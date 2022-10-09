@@ -1,0 +1,69 @@
+domains:
+- domain: appname.tjmcode.io
+  type: PRIMARY
+  zone: tjmcode.io
+envs:
+- key: APP_NAME
+  scope: RUN_AND_BUILD_TIME
+  value: appname
+- key: APP_VERSION
+  scope: RUN_AND_BUILD_TIME
+  value: 0.0.0
+- key: APP_TITLE
+  scope: RUN_AND_BUILD_TIME
+  value: 'App-Name: Genric MERN App'
+- key: APP_DESCRIPTION
+  scope: RUN_AND_BUILD_TIME
+  value: A template for a 3-Tier FrontEnd-BackEnd-Database App.
+- key: APP_CONSTRUCTOR
+  scope: RUN_AND_BUILD_TIME
+  value: tjmcode <tmcguire@mcode.com>
+- key: APP_FRONTEND_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "3000"
+- key: APP_BACKEND_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "8080"
+- key: APP_DATABASE_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "27017"
+- key: COMPOSE_PROJECT_NAME
+  scope: RUN_AND_BUILD_TIME
+  value: appname
+name: appname
+region: nyc
+services:
+- http_port: 27017
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: appname-database
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: appname-database
+  routes:
+  - path: /database
+- http_port: 8080
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: appname-backend
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: appname-backend
+  routes:
+  - path: /backend
+- http_port: 3000
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: appname-frontend
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: appname-frontend
+  routes:
+  - path: /frontend
+  - path: /

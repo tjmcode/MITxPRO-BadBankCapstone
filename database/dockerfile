@@ -1,0 +1,77 @@
+#      Title:    MicroCODE Dockerfile for MERN App - DATABASE
+#      Module:   Modules (./dockerfile)
+#      Customer: Internal
+#      Creator:  MicroCODE Incorporated
+#      Date:     August 2022
+#      Author:   Timothy J McGuire
+#
+#      Designed and Coded: 2022 MicroCODE Incorporated
+#
+#      This software and related materials are the property of
+#      MicroCODE Incorporated and contain confidential and proprietary
+#      information. This software and related materials shall not be
+#      duplicated, disclosed to others, or used in any way without the
+#      written of MicroCODE Incorported.
+#
+#
+#      DESCRIPTION:
+#      ------------
+#
+#      This module implements the Dockerization of a MERN Database.
+#
+#
+#      REFERENCES:
+#      -----------
+#
+#      1. DOCKER Documentation
+#         https://docs.docker.com/docker-hub/
+#
+#
+#
+#      MODIFICATIONS:
+#      --------------
+#
+#  Date:         By-Group:   Rev:     Description:
+#
+#  26-sep-2022   TJM-MCODE  {0001}    New file for learning DOCKER-ization.
+#  27-Sep-2022   TJM-MCODE  {0002}    Updated to use .env APP_* variables.
+#  06-Oct-2022   TJM-MCODE  {0003}    Added in '.env.production' ENV VARs as defaults to be overriden by the 'docker-compose.yml'
+#
+#
+#
+# use official "mongo" image
+FROM mongo
+#
+# signature
+LABEL ${APP_NAME:-badbank}.frontend.constructor=${APP_CONSTRUCTOR:-tmcguire@mcode.com}
+#
+# default all required ENVIRONMENT VARIABLES to '.env.production' values
+# these of overridden by the 'Docker-Compose.yaml' during development
+ENV \
+    # REACT_APP_ENV
+    REACT_APP_ENV=production \
+    #
+    # APP_DOMAIN - the name of the domain hosting the App used throughout the build and the JS code.
+    # tjmcode.io, controlnet.io, laddersnet.io, or localhost for development
+    APP_DOMAIN=tjmcode.io \
+    #
+    # APP_SUBDOMAIN - the name of the sub-doomain hosting the App used throughout the build and the JS code.
+    # ${APP_NAME}.${APP_DOMAIN} or localhost for development
+    APP_SUBDOMAIN=badbank.tjmcode.io \
+    #
+    # REACT_APP_SUBDOMAIN - the same name made accessible in the React App Front-end
+    # should be equal to ${APP_SUBDOMAIN}
+    REACT_APP_SUBDOMAIN=badbank.tjmcode.io \
+    #
+    # REACT_APP_BACKEND_PORT - taken from the standard .env file into a REACT_APP_* var for the Front-End
+    # should be equal to ${APP_BACKEND_PORT}
+    REACT_APP_BACKEND_PORT=8080 \
+    #
+    # REACT_APP_BACKEND_URL - taken from the standard .env file into a REACT_APP_* var for the Front-End
+    # should be equal to ${APP_BACKEND_URL}
+    REACT_APP_BACKEND_URL=https://badbank.tjmcode.io/backend
+#
+# expose port and start the application
+EXPOSE ${APP_DATABASE_PORT:-27017}
+#
+CMD ["mongod"]

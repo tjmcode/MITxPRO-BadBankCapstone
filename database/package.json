@@ -1,0 +1,17 @@
+{
+  "name": "mcode-database",
+  "version": "0.0.0",
+  "description": "MicroCODE's Generic MERN Database.",
+  "main": "",
+  "scripts": {
+    "test": "",
+    "start": "",
+    "dev": ""
+  },
+  "author": "Timothy McGuire",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

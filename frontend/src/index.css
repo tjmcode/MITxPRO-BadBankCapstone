@@ -1,0 +1,112 @@
+/* #region  H E A D E R */
+/* <copyright file="index.css" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE Incorporated Troy, MI</copyright><author>Timothy J. McGuire</author> */
+/* #region  P R E A M B L E */
+/* #region  D O C U M E N T A T I O N */
+/*
+ *      Title:    MicroCODE AppName Index CSS
+ *      Module:   Styles (MicroCODE:index.css)
+ *      Project:  MicroCODE 3-Tier MERN Template 'AppName'
+ *      Customer: Internal + MIT xPRO Course
+ *      Creator:  MicroCODE Incorporated
+ *      Date:     March 2022
+ *      Author:   Timothy J McGuire
+ *
+ *      Designed and Coded: 2022 MicroCODE Incorporated
+ *
+ *      This software and related materials are the property of
+ *      MicroCODE Incorporated and contain confidential and proprietary
+ *      information. This software and related materials shall not be
+ *      duplicated, disclosed to others, or used in any way without the
+ *      written of MicroCODE Incorported.
+ *
+ *
+ *      DESCRIPTION:
+ *      ------------
+ *
+ *      This module implements the default Cascading Style Sheet (CSS) for our 'AppName' template.
+ *
+ *
+ *      REFERENCES:
+ *      -----------
+ *
+ *      1. MIT xPRO CSS Style Guide
+ *         https://student.emeritus.org/courses/3291/files/2554233/download?wrap=1
+ *
+ *      2. AirBnB CSS Style Guide
+ *         https://github.com/airbnb/css
+ *
+ *      3. Google HTML/CSS Style Guide
+ *         https://google.github.io/styleguide/htmlcssguide.html
+ *
+ *      4. MicroCODE HTML-CSS Style Guide
+ *         Local File: MCX-S03 (Internal HHTML-CSS Style Guide).docx
+ *         https://github.com/MicroCODEIncorporated/HTML-CSS-SG
+ *
+ *
+ *      DEMONSTRATION VIDEOS:
+ *      --------------------
+ *
+ *      1. ...
+ *
+ *
+ *
+ *      MODIFICATIONS:
+ *      --------------
+ *
+ *  Date:         By-Group:   Rev:     Description:
+ *
+ *  07-Mar-2022   TJM-MCODE  {0001}    New module for common reusable Cascading Style Sheet (CSS) files.
+ *
+ *
+ */
+
+/* #endregion */
+/* #endregion */
+/* #endregion */
+
+/* #region  C S S */
+/* #region  S T Y L E S */
+
+/* #region  I D  -- highest priority, references <... id="id-name" ...> - a specific instance of an element */
+
+#id-name {
+
+    font-family: 'Libre Franklin', sans-serif;
+}
+
+/* #endregion */
+
+/* #region  C L A S S -- lower priority, references <... class="class-name" - a defined type of element */
+
+.class-name {
+
+    font-family: 'Libre Franklin', sans-serif;
+}
+
+/* #endregion */
+
+/* #region  T A G -- lowest priority, references <tag-name> - an HTML Tag */
+
+tagName {
+
+    font-family: 'Michroma', sans-serif;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+body {
+    margin: 0;
+    background-color: #282c34;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* #endregion */
+
+/* #endregion */
+/* #endregion */
