@@ -1,0 +1,68 @@
+domains:
+- domain: badbank.tjmcode.io
+  type: PRIMARY
+  zone: tjmcode.io
+envs:
+- key: APP_NAME
+  scope: RUN_AND_BUILD_TIME
+  value: badbank
+- key: APP_VERSION
+  scope: RUN_AND_BUILD_TIME
+  value: 0.0.6
+- key: APP_TITLE
+  scope: RUN_AND_BUILD_TIME
+  value: 'Bad Bank: A 3-Tier MERN App'
+- key: APP_DESCRIPTION
+  scope: RUN_AND_BUILD_TIME
+  value: Bad Bank as a 3-Tier FrontEnd-BackEnd-Database App.
+- key: APP_CONSTRUCTOR
+  scope: RUN_AND_BUILD_TIME
+  value: tjmcode <tmcguire@mcode.com>
+- key: APP_FRONTEND_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "3000"
+- key: APP_BACKEND_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "8080"
+- key: APP_DATABASE_PORT
+  scope: RUN_AND_BUILD_TIME
+  value: "27017"
+- key: COMPOSE_PROJECT_NAME
+  scope: RUN_AND_BUILD_TIME
+  value: ${APP_NAME}
+name: badbank
+region: nyc
+services:
+- http_port: 3000
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: badbank-frontend
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: badbank-frontend
+  routes:
+  - path: /
+- http_port: 8080
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: badbank-backend
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: badbank-backend
+  routes:
+  - path: /tjmcode-badbank-backend
+- http_port: 27017
+  image:
+    registry: tjmcode
+    registry_type: DOCKER_HUB
+    repository: badbank-database
+    tag: latest
+  instance_count: 1
+  instance_size_slug: professional-xs
+  name: badbank-database
+  routes:
+  - path: /tjmcode-badbank-database
