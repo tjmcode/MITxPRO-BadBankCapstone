@@ -61,6 +61,9 @@
 
 import React, {useState} from 'react';
 
+// support .env file variables
+require('dotenv').config();
+
 // #endregion
 
 // #region  J A V A S C R I P T
@@ -98,7 +101,7 @@ const AppContext = React.createContext(defaultValue);
 // Our global Context Provider
 const AppContextProvider = (props) =>
 {
-    const [Version, setVersion] = useState("Version 0.3.0");
+    const [Version, setVersion] = useState(`Version ${process.env.REACT_APP_VERSION}`);
     const [LoggedIn, setLoggedIn] = useState(false);
     const [UserIndex, setUserIndex] = useState(0);
     const [CurrentUser, setCurrentUser] = useState('');

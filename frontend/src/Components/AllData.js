@@ -149,6 +149,12 @@ function AllData()
 
         if (accounts)
         {
+            // remove MongoDB IDs before using in App Context
+            accounts.forEach(element =>
+            {
+                delete element["_id"];
+            });
+
             // Update our App Context
             ctx.Users = accounts;
 
