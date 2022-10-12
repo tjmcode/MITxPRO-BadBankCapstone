@@ -115,9 +115,12 @@ function AllData()
 
     // initialize STATE and define accessors...
     const [accounts, setAccounts] = useState(null);
+    const [needInput, setNeedInput] = useState(true);
 
     // access CONTEXT for reference...
     const ctx = useContext(AppContext);
+
+    ctx.RevealAccounts = false;
 
     // #region  P R I V A T E   F U N C T I O N S
 
@@ -194,19 +197,41 @@ function AllData()
      * *_Click() - 'on click' event handlers for UI elements.
      */
 
+    // opens the UI to show all data in the Accounts
+    function showAllData_Click(e)
+    {
+        e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
+
+        ctx.RevealAccounts = true;
+
+        setNeedInput(false);
+    }
+
     // #endregion
 
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (
         <BankCard
             bgcolor="warning"
-            header="Account Data"
+            header="All Account Data"
             width="60rem"
-            body={(
-                <ul className="list-group">
-                    {/* the rest of the list is build from the Account array held within our Context */}
-                    {buildAccountList()}
-                </ul>
+            body={needInput ? (
+                <form>
+                    <h5 className="card-title">Show all data for all Accounts</h5>
+                    <p className="card-text">WARNING: This is display all the data <br />from the User Account Database.</p>
+                    <div className="col-10">
+                        <button className="btn btn-outline-light" onClick={showAllData_Click} type="display">Show All Data</button>
+                    </div>
+                </form>
+            ) : (
+                <>
+                    <h5>All Account Data</h5>
+                    <br />
+                    <ul className="list-group">
+                        {/* the rest of the list is build from the Account array held within our Context */}
+                        {buildAccountList()}
+                    </ul>
+                </>
             )}
         />
     );

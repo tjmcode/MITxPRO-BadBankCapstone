@@ -93,6 +93,9 @@ const defaultValue = {
     Users: {},
     setUsers: () => { },
 
+    // Value indicating whether or not anyone can see all other Users
+    RevealUsers: false,
+    setRevealUsers: () => { },
 };
 
 // App Context holding User information
