@@ -1,12 +1,12 @@
 // #region  H E A D E R
-// <copyright file="App.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
+// <copyright file="index.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
 // #region  P R E A M B L E
 // #region  D O C U M E N T A T I O N
 /*
- *      Title:    MicroCODE AppName React App
+ *      Title:    MicroCODE Bad Bank React App
  *      Module:   Modules (./App.js)
- *      Project: MicroCODE 3-Tier MERN Template 'AppName'
- *      Customer: Internal+MIT xPRO Course
+ *      Project: MicroCODE 3-Tier MERN App 'BadBank'
+ *      Customer: MIT xPRO Course
  *      Creator:  MicroCODE Incorporated
  *      Date:     October 2022
  *      Author:   Timothy J McGuire
@@ -23,7 +23,7 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the MicroCODE's 'AppName' React App Entry Point.
+ *      This module implements the MicroCODE's Bad Bank React App Entry Point.
  *
  *
  *      REFERENCES:
@@ -47,7 +47,7 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  03-Jun-2022   TJM-MCODE  {0001}    New module implementing the 'AppName' App Entry.
+ *  03-Jun-2022   TJM-MCODE  {0001}    New module implementing the Bad Bank App Entry.
  *
  *
  */
@@ -58,18 +58,24 @@
 
 // #region  I M P O R T S
 
-import React, {Component} from 'react';
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
+import React, {useContext} from 'react';
+
+import {HashRouter, Routes, Route} from 'react-router-dom';
+
+import {AppContext} from './Components/AppContext';
+
+import NavBar from './Components/NavBar';
+import Account from './Components/Account';
+import AllData from './Components/AllData';
+import Deposit from './Components/Deposit';
+import Home from './Components/Home';
+import Login from './Components/Login';
+import Withdraw from './Components/Withdraw';
 
 import './App.css';
-import logo from './logo.svg';
-import axios from 'axios';
 
 // include our common MicroCODE Server Library
-import {log, simplifyText} from './mcodeClient.js';
+import {log} from './mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -111,7 +117,7 @@ const apiUrl = `${process.env.REACT_APP_BACKEND_URL}`;
 // #region  C O M P O N E N T S
 
 /**
- * App() – AppNames's Single Page App (SPA) - the 'FRONT-END'.
+ * App() – Bad Bank's Single Page App (SPA).
  *
  * @api public
  *
@@ -124,139 +130,49 @@ const apiUrl = `${process.env.REACT_APP_BACKEND_URL}`;
  *      App();
  *
  */
-class App extends Component
+function App()
 {
     // validate PROPS input(s)
 
     // initialize STATE and define accessors...
-    state = {
-        users: [],
-    };
 
     // access CONTEXT for reference...
+    const ctx = useContext(AppContext);
 
     // #region  P R I V A T E   F U N C T I O N S
-
-    async createUser()
-    {
-        log(`Attempting Create User: ${apiUrl}/user-create`, logSource, `Waiting`);
-
-        try
-        {
-            await axios.get(apiUrl + '/user-create');
-            this.loadUsers();
-        }
-        catch
-        {
-            log(`Create User failed: ${apiUrl}/user-create`, logSource, `Error`);
-        }
-    }
-
-    async deleteAllUsers()
-    {
-        log(`Attempting Delete All Users: ${apiUrl}/users-delete`, logSource, `Waiting`);
-
-        try
-        {
-            await axios.get(apiUrl + '/users-delete');
-            this.setState({
-                users: [],
-            });
-        }
-        catch
-        {
-            log(`Delete All Users failed: ${apiUrl}/users-delete`, logSource, `Error`);
-        }
-    }
-
-    async loadUsers()
-    {
-        log(`Attempting to Load All Users: ${apiUrl}/users`, logSource, `Waiting`);
-
-        try
-        {
-            const res = await axios.get(apiUrl + '/users');
-            this.setState({
-                users: res.data
-            });
-
-            log(`Load All Users succeeded: ${apiUrl}/users`, logSource, `Information`);
-            log(`users:${simplifyText(JSON.stringify(this.state.users))}`, logSource, `Information`);
-        }
-        catch
-        {
-            log(`Load All Users failed: ${apiUrl}/users`, logSource, `Error`);
-        }
-    }
 
     // #endregion
 
     // #region  E V E N T   H A N D L E R S
 
-    componentDidMount()
-    {
-        this.loadUsers();
-    }
-
     // #endregion
 
     // perform component COMPUTATION to generate output
+    log(`Front-End is starting using ${apiUrl} to access Back-End.`, logSource, `Information`);
 
     // OUTPUT the Component's JavaScript Extension (JSX) code...
-    render()
-    {
-        return (
-            <div className="App">
-                <Container fluid>
+    return (
+        <>
+            <HashRouter>
 
-                    <header className="App-header">
-                        <img src={logo} className="App-logo" alt="logo" />
-                    </header>
-                    <Row className="App-buttons">
-                        <Button
-                            className="App-button"
-                            variant="dark"
-                            onClick={() => this.createUser()}
-                        >
-                            Create User
-                        </Button>
+                <NavBar />
 
-                        <Button
-                            className="App-button"
-                            variant="dark"
-                            onClick={() => this.deleteAllUsers()}
-                        >
-                            Delete All Users
-                        </Button>
-                    </Row>
+                <div className="container" style={{padding: "20px"}}>
+                    <Routes>
+                        <Route path="/" exact element={<Home />}></Route>
+                        <Route path="/Account/" element={<Account />}></Route>
+                        <Route path="/Login/" element={<Login />}></Route>
+                        <Route path="/Deposit/" element={<Deposit />}></Route>
+                        <Route path="/Withdraw/" element={<Withdraw />}></Route>
+                        <Route path="/AllData/" element={<AllData />}></Route>
+                    </Routes>
+                </div>
 
-                    <div className="App-body">
-                        <Table striped bordered hover size="sm" variant="dark">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Username</th>
-                                    <th>Email Address</th>
-                                    <th>Password</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.users.map((user, index) => (
-                                    <tr key={index + 1}>
-                                        <td>{index + 1}</td>
-                                        <td key={user.username}>{user.username}</td>
-                                        <td key={user.email}>{user.email}</td>
-                                        <td key={user.password}>{user.password}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </div>
+                <p>{ctx.Version}</p>
 
-                </Container>
-            </div>
-        );
-    }
+            </HashRouter>
+        </>
+    );
 }
 
 // #endregion

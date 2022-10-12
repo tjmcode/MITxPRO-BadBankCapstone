@@ -5,10 +5,10 @@
 /*
  *      Title:    MicroCODE
  *      Module:   index (.\backend\server.js)
- *      Project:  MicroCODE 3-Tier MERN Template 'AppName'
- *      Customer: Internal + MIT xPRO Course
+ *      Project:  MicroCODE 3-Tier MERN App 'BadBank'
+ *      Customer: MIT xPRO Course
  *      Creator:  MicroCODE Incorporated
- *      Date:     August 2022
+ *      Date:     October 2022
  *      Author:   Timothy J McGuire
  *
  *      Designed and Coded: 2021,2022 MicroCODE Incorporated
@@ -24,15 +24,17 @@
  *      ------------
  *
  *      This module implements the MicroCODE JavaScript Class for 'backend\server'
- *      to implement the template MERN 'Appname' project.
+ *      to implement the MIT 'Bad Bank' Fire Hydrant project.
+ *      This was reused in the refactoring of the React App version of my 'Bad Bank' app.
  *
  *      This implements the Server-side, the 'BACK-END'.
+ *
  *
  *
  *      REFERENCES:
  *      -----------
  *
- *      1. Starter Code Repository (Front-End and API)
+ *      1. Starter Code Repository (Front end and API)
  *         https://github.com/1125f16/badbank
  *      2. Starter Code Repository (Simple database)
  *         https://github.com/1125f16/littledb
@@ -74,11 +76,11 @@
 // #region  C O N S T A N T S
 
 //    localhost:8080 for development
-//    https://appname.tjmcode.io/backend for frontend
-// or https://appname.tjmcode.io:8080 for backend
+//    https://badbank.tjmcode.io/backend for frontend
+// or https://badbank.tjmcode.io:8080 for backend
 //
-const appPort = parseInt(`${process.env.APP_BACKEND_PORT}`);
-const appUrl = `https://${process.env.APP_SUBDOMAIN}:${appPort}`;
+const APP_PORT = parseInt(`${process.env.APP_BACKEND_PORT}`);
+const APP_URL = `https://${process.env.APP_SUBDOMAIN}:${APP_PORT}`;
 
 // #endregion
 
@@ -97,6 +99,9 @@ const express = require('express');
 // allow Cross Origin Resource Sharing (for development only)
 const cors = require('cors');
 
+// support .env file variables -- this bring the .env file variables into the 'process.env' object
+require('dotenv').config();
+
 // instantiate ExpressJS
 const app = express();
 
@@ -106,19 +111,38 @@ const faker = require(`faker`);
 // include our common MicroCODE Server Library
 var mcode = require('./src/mcodeServer.js');
 
+// load our Data Abstraction Layer (DAL)
+const dal = require('./src/dal.js');
+
 // get our current file name for logging events
 var path = require('path');
 var logSource = path.basename(__filename);
 
-// load our common MongoDB connection
-const connectDB = require(`./src/database`);
+// and our Account Schema
+const User = require(`./src/models/account.model`);
 
-// and our User Schema
-const User = require(`./src/models/user.model`);
+// Required data store structure
+/*
+{
+    account:
+    {
+        name        : "",
+        email       : "",
+        password    : "",
+        balance     : 0.00,
+        created     : "YYYY-MM-DD HH:MM:SS.mmm"
+        transaction : []
+    }
 
-// support .env file variables -- this bring the .env file variables into the 'process.env' object
-require('dotenv').config();
-
+    transaction:
+    {
+        type      : <DEPOSIT, WITHDRAW, BALANCE>
+        amount    : 0.00
+        balance   : 0.00
+        timestamp : "YYYY-MM-DD HH:MM:SS.mmm"
+    }
+}
+*/
 // #endregion
 
 // #region  E N U M E R A T I O N S
@@ -129,7 +153,29 @@ require('dotenv').config();
 
 // #endregion
 
-// #region  A P I –- P U B L I C
+// #region  A P I – P U B L I C
+
+/*
+ * API: INITIALIZATION
+ * -------------------
+ * This instantiates our Application Programming Interface (API)
+ * and listens for Client requests.
+ *
+ */
+
+// configure express to serve static files from public directory
+app.use(express.static('public'));
+
+// configure CORS to share resources
+app.use(cors());
+
+// Startup Server
+// Define a LISTENER with a simple Callback function that logs a response in the console...
+app.listen(APP_PORT, function ()
+{
+    // show that our listener is alive
+    mcode.log(`Running on Port: ${APP_PORT}!  Path: ${APP_URL}`, logSource, `Information`);
+});
 
 /*
  * API: UI ROUTES
@@ -138,12 +184,6 @@ require('dotenv').config();
  * and correspond to the UI Widgets.
  *
  */
-
-// configure express to serve static files from public directory
-app.use(express.static('public'));
-
-// configure CORS to share resources -- THIS MUST COME BEFORE ROUTES
-app.use(cors());
 
 /**
  * Define a ROUTE - from Browser to Server.
@@ -156,108 +196,110 @@ app.use(cors());
 app.get('/', function (req, res)
 {
     // a simple response to a request
-    res.send(`MicroCODE Generic 3-Tier MERN Response from ${process.env.APP_NAME}-backend\n`);
+    res.send("Bad Bank Server is online. [NOTE: This should never be seen if the React App is being served properly.]");
 });
 
 app.get('/test', function (req, res)
 {
     // a simple response to a request
-    res.send("MicroCODE Generic 3-Tier MERN test was scucessful. [NOTE: Changes to this file are *not* dynamic, they are loaded at Page Display.]\n");
+    res.send("Bad Bank Server was test scucessful. [NOTE: Changes to this file are *not* dynamic, they are loaded at Page Display.]");
 });
 
 /**
  * @function api.create() -- create account route
  *
- * Required data store structure
-*
-    user:
-    {
-        name     : "",
-        email    : "",
-        password : "",
-    }
- *
- *
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get(`/user-create`, async (req, res) =>
+app.get('/account/create/:username/:email/:password/:deposit', function (req, res)
 {
-    const user = new User(
+    mcode.log(`Creating Account...`, logSource, `Information`);
+
+    let amount = parseFloat(req.params.deposit);
+
+    dal.createAccount(req.params.username, req.params.email, req.params.password, amount)
+        .then((account) =>
         {
-            username: faker.internet.userName(),
-            email: faker.internet.email(),
-            password: faker.internet.password(),
+            mcode.log(`Successfully created User Account: ${account.email}`, logSource, `Information`);
+            res.send(account);
         });
-
-    try
-    {
-        await user.save().then(() => mcode.log(`User [${user.username}] was created in database.`, logSource, `Information`));
-        res.send(`User [${user.username}] was created.\n`);
-    }
-    catch
-    {
-        mcode.log(`Creation of User [${user.username}] failed, check MongoDB.`, logSource, `Error`);
-        res.send(`Creation of User [${user.username}] failed, check MongoDB.\n`);
-    }
-
 });
 
 /**
- * @function api.delete() -- delete all accounts route
+ * @function api.login() -- user confirm credentials
  *
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get(`/users-delete`, async (req, res) =>
+app.get('/account/login/:email/:password', function (req, res)
 {
-    await User.deleteMany({}).then(() => mcode.log(`All Users were deleted from database.`, logSource, `Warning`));
+    console.log();
+    console.log("Logging into Account...");
 
-    res.send(`All Users deleted.\n`);
+    // done in Client with a current copy of 'AllData'
+
 });
 
 /**
- * @function api.users() -- Return all accounts
+ * @function api.deposit() -- deposit money to account by email
+ *
+ * @returns {object} account object if successful
+ * @returns {string} 401 status with error message if unsucessful
+ */
+app.get('/account/deposit/:email/:amount', function (req, res)
+{
+    mcode.log("Depositing Funds...");
+
+    let amount = parseFloat(req.params.amount);
+
+    mcode.log(`About to add ${amount} to balance.`);
+
+    dal.depositFunds(req.params.email, amount)
+        .then((account) =>
+        {
+            mcode.log(`Successfully deposited User funds, new balance: ${account.balance}`, logSource, `Information`);
+            res.send(account);
+        });
+});
+
+/**
+ * @function api.withdraw() -- withdraw money from account by email
+ *
+ * @returns {object} account object if successful
+ * @returns {string} 401 status with error message if unsucessful
+ */
+app.get('/account/withdraw/:email/:amount', function (req, res)
+{
+    mcode.log("Withdrawing Funds...");
+
+    let amount = parseFloat(req.params.amount);
+
+    console.log(`About to subtract ${amount} from balance.`);
+
+    dal.withdrawFunds(req.params.email, amount)
+        .then((account) =>
+        {
+            mcode.log(`Successfully withdrew User funds: ${account.balance}`, logSource, `Information`);
+            res.send(account);
+        });
+});
+
+/**
+ * @function api.allData() -- Return data for all accounts
  *
  * @returns {object} accounts JSON data object if successful
  */
-app.get(`/users`, async (req, res) =>
+app.get('/account/all', function (req, res)
 {
-    const users = await User.find();
-    mcode.log(`users:${mcode.simplifyText(JSON.stringify(users))}`, logSource, `Information`);
+    mcode.log("Returning all Account Data...");
 
-    res.json(users);
-});
-
-// #endregion
-
-// #region  A P I -- E X E C U T I O N
-
-/*
- * API: INITIALIZATION
- * -------------------
- * This instantiates our Application Programming Interface (API)
- * and listens for Client requests.
- *
- */
-
-// Startup Server
-// Define a LISTENER with a simple Callback function that logs a response in the console...
-app.listen(appPort, function ()
-{
-    // show that our listener is alive
-    mcode.log(`Running on Port: ${appPort}!  Path: ${appUrl}`, logSource, `Information`);
-    mcode.log(`Attempting Database connection: ${appUrl}`, logSource, `Waiting`);
-
-    try
-    {
-        // connect to our database server/container
-        connectDB().then(() => mcode.log(`Database connected.`, logSource, `Information`));
-    }
-    catch
-    {
-        mcode.log(`Database connection failed: ${appUrl}`, logSource, `Error`);
-    }
+    // returns all data in the database
+    dal.allAccounts()
+        .then((users) =>
+        {
+            mcode.log(`users:${JSON.stringify(users)}`, logSource, `Information`);
+            res.send(users);
+        });
 });
 
 // #endregion

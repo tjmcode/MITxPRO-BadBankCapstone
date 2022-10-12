@@ -3,12 +3,11 @@
 <!-- #region  P R E A M B L E -->
 <!-- #region  D O C U M E N T A T I O N -->
 <!--
- *      Title:    AppName - MERN Template
+ *      Title:    MicroCODE Bad Bank React App
  *      Module:   Modules (./index.html)
- *      Project:  MicroCODE 3-Tier MERN Template 'AppName'
- *      Customer: Internal + MIT xPRO Course
+ *      Customer: MIT xPRO
  *      Creator:  MicroCODE Incorporated
- *      Date:     October 2022
+ *      Date:     June 2022
  *      Author:   Timothy J McGuire
  *
  *      Designed and Coded: 2022 MicroCODE Incorporated
@@ -23,7 +22,7 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the Front-End landing page of our 'AppName' Template.
+ *      This module implements the MIT xPRO Bad Bank Project as a React App.
  *
  *
  *      REFERENCES:
@@ -57,11 +56,10 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  02-Oct-2022   TJM-MCODE  {0001}    Added MCODE template documentation.
+ *  02-Jun-2022   TJM-MCODE  {0001}    New file refactored from MIT starter code.
  *
  *
- *
--->
+ -->
 
 <!-- #endregion -->
 <!-- #endregion -->
@@ -73,9 +71,9 @@
 
     <!-- #region  C S S : visual styles -->
 
-    <!-- Popular Style Sheets from BOOTSTRAP -->
+    <!-- Popular Style Sheets from B O O T S T R A P  v4.5.2 -->
     <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 
     <!-- Page Specific Styles -->
     <style>
@@ -85,7 +83,7 @@
 
     <!-- #region  H E A D E R -->
     <head>
-        <meta charset="utf-8" />
+        <meta charset="UTF-8">
         <link rel="icon"
               href="%PUBLIC_URL%/favicon.ico" />
         <meta name="viewport"
@@ -95,41 +93,146 @@
         <meta name="description"
               content="Web site created using create-react-app" />
         <link rel="apple-touch-icon"
-              href="%PUBLIC_URL%/logo192.png" />
-        <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+              href="%PUBLIC_URL%/logo256.png" />
+        <meta http-equiv="X-UA-Compatible"
+              content="IE=edge">
+        <meta name="viewport"
+              content="width=120, initial-scale=1.0">
+
+        <!-- MANIFEST: manifest.json provides metadata used when your web app is installed on a
+             user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/ -->
         <link rel="manifest"
               href="%PUBLIC_URL%/manifest.json" />
-        <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-        <title>BadBank: Dockerized MERN App</title>
+        <!-- PUBLIC: Notice the use of %PUBLIC_URL% in the tags above.
+                     It will be replaced with the URL of the `public` folder during the build.
+                     Only files inside the `public` folder can be referenced from the HTML.
+
+                     Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+                     work correctly both with client-side routing and a non-root public URL.
+                     Learn how to configure a non-root public URL by running `npm run build`.
+        -->
+
+        <!-- #region  F O N T S -- our default fonts -->
+
+        <!-- #endregion -->
+
+        <title>MIT xPRO: Bad Bank!</title>
+
     </head>
     <!-- #endregion -->
 
     <!-- #region  B O D Y -->
     <body>
+
+        <!-- REACT: target for dynamic HTML Components -->
         <noscript>You need to enable JavaScript to run this app.</noscript>
+
         <div id="root"></div>
-        <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+        <!-- TEMPLATE:  This HTML file is a template.
+                        If you open it directly in the browser, you will see an empty page.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+                        You can add webfonts, meta tags, or analytics to this file.
+                        The build step will place the bundled scripts into the <body> tag.
+
+                        To begin the development, run `npm start` or `yarn start`.
+                        To create a production bundle, use `npm run build` or `yarn build`.
+        -->
     </body>
+    <!-- #endregion -->
+
+    <!-- #region  D A T A B A S E : data source(s) -->
+    <!-- <script src="moduleData.js"></script> -->
+    <!-- #endregion -->
+
+    <!-- R E A C T : JSX Libraries -->
+    <script src="https://unpkg.com/react/umd/react.development.js"
+            crossorigin></script>
+    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"
+            crossorigin></script>
+    <script src="https://unpkg.com/react-router@5.2.1/umd/react-router.min.js"
+            crossorigin></script>
+    <script src="https://unpkg.com/react-router-dom@5.2.1/umd/react-router-dom.min.js"
+            crossorigin></script>
+    <!-- #endregion -->
+
+    <!-- #region  R E A C T : Single Page App (SPA/App) Components -->
+    <script src="context.js"
+            defer
+            type="text/babel"></script>
+    <script src="navbar.js"
+            defer
+            type="text/babel"></script>
+    <script src="account.js"
+            defer
+            type="text/babel"></script>
+    <script src="login.js"
+            defer
+            type="text/babel"></script>
+    <script src="deposit.js"
+            defer
+            type="text/babel"></script>
+    <script src="withdraw.js"
+            defer
+            type="text/babel"></script>
+    <script src="balance.js"
+            defer
+            type="text/babel"></script>
+    <script src="alldata.js"
+            defer
+            type="text/babel"></script>
+    <script src="home.js"
+            defer
+            type="text/babel"></script>
+    <script src="index.js"
+            defer
+            type="text/babel"></script>
+
+    <!-- #endregion -->
+
+    <!-- #region  J A V A S C R I P T : page specific code -->
+    <script>
+
+        // #region P R I V A T E   C O N S T A N T S
+
+        // #endregion
+
+        // #region P R I V A T E   F I E L D S
+
+        // #endregion
+
+        // #region P R I V A T E   F U N C T I O N S
+
+        // #endregion
+
+        // #region C A L L B A C K S
+        /*
+        * callback*() - callback* description.
+        */
+
+        // #endregion
+
+        // #region E V E N T   H A N D L E R S
+        /*
+         * btnUI_*_Click() - event handlers for UI buttons.
+         */
+
+        // #endregion
+
+        // #region E X E C U T I O N
+
+        // Load data sources...
+
+        // Map Event Handlers...
+
+        // Set Timeout Events...
+
+        // Run Timed Events...
+
+        // #endregion
+
+    </script>
     <!-- #endregion -->
 
 </html>

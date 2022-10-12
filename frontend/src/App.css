@@ -3,10 +3,10 @@
 /* #region  P R E A M B L E */
 /* #region  D O C U M E N T A T I O N */
 /*
- *      Title:    MicroCODE App CSS
+ *      Title:    App Specific CSS for Bad Bank React App
  *      Module:   Styles (MicroCODE:App.css)
- *      Project: MicroCODE 3-Tier MERN Template 'AppName'
- *      Customer: Internal+MIT xPRO Course
+ *      Project:  MicroCODE Common Library
+ *      Customer: Internal
  *      Creator:  MicroCODE Incorporated
  *      Date:     March 2022
  *      Author:   Timothy J McGuire
@@ -23,7 +23,9 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the Cascading Style Sheet (CSS) for the App of our 'AppName' template.
+ *      This module implements the MicroCODE's Common Cascading Style Sheet (CSS) Template.
+ *      This file is copied to start all MicroCODE CSS files.
+ *      It demonstrates our desired ordering and formatting of a CSS file.
  *
  *
  *      REFERENCES:
@@ -55,7 +57,7 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  07-Mar-2022   TJM-MCODE  {0001}    New module for common reusable Cascading Style Sheet (CSS) files.
+ *  29-Jun-2022   TJM-MCODE  {0001}    New module for the refactoring of the Bad Bank App in a new React v18^ App.
  *
  *
  */
@@ -85,9 +87,6 @@
 
 .App {
     text-align: center;
-    width: auto;
-    background-color: #282c34;
-    min-height: 100vh;
 }
 
 .App-logo {
@@ -102,10 +101,9 @@
 }
 
 .App-header {
-    background-color: #282c34;
-    /* min-height: 100vh; */
+    background-color: black;
+    min-height: 100vh;
     display: flex;
-    width: auto;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -113,17 +111,8 @@
     color: white;
 }
 
-.App-body {
-    width: auto;
-    margin: 20px;
-}
-
-.App-buttons {
-    justify-content: space-around;
-}
-
 .App-link {
-    color: #61dafb;
+    color: blue;
 }
 
 @keyframes App-logo-spin {
@@ -136,6 +125,74 @@
     }
 }
 
+/* Hover ToolTip Styling */
+/* Bank Brand ToolTip */
+.navbar-brand {
+    position: relative;
+}
+
+.navbar-brand:before {
+    content: attr(tooltip);
+    visibility: hidden;
+    opacity: 0;
+    width: 300px;
+    background-color: blue;
+    color: white;
+    font-size: medium;
+    font-style: normal;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 3px;
+    transition: opacity 01s ease-in-out;
+    position: absolute;
+    z-index: 999;
+    left: 0;
+    top: 110%;
+}
+
+.navbar-brand:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* NavBar Menu Item ToolTips */
+.nav-link {
+    position: relative;
+}
+
+.nav-link:before {
+    content: attr(tooltip);
+    visibility: hidden;
+    opacity: 0;
+    width: 300px;
+    background-color: darkgray;
+    color: white;
+    font-size: medium;
+    font-style: normal;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 3px;
+    transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    z-index: 999;
+    left: 0;
+    top: 110%;
+}
+
+.nav-link:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.card {
+    min-width: 400px;
+}
+
+.list-group-item {
+    color: gray;
+    font-weight: 600;
+}
+
 /* #endregion */
 
 /* #region  T A G -- lowest priority, references <tag-name> - an HTML Tag */
@@ -143,6 +200,25 @@
 tagName {
 
     font-family: 'Michroma', sans-serif;
+}
+
+/* NavBar Styling */
+nav {
+    width: 100%;
+    padding-left: 20%;
+    height: 35%;
+    font-weight: bold;
+    font-size: large;
+}
+
+nav ul a li:not(.noborder),
+nav ul li {
+    border-right: solid 0.025vw gray
+}
+
+/* for Version # */
+p {
+    text-align: center;
 }
 
 /* #endregion */

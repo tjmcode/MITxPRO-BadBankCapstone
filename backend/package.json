@@ -12,10 +12,12 @@
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.0.2",
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "faker": "^5.4.0",
-    "mongoose": "^5.12.0",
+    "mongodb": "^4.10.0",
+    "mongoose": "^6.6.5",
+    "path": "^0.12.7",
     "puppeteer": "^18.0.5",
     "supertest": "^6.2.4"
   },

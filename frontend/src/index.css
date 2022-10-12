@@ -3,12 +3,12 @@
 /* #region  P R E A M B L E */
 /* #region  D O C U M E N T A T I O N */
 /*
- *      Title:    MicroCODE AppName Index CSS
+ *      Title:    Base CSS for Bad Bank React App
  *      Module:   Styles (MicroCODE:index.css)
- *      Project:  MicroCODE 3-Tier MERN Template 'AppName'
- *      Customer: Internal + MIT xPRO Course
+ *      Project:  MicroCODE Common Library
+ *      Customer: Internal
  *      Creator:  MicroCODE Incorporated
- *      Date:     March 2022
+ *      Date:     June 2022
  *      Author:   Timothy J McGuire
  *
  *      Designed and Coded: 2022 MicroCODE Incorporated
@@ -23,7 +23,9 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the default Cascading Style Sheet (CSS) for our 'AppName' template.
+ *      This module implements the MicroCODE's Common Cascading Style Sheet (CSS) Template.
+ *      This file is copied to start all MicroCODE CSS files.
+ *      It demonstrates our desired ordering and formatting of a CSS file.
  *
  *
  *      REFERENCES:
@@ -55,7 +57,7 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  07-Mar-2022   TJM-MCODE  {0001}    New module for common reusable Cascading Style Sheet (CSS) files.
+ *  29-Jun-2022   TJM-MCODE  {0001}    New module for the refactoring of the Bad Bank App in a new React v18^ App.
  *
  *
  */
@@ -92,18 +94,18 @@ tagName {
     font-family: 'Michroma', sans-serif;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 body {
     margin: 0;
-    background-color: #282c34;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
 }
 
 /* #endregion */

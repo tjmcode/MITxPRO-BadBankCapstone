@@ -141,6 +141,8 @@
  */
 function log(message, source, severity)
 {
+    let logifiedMessage = ``;
+
     // Colors constants for changing Console appearance ala DEC`s VT52 + VT100 + VT220.
     var vt =
     {
@@ -153,26 +155,18 @@ function log(message, source, severity)
         reverse: "\x1b[7m",
         hidden: "\x1b[8m",
 
-        // text color, Note: fg. foreground is the default target
-        black: "\x1b[30m",
-        red: "\x1b[31m",
-        green: "\x1b[32m",
-        yellow: "\x1b[33m",
-        blue: "\x1b[34m",
-        magenta: "\x1b[35m",
-        cyan: "\x1b[36m",
-        white: "\x1b[37m",
-        crimson: "\x1b[38m",
-
-        // Extended 256-Color codes
-        gray: "\x1b[38;5;255m",  // `Set Foreground Color` -- 5; means 256 Color Code follows
-
-        // custom event colors
-        info: "\x1b[36m",  // cyan
-        warn: "\x1b[33m",  // yellow
-        errr: "\x1b[31m",  // red
-        dead: "\x1b[35m",  // magenta
-        hmmm: "\x1b[37m",  // white
+        // foreground color
+        fg: {
+            black: "\x1b[30m",
+            red: "\x1b[31m",
+            green: "\x1b[32m",
+            yellow: "\x1b[33m",
+            blue: "\x1b[34m",
+            magenta: "\x1b[35m",
+            cyan: "\x1b[36m",
+            white: "\x1b[37m",
+            crimson: "\x1b[38m"
+        },
 
         // background color
         bg: {
@@ -185,33 +179,52 @@ function log(message, source, severity)
             cyan: "\x1b[46m",
             white: "\x1b[47m",
             crimson: "\x1b[48m"
-        }
+        },
+
+        // Extended 256-Color codes
+        gray: "\x1b[38;5;255m",  // `Set Foreground Color` -- 5; means 256 Color Code follows
+
+        // custom event colors
+        info: "\x1b[36m",  // cyan
+        warn: "\x1b[33m",  // yellow
+        errr: "\x1b[31m",  // red
+        dead: "\x1b[35m",  // magenta
+        hmmm: "\x1b[37m",  // white
     };
+
+    if (isJson(message))
+    {
+        logifiedMessage = logifyText(message);
+    }
+    else
+    {
+        logifiedMessage = message;
+    }
 
     console.log(vt.reset + `++`);
 
     switch (severity)
     {
         case `Information`:
-            console.log(vt.info + `ℹ ｢mcode｣:'${message}'`);
+            console.log(vt.info + `ℹ ｢mcode｣:'${logifiedMessage}'`);
             break;
         case `Warning`:
-            console.log(vt.warn + `⚠ ｢mcode｣:'${message}'`);
+            console.log(vt.warn + `⚠ ｢mcode｣:'${logifiedMessage}'`);
             break;
         case `Error`:
-            console.log(vt.errr + `✖ ｢mcode｣:'${message}'`);
+            console.log(vt.errr + `✖ ｢mcode｣:'${logifiedMessage}'`);
             break;
         case `Fatal`:
-            console.log(vt.dead + `✖ ｢mcode｣:'${message}'`);
+            console.log(vt.dead + `✖ ｢mcode｣:'${logifiedMessage}'`);
             break;
         default:
-            console.log(vt.hmmm + `❔ ｢mcode｣:'${message}'`);
+            console.log(vt.hmmm + `❔ ｢mcode｣:'${logifiedMessage}'`);
             break;
     }
     console.log(
         vt.gray + `     ` + vt.reset +
         vt.gray + `time: ` + vt.reset + `${timeStamp()}    ` +
-        vt.gray + `from: ` + vt.reset + `backend.${source}    ` +
+        vt.gray + `from: ` + vt.reset + `frontend ${source}    ` +
         vt.gray + `severity: ` + vt.reset + `${severity}`);
 
     console.log(`--` + vt.reset);
@@ -255,7 +268,45 @@ function timeStamp()
  */
 function simplifyText(textToSimplify)
 {
-    let simplifiedText = ``;
+    let simplifiedText = "";
+
+    for (let i = 0; i < textToSimplify.length; i++)
+    {
+        switch (textToSimplify[i])
+        {
+            case '{':
+            case '}':
+            case '[':
+            case ']':
+            case '"':
+                break;
+            case ':':
+                simplifiedText += textToSimplify[i];
+                simplifiedText += ' ';
+                break;
+            case ',':
+                simplifiedText += textToSimplify[i];
+                simplifiedText += ' ';
+                break;
+            default:
+                simplifiedText += textToSimplify[i];
+                break;
+        }
+    }
+
+    return simplifiedText;
+};
+
+/**
+ * logifyText() -- Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
+ *
+ * @param {string} textToLogiify the string to be formatted for the event log
+ * @returns {string} the logified text
+ * @api public
+ */
+function logifyText(textToLogiify)
+{
+    let logifiedText = ``;
     let firstColon = true;
     let tabStop = 0;
     let lineEmpty = false;  // to start of a new line
@@ -276,36 +327,36 @@ function simplifyText(textToSimplify)
         return newline;
     };
 
-    for (let i = 0; i < textToSimplify.length; i++)
+    for (let i = 0; i < textToLogiify.length; i++)
     {
-        switch (textToSimplify[i])
+        switch (textToLogiify[i])
         {
             case `{`:
-                simplifiedText += indent() + `{`;
+                logifiedText += indent() + `{`;
                 lineEmpty = false;
                 tabStop++;
-                simplifiedText += indent();
+                logifiedText += indent();
                 break;
             case `[`:
-                simplifiedText += indent() + `[`;
+                logifiedText += indent() + `[`;
                 lineEmpty = false;
                 tabStop++;
-                simplifiedText += indent();
+                logifiedText += indent();
                 break;
             case `}`:
                 tabStop--;
-                simplifiedText += indent() + `}`;
+                logifiedText += indent() + `}`;
                 firstColon = true;
                 lineEmpty = false;
                 break;
             case `]`:
                 tabStop--;
-                simplifiedText += indent() + `]`;
+                logifiedText += indent() + `]`;
                 firstColon = true;
                 lineEmpty = false;
                 break;
             case `,`:
-                simplifiedText += indent();
+                logifiedText += indent();
                 firstColon = true;
                 lineEmpty = true;
                 break;
@@ -314,29 +365,29 @@ function simplifyText(textToSimplify)
             case `:`:
                 if (firstColon)
                 {
-                    simplifiedText += textToSimplify[i];
-                    simplifiedText += ` `;
+                    logifiedText += textToLogiify[i];
+                    logifiedText += ` `;
                     firstColon = false;
                 }
                 else
                 {
-                    simplifiedText += textToSimplify[i];
+                    logifiedText += textToLogiify[i];
                 }
                 break;
             case ` `:
-                simplifiedText += textToSimplify[i];
+                logifiedText += textToLogiify[i];
                 break;
             case `\t`:
-                simplifiedText += textToSimplify[i];
+                logifiedText += textToLogiify[i];
                 break;
             default:
                 lineEmpty = false;
-                simplifiedText += textToSimplify[i];
+                logifiedText += textToLogiify[i];
                 break;
         }
     }
 
-    return simplifiedText;
+    return logifiedText;
 };
 
 /**
@@ -385,11 +436,42 @@ function listifyArrayJSX(arrayToListify)
     return listifiedText;
 };
 
+/**
+ * isString() -- Checks the type of an Object for String.
+ *
+ * @param {object} object to be tested
+ * @returns a value indicating whether or not the object is a string
+ */
+function isString(object)
+{
+    return Object.prototype.toString.call(object) === '[object String]';
+}
+
+/**
+ * isJson() -- Checks a string for JAON data.
+ *
+ * @param {object} object to be tested
+ * @returns a value indicating whether or not the object is a JSON string
+ */
+function isJson(object)
+{
+    try
+    {
+        if (typeof object != 'string') return false;
+        if (object.includes(`{`)) return true;  // treat as JSON -- JSON.parse() if overkill
+        return false; // *not* JSON
+    }
+    catch
+    {
+        return false;  // *not* JSON and not parsable
+    }
+};
+
 // #endregion
 
 // #region  F U N C T I O N - E X P O R T S
 
-export {log, timeStamp, simplifyText, listifyArrayHTML, listifyArrayJSX};
+export {log, timeStamp, simplifyText, listifyArrayHTML, listifyArrayJSX, isString, isJson};
 
 // #endregion
 

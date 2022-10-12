@@ -1,11 +1,11 @@
 // #region  H E A D E R
-// <copyright file="user.model.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
+// <copyright file="account.model.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
 // #region  P R E A M B L E
 // #region  D O C U M E N T A T I O N
 /*
  *      Title:    MicroCODE Common User Model
- *      Module:   Modules (./user.model.js)
- *      Project:  MicroCODE 3-Tier MERN Template 'AppName'
+ *      Module:   Modules (./account.model.js)
+ *      Project:  MicroCODE 3-Tier MERN App 'Bad Bank'
  *      Customer: Internal + MIT xPRO Course
  *      Creator:  MicroCODE Incorporated
  *      Date:     October 2022
@@ -23,14 +23,17 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the MicroCODE's Common User Model.
+ *      This module implements the Bad Bank Account Model.
  *
  *
  *      REFERENCES:
  *      -----------
  *
- *      1. MIT xPRO MERN Examples
- *         https://student.emeritus.org/courses/3291/files/2554233/download?wrap=1
+ *      1.  MIT xPRO MERN Examples
+ *          https://student.emeritus.org/courses/3291/files/2554233/download?wrap=1
+ *
+ *      2.  MongoDB Schema Design Best Practices
+ *          https://www.mongodb.com/developer/products/mongodb/mongodb-schema-design-best-practices/
  *
  *
  *
@@ -63,7 +66,23 @@ const mongoose = require('mongoose');
 
 // #region  C O N S T A N T S
 
-const userSchema = new mongoose.Schema(
+const transactionSchema = new mongoose.Schema(
+    {
+        type: {
+            enum: ['DEPOSIT', 'WITHDRAW', 'BALANCE'],
+        },
+        amount: {
+            type: String,
+        },
+        balance: {
+            type: String,
+        },
+        timestamp: {
+            type: Number,
+        }
+    });
+
+const accountSchema = new mongoose.Schema(
     {
         username: {
             type: String,
@@ -74,6 +93,15 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
         },
+        balance: {
+            type: Number,
+        },
+        created: {
+            type: String,
+        },
+        transaction: {
+            type: [transactionSchema],
+        }
     });
 
 // #endregion
@@ -92,9 +120,9 @@ const userSchema = new mongoose.Schema(
 
 // #region  M E T H O D - E X P O R T S
 
-const User = mongoose.model('User', userSchema);
+const Account = mongoose.model('Account', accountSchema);
 
-module.exports = User;
+module.exports = Account;
 
 // #endregion
 
