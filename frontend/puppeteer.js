@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer');
-
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log} from './src/mcodeClient.js';
+
+const puppeteer = require('puppeteer');
 
 // get our current file name for logging events
 var path = require('path');

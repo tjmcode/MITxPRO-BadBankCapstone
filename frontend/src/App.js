@@ -67,9 +67,11 @@ import {AppContext} from './Components/AppContext';
 import NavBar from './Components/NavBar';
 import Account from './Components/Account';
 import AllData from './Components/AllData';
+import Balance from './Components/Balance';
 import Deposit from './Components/Deposit';
 import Home from './Components/Home';
 import Login from './Components/Login';
+import Transactions from './Components/Transactions';
 import Withdraw from './Components/Withdraw';
 
 import './App.css';
@@ -164,6 +166,8 @@ function App()
                         <Route path="/Login/" element={<Login />}></Route>
                         <Route path="/Deposit/" element={<Deposit />}></Route>
                         <Route path="/Withdraw/" element={<Withdraw />}></Route>
+                        <Route path="/Balance/" element={<Balance />}></Route>
+                        <Route path="/Transactions/" element={<Transactions />}></Route>
                         <Route path="/AllData/" element={<AllData />}></Route>
                     </Routes>
                 </div>

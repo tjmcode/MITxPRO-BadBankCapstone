@@ -1,0 +1,10 @@
+{
+    "__comment": "jsconfig.json -- for Generic MicroCODE Database",
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6"
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

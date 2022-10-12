@@ -278,7 +278,56 @@ function withdrawFunds(email, amount)
     });
 };
 
-// Return all User Accounts
+/**
+ * accountBalance() – Get Balance in an Account.
+ *
+ * @api public
+ *
+ * @param {string} email User's email account - UNIQUE KEY.
+ * @returns JSON data for Account.
+ *
+ * @example
+ *
+ *      accountBalance('pparker@mit.edu');
+ *
+ */
+function accountBalance(email)
+{
+    return new Promise(async (resolve, reject) =>
+    {
+        // grab current users from DB
+        var account = await db
+            .collection('Accounts')
+            .findOne({email: email});
+
+        if (account)
+        {
+            mcode.log(`Viewing balance in ${account.name} account.`, logSource, `Information`);
+
+            account.balance = mcode.roundToCents(account.balance);
+            //~ account.transactions.push(createTransaction("BALANCE", amount, account.balance));
+        }
+        else
+        {
+            const errorMsg = `View Balance FAILED, no Account for email: ${req.params.email}`;
+            mcode.log(errorMsg, logSource, `Error`);
+            res.status(401).json({error: errorMsg});
+        }
+    });
+};
+
+/**
+ * allAccounts() – Return all data for all Accounts.
+ *
+ * @api public
+ *
+ * @returns JSON data for all Accounts.
+ *
+ * @example
+ *
+ *      allAccounts();
+ *
+ */
 function allAccounts()
 {
     return new Promise(async (resolve, reject) =>
@@ -298,7 +347,7 @@ function allAccounts()
 
 // #region  M E T H O D - E X P O R T S
 
-module.exports = {createAccount, depositFunds, withdrawFunds, allAccounts};
+module.exports = {createAccount, depositFunds, withdrawFunds, accountBalance, allAccounts};
 
 // #endregion
 

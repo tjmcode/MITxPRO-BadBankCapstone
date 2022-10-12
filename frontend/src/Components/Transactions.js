@@ -1,10 +1,10 @@
 // #region  H E A D E R
-// <copyright file="alldata.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
+// <copyright file="transactions.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
 // #region  P R E A M B L E
 // #region  D O C U M E N T A T I O N
 /*
- *      Title:    MicroCODE Bad Bank React All Data
- *      Module:   Modules (./alldata.js)
+ *      Title:    MicroCODE Bad Bank React Transactions
+ *      Module:   Modules (./transactions.js)
  *      Project:  MicroCODE Bad Bank React App
  *      Customer: Internal
  *      Creator:  MicroCODE Incorporated
@@ -23,7 +23,7 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the MicroCODE's Bad Bank React Login.
+ *      This module implements the MicroCODE's Bad Bank React Transactions.
  *
  *
  *      REFERENCES:
@@ -33,10 +33,12 @@
  *         Local File: MCX-S02 (Internal JS Style Guide).docx
  *         https://github.com/MicroCODEIncorporated/JavaScriptSG
  *
+ *      2. MIT xPRO:
+ *
  *
  *
  *      DEMONSTRATION VIDEOS:
- *      ---------------------
+ *      --------------------
  *
  *      1. ...
  *
@@ -47,7 +49,7 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the Bad Bank Context Display (All Data).
+ *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the creation Bad Bank Transactionss.
  *
  *
  */
@@ -58,7 +60,7 @@
 
 // #region  I M P O R T S
 
-import React, {useContext, useEffect, useState} from 'react';
+import React from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
@@ -92,7 +94,7 @@ var logSource = path.basename(__filename);
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * AllData() – returns all data from our Bad Bank Accounts.
+ * Transactions() – the Bad Bank Transactions Component.
  *
  * @api public
  *
@@ -102,59 +104,66 @@ var logSource = path.basename(__filename);
  *
  * @example
  *
- *      AllData();
+ *      Transactions();
  *
  */
-function AllData()
+function Transactions()
 {
-    // validate PROPS input(s)
+    // validate PROPS input(s) if required
 
     // initialize STATE and define accessors...
-    const [accounts, setAccounts] = useState(null);
-    const [needInput, setNeedInput] = useState(true);
+    const [transactions, setTransactions] = React.useState([]);
 
     // access CONTEXT for reference...
-    const ctx = useContext(AppContext);
-
-    ctx.RevealAccounts = false;
+    const ctx = React.useContext(AppContext);
 
     // #region  P R I V A T E   F U N C T I O N S
 
     // useEffect with an empty dependency array
-    useEffect(() =>
+    React.useEffect(() =>
     {
-        (async () =>
+        if (ctx.LoggedIn)
         {
-            log(`Getting all Accounts from DB...`, logSource, "Information");
-            let response = await api.allData();
-            setAccounts(response.data);
+            (async () =>
+            {
+                log(`Getting Account Transactions from DB...`, logSource, "Information");
+                let response = await api.transactions(ctx.Users[ctx.UserIndex].email);
+                setTransactions(response.data);
 
-        })();
+            })();
 
-    }, []);
+        }
+        else
+        {
+            log(`Must be logged in to get Transactions..`, logSource, "Warning");
+            setTransactions([]);
+        }
 
-    // Build an HTML List of all our User Accounts
-    function buildAccountList()
+    }, [ctx.LoggedIn, ctx.UserIndex, ctx.Users]);
+
+
+    // Build an HTML List of all our User Account Transactions
+    function buildTransactionsList()
     {
-        const accountArray = [];
+        const transactionArray = [];
         var key = 0;
 
-        if (accounts)
+        if (transactions)
         {
             // remove MongoDB IDs before using in App Context
-            accounts.forEach(element =>
+            transactions.forEach(element =>
             {
                 delete element["_id"];
             });
 
             // Update our App Context
-            ctx.Users = accounts;
+            ctx.Transactions = transactions;
 
-            log(`Returning All Data listing...`, logSource, "Information");
+            log(`Returning Transactions listing...`, logSource, "Information");
 
             for (var i in ctx)
             {
-                if (i === "Users")
+                if (i === "Transactions")
                 {
                     for (var j in ctx[i])
                     {
@@ -162,8 +171,8 @@ function AllData()
                         {
                             key++;
 
-                            // pick up the Users array, skipping "users" tag (which is not an array)
-                            accountArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(ctx[i][j]))}</li>);
+                            // pick up the Transactions array, skipping "users" tag (which is not an array)
+                            transactionArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(ctx[i][j]))}</li>);
                         }
                     }
                 }
@@ -173,10 +182,10 @@ function AllData()
         {
             log(`Awaiting Server response...`, logSource, "Warning");
 
-            accountArray.push(<li key={key} className="list-group-item">Awaiting badbank-backend response...</li>);
+            transactionArray.push(<li key={key} className="list-group-item">Awaiting badbank-backend response...</li>);
         }
 
-        return accountArray;
+        return transactionArray;
     };
 
     // #endregion
@@ -186,39 +195,19 @@ function AllData()
      * *_Click() - 'on click' event handlers for UI elements.
      */
 
-    // opens the UI to show all data in the Accounts
-    function showAllData_Click(e)
-    {
-        e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
-
-        ctx.RevealAccounts = true;
-
-        setNeedInput(false);
-    }
-
-    // #endregion
-
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (
         <BankCard
-            bgcolor="warning"
-            header="All Account Data"
-            width="60rem"
-            body={needInput ? (
-                <form>
-                    <h5 className="card-title">Show all data for all Accounts</h5>
-                    <p className="card-text">WARNING: This is display all the data <br />from the User Account Database.</p>
-                    <div className="col-10">
-                        <button className="btn btn-outline-light" onClick={showAllData_Click} type="display">Show All Data</button>
-                    </div>
-                </form>
-            ) : (
+            bgcolor="info"
+            header="Transactions"
+            width="30rem"
+            body={(
                 <>
-                    <h5>All Account Data</h5>
+                    <h5>Account Transactions</h5>
                     <br />
                     <ul className="list-group">
-                        {/* the rest of the list is built from the Account array returned from the Back-End */}
-                        {buildAccountList()}
+                        {/* the rest of the list is built from the Transactions array returned from the Back-End */}
+                        {buildTransactionsList()}
                     </ul>
                 </>
             )}
@@ -230,7 +219,7 @@ function AllData()
 
 // #region  C O M P O N E N T - E X P O R T S
 
-export default AllData;
+export default Transactions;
 
 // #endregion
 

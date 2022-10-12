@@ -248,11 +248,11 @@ app.get('/account/login/:email/:password', function (req, res)
  */
 app.get('/account/deposit/:email/:amount', function (req, res)
 {
-    mcode.log("Depositing Funds...");
+    mcode.log(`Depositing Funds...`, logSource, `Information`);
 
     let amount = parseFloat(req.params.amount);
 
-    mcode.log(`About to add ${amount} to balance.`);
+    mcode.log(`About to add ${amount} to balance.`, logSource, `Information`);
 
     dal.depositFunds(req.params.email, amount)
         .then((account) =>
@@ -270,7 +270,7 @@ app.get('/account/deposit/:email/:amount', function (req, res)
  */
 app.get('/account/withdraw/:email/:amount', function (req, res)
 {
-    mcode.log("Withdrawing Funds...");
+    mcode.log(`Withdrawing Funds...`, logSource, `Information`);
 
     let amount = parseFloat(req.params.amount);
 
@@ -285,13 +285,31 @@ app.get('/account/withdraw/:email/:amount', function (req, res)
 });
 
 /**
+ * @function api.balance() -- Return balance for specific accounts
+ *
+ * @returns {object} accounts JSON data object if successful
+ */
+app.get('/account/balance/:email', function (req, res)
+{
+    mcode.log(`Returning Account Balance...`, logSource, `Information`);
+
+    // returns balance in the database
+    dal.balance()
+        .then((balance) =>
+        {
+            mcode.log(`balance:${JSON.stringify(balance)}`, logSource, `Information`);
+            res.send(balance);
+        });
+});
+
+/**
  * @function api.allData() -- Return data for all accounts
  *
  * @returns {object} accounts JSON data object if successful
  */
 app.get('/account/all', function (req, res)
 {
-    mcode.log("Returning all Account Data...");
+    mcode.log(`Returning all Account Data...`, logSource, `Information`);
 
     // returns all data in the database
     dal.allAccounts()

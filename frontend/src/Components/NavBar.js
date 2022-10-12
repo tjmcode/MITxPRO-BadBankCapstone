@@ -158,6 +158,20 @@ function NavBar()
                             )}
                         </li>
                         <li className="nav-item">
+                            {!ctx.LoggedIn ? (
+                                <a className="nav-link disabled" tooltip="Log in to check balance" href="#/balance/" aria-disabled="true">Balance</a>
+                            ) : (
+                                <a className="nav-link" tooltip="Check Balance in your account" href="#/balance/" aria-disabled="true">Balance</a>
+                            )}
+                        </li>
+                        <li className="nav-item">
+                            {!ctx.LoggedIn ? (
+                                <a className="nav-link disabled" tooltip="Log in to view transactions" href="#/transactions/" aria-disabled="true">Transactions</a>
+                            ) : (
+                                <a className="nav-link" tooltip="View Transactions on your account" href="#/transactions/" aria-disabled="true">Transactions</a>
+                            )}
+                        </li>
+                        <li className="nav-item">
                             <a className="nav-link" tooltip="Check all bank accounts" href="#/alldata/">AllData</a>
                         </li>
                         <li className="nav-item">

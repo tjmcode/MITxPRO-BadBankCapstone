@@ -1,8 +1,8 @@
 # MITxPRO-BadBankCapstone
-A 5th refactoring of the Bad Bank App, moving it into three (3) Docker Containers.
+A 5th refactoring of the Bad Bank App, moving it into three (3) Docker Containers all running in a Cloud VM.
 
     * Frontend - the Web Browser Client
-    * Backend - the CLoud based Server
+    * Backend - the Cloud based Server
     * Database - a MongoDB database for the Backend
 
 
@@ -26,6 +26,10 @@ that utilizes a GitHib Action, Docker Hub, and three Containers.
 
 ## Getting Started
 
+* General help with using Visual Studio Code to develop JavaScript...
+```
+https://code.visualstudio.com/Docs/languages/javascript
+```
 
 ### Dependencies
 
