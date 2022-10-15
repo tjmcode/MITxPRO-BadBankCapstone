@@ -457,7 +457,8 @@ app.get(`/account/all`, function (req, res)
     dal.allAccounts()
         .then((res_allAccounts) =>
         {
-            mcode.log(`ALL DATA -- Users: ${JSON.stringify(res_allAccounts)}`, logSource, `info`);
+            mcode.log(`ALL DATA -- Get data succeeded, number = ${res_allAccounts.length}.`, logSource, `info`);
+            // debug only --- mcode.log(`ALL DATA -- Users: ${JSON.stringify(res_allAccounts)}`, logSource, `info`);
             res.send(res_allAccounts);
         })
         .catch((exp_allAccounts) =>

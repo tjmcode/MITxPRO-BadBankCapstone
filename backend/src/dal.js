@@ -393,7 +393,8 @@ function accountBalance(email)
 {
     return new Promise(async (resolve, reject) =>
     {
-        db.collection('Accounts').findOne({"email": email})
+        db.collection('Accounts')
+            .findOne({"email": email})
             .then((res_find) =>
             {
                 mcode.log(`DAL: accountBalance - MongoDB response: ${JSON.stringify(res_find)}`, logSource, `info`);
@@ -426,34 +427,32 @@ function allAccounts()
 {
     return new Promise(async (resolve, reject) =>
     {
-        db.collection('Accounts')
-            .find({})
-            .catch((exp_find) =>
+        db.collection('Accounts').find({}).toArray()
+            .then((res_array) =>
             {
-                mcode.exp(`DAL: allAccounts - .find CRASHED.`, logSource, exp_find);
-                reject(exp_find);
-            })
-            .finally(() =>
-            {
-
-            })
-            .toArray(function (err, res_array)
-            {
-                if (err)
+                if (!res_array)
                 {
-                    mcode.log(`DAL: allAccounts - Get data failed - Error: $(err}.`, logSource, `error`);
-                    reject(err);
+                    mcode.log(`DAL: allAccounts - Get data failed`, logSource, `error`);
+                    reject(res_array);
                 }
                 else
                 {
-                    mcode.log(`DAL: allAccounts - MongoDB response: ${JSON.stringify(res_array)}`, logSource, `info`);
                     mcode.log(`DAL: allAccounts - Get data succeeded, number = ${res_array.length}.`, logSource, `info`);
+                    // debug only -- mcode.log(`DAL: allAccounts - MongoDB response: ${JSON.stringify(res_array)}`, logSource, `info`);
 
                     // return the RESPONSE from MongoDB which is the ARRAY of RECORDs
                     resolve(res_array);
                 }
-            });
+            })
+            .catch((exp_array) =>
+            {
+                mcode.exp(`DAL: allAccounts - .find CRASHED.`, logSource, exp_array);
+                reject(exp_array);
+            })
+            .finally(() =>
+            {
 
+            });
     });
 };
 
