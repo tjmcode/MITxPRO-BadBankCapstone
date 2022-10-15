@@ -81,7 +81,7 @@
 import axios from 'axios';
 
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -115,25 +115,22 @@ const RES_SUCCESS = 200;
 
 // #region  F U N C T I O N S – P R I V A T E
 
-//
-
 /**
- * getRes() -- Common execution and event logging for every API function.
- *
+ * @func getResData
+ * @desc Common execution and event logging for every API function.
  * @api private
- *
  * @param {string} functionName name to display in the event log.
  * @param {string} url the path to the Back-End Entry Point.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
  *    var functionName = "Account Login";
  *    var url = `${API_URL}/account/login/${email}/${password}`;
- *    return getRes(functionName, url);
+ *    return getResData(functionName, url);
  *
  */
-const getRes = async (functionName, url) =>
+const getResData = async (functionName, url) =>
 {
     let res = {};
     try
@@ -142,20 +139,21 @@ const getRes = async (functionName, url) =>
 
         if (res.status === RES_SUCCESS)
         {
-            log(`API: ${functionName} - Data: ${JSON.stringify(res.data)}`, logSource, `Information`);
+            log(`API: ${functionName} - Data: ${JSON.stringify(res.data)}`, logSource, `info`);
+            return res.data;
         }
         else
         {
             const resMessage = JSON.parse(res.text);
-            log(`API: ${functionName} - Error: ${resMessage.error}`, logSource, `Error`);
+            log(`API: ${functionName} - Error: ${resMessage.error}`, logSource, `error`);
+            return null;
         }
     }
-    catch (error)
+    catch (exception)
     {
-        log(`API: ${functionName} - Exception: ${error}`, logSource, `Fatal`);
+        exp(`API: ${functionName}`, logSource, exception);
+        return null;
     }
-
-    return res;
 };
 
 // #endregion
@@ -165,15 +163,14 @@ const getRes = async (functionName, url) =>
 var api = {};
 
 /**
- * create() -- Create USER ACCOUNT on Back-End.
- *
+ * @func create
+ * @desc Creates a USER ACCOUNT on Back-End.
  * @api public
- *
  * @param {string} username user selected display name.
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
  * @param {string} deposit initial deposit.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -184,15 +181,37 @@ api.create = async (username, email, password, deposit) =>
 {
     var functionName = "Create Account";
     var url = `${API_URL}/account/create/${username}/${email}/${password}/${deposit}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * login() -- Confirm USER CREDENTIALS on Back-End.
- *
+ * @func delete
+ * @desc Deletes a USER ACCOUNT on Back-End.
+ * @api public
+ * @param {string} username user selected display name.
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
+ *
+ * @example
+ *
+ *    res = api.delete("username", "user@company.com", "secret01");
+ *
+ */
+api.delete = async (username, email, password) =>
+{
+    var functionName = "Delete Account";
+    var url = `${API_URL}/account/delete/${username}/${email}/${password}}`;
+    return getResData(functionName, url);
+};
+
+/**
+ * @func login
+ * @desc Confirms USER CREDENTIALS on Back-End.
+ * @api public
+ * @param {string} email user's email - UNIQUE ACCOUNT KEY.
+ * @param {string} password user's password.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -203,17 +222,16 @@ api.login = async (email, password) =>
 {
     var functionName = "Account Login";
     var url = `${API_URL}/account/login/${email}/${password}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * deposit() -- DEPOSIT funds to Account in Back-End.
- *
+ * @func deposit
+ * @desc DEPOSIT funds to Account in Back-End.
  * @api public
- *
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} deposit deposit amount.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -224,17 +242,16 @@ api.deposit = async (email, deposit) =>
 {
     var functionName = "Deposit Funds";
     var url = `${API_URL}/account/deposit/${email}/${deposit}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * withdraw() -- WITHDRAW funds from Account in Back-End.
- *
+ * @func withdraw
+ * @desc WITHDRAW funds from Account in Back-End.
  * @api public
- *
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} withdraw withdraw amount.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -245,16 +262,15 @@ api.withdraw = async (email, withdraw) =>
 {
     var functionName = "Withdraw Funds";
     var url = `${API_URL}/account/withdraw/${email}/${withdraw}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * transactions() -- Get all user TRANSACTIONS from Back-End.
- *
+ * @func transactions
+ * @desc Get all user TRANSACTIONS from Back-End.
  * @api public
- *
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -265,14 +281,15 @@ api.transactions = async (email) =>
 {
     var functionName = "View Transactions";
     var url = `${API_URL}/account/transactions/${email}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * balance() -- Get user BALANCE from Back-End.
- *
+ * @func balance
+ * @desc Get user BALANCE from Back-End.
+ * @api public
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -282,15 +299,14 @@ api.balance = async (email) =>
 {
     var functionName = "View Balance";
     var url = `${API_URL}/account/balance/${email}`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 /**
- * allData() -- Get ALL DATA from Back-End.
- *
+ * @func allData
+ * @desc Get ALL DATA from Back-End.
  * @api public
- *
- * @returns the Axios Response.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example
  *
@@ -301,7 +317,7 @@ api.allData = async () =>
 {
     var functionName = "Get All Data";
     var url = `${API_URL}/account/all`;
-    return getRes(functionName, url);
+    return getResData(functionName, url);
 };
 
 // #endregion
@@ -313,4 +329,4 @@ export {api};
 // #endregion
 
 // #endregion
-// #endregion
+// #endregion;

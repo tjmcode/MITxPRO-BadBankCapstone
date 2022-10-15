@@ -57,6 +57,9 @@
 
 const mongoose = require('mongoose');
 
+// include our common MicroCODE Server Library
+var mcode = require(`../mcodeServer.js`);
+
 // #endregion
 // #endregion
 // #endregion
@@ -116,13 +119,64 @@ const accountSchema = new mongoose.Schema(
 
 // #region  M E T H O D S – P U B L I C
 
+/**
+ * @function accountRecord() -- Create a User Account record.
+ *
+ * @param {string} username selected by the user.
+ * @param {string} email email address supplied by the user.
+ * @param {string} password set by the user.
+ * @param {number} deposit initial deposit, or $0.00.
+ * @returns {object} newly created account object with its initial transaction.
+ */
+var accountRecord = function (username, email, password, deposit)
+{
+    let account =
+    {
+        username: username,
+        email: email,
+        password: password,
+        balance: parseFloat(deposit),
+        created: mcode.timeStamp(),
+        transactions: []
+    };
+
+    // keep in pennies
+    account.balance = mcode.roundToCents(account.balance);
+
+    // make initial depsoit transaction... (optional)
+    account.transactions.push(transactionRecord("DEPOSIT", deposit, account.balance));
+
+    return account;
+};
+
+/**
+ * @function transactionRecord() -- Create an Account Transaction object.
+ *
+ * @param {string} type One of: DEPOSIT, WITHDRAW, BALANCE, CLOSE.
+ * @param {number} amount amount of money involved in this transaction.
+ * @param {number} balance resulting balance after the transaction executed.
+ * @returns {object} newly created transaction object.
+ */
+var transactionRecord = function (type, amount, balance)
+{
+    let transaction =
+    {
+        type: type,
+        amount: amount,
+        balance: balance,
+        timeStamp: mcode.timeStamp()
+    };
+
+    return transaction;
+};
+
 // #endregion
 
 // #region  M E T H O D - E X P O R T S
 
 const Account = mongoose.model('Account', accountSchema);
 
-module.exports = Account;
+module.exports = {Account, accountRecord, transactionRecord};
 
 // #endregion
 

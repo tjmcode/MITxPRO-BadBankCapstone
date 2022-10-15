@@ -64,8 +64,11 @@ import React from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
+// include the Back-End API
+import {api} from '../api/api.js';
+
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -78,7 +81,7 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 3000;
+const TIMEOUT_MSEC = 2500;
 const MINIMUM_DEPOSIT = 10;
 
 // #endregion
@@ -94,13 +97,11 @@ const MINIMUM_DEPOSIT = 10;
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Deposit() – the Bad Bank Deposit Component.
- *
+ * @func Deposit
+ * @desc Bad Bank Deposit Component.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -141,24 +142,24 @@ function Deposit()
             if (isNaN(field))
             {
                 setStatus('Error NaN: Deposit must be a number.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmitDisabled('Disabled');
+                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
 
             if (field < 0)
             {
                 setStatus('Error: Deposit cannot be negative.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmitDisabled('Disabled');
+                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
 
             if (field < MINIMUM_DEPOSIT)
             {
                 setStatus('Error: Deposit is less than minimum.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmitDisabled('Disabled');
+                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
         }
@@ -181,8 +182,8 @@ function Deposit()
     function clearForm()
     {
         setDeposit('');
-
         setSubmitDisabled('Disabled');
+        setNeedInput(true);
     };
 
     // #endregion
@@ -206,18 +207,45 @@ function Deposit()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`Making Account Deposit - name: ${ctx.Users[ctx.UserIndex].name} deposit: ${deposit}`, logSource, "Information");
+        log(`[DEPOSIT] Making Account Deposit - name: ${ctx.User.username} deposit: ${deposit}`, logSource, `info`);
 
         if (!checkFields())
         {
-            log(`Deposit Failed Checks - name: ${ctx.Users[ctx.UserIndex].name} deposit: ${deposit}`, logSource, "Warning");
+            log(`[DEPOSIT] Deposit Failed check amount - name: ${ctx.User.username} deposit: ${deposit}`, logSource, `warn`);
             return;
         }
 
-        // add deposit to Account balance
-        ctx.Users[ctx.UserIndex].balance = parseInt(ctx.Users[ctx.UserIndex].balance) + parseInt(deposit);
+        log(`[DEPOSIT] Attempting User Deposit...`, logSource, `Waiting`);
 
-        setNeedInput(false);
+        try
+        {
+            // Deposit into Account in Database
+            api.deposit(ctx.User.email, deposit)
+                .then((account) =>
+                {
+                    if (!account)
+                    {
+                        setStatus(log(`Account Deposit failed, check account for: ${ctx.User.email}`, logSource, `error`));
+                        setSubmitDisabled('Disabled');
+                        setNeedInput(true);
+                    }
+                    else
+                    {
+                        ctx.setUser(account);  // update .balance and .transactions
+                        log(`[DEPOSIT] Account Deposit succeeded - Email: ${account.email}`, logSource, `info`);
+                        setStatus(``);
+                        setSubmitDisabled('Disabled');
+                        setNeedInput(false);
+                    }
+                });
+        }
+        catch (exception)
+        {
+            setStatus(exp(`[DEPOSIT] Account Deposit CRASHED - User: ${ctx.User.email}`, logSource, exception));
+            setSubmitDisabled('Disabled');
+            setNeedInput(true);
+            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+        }
     }
 
     // #endregion
@@ -240,7 +268,7 @@ function Deposit()
                 <form>
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.Users[ctx.UserIndex].balance} /><br />
+                        placeholder="Current balance" value={ctx.User.balance} /><br />
 
                     Deposit<br />
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="deposit"
@@ -262,7 +290,7 @@ function Deposit()
                     <br />
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.Users[ctx.UserIndex].balance} /><br />
+                        placeholder="Current balance" value={ctx.User.balance} /><br />
                     <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another deposit</button>
                 </>
             )}

@@ -60,12 +60,9 @@
 
 // #region  I M P O R T S
 
-import React from 'react';
+import React, {useState} from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
-
-// include the Back-End API
-import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Library
 import {log, simplifyText} from '../mcodeClient.js';
@@ -94,13 +91,11 @@ var logSource = path.basename(__filename);
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Transactions() – the Bad Bank Transactions Component.
- *
+ * @func Transactions
+ * @desc the Bad Bank Transactions Component.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -113,6 +108,7 @@ function Transactions()
 
     // initialize STATE and define accessors...
     const [transactions, setTransactions] = React.useState([]);
+    const [status, setStatus] = useState('');
 
     // access CONTEXT for reference...
     const ctx = React.useContext(AppContext);
@@ -126,20 +122,19 @@ function Transactions()
         {
             (async () =>
             {
-                log(`Getting Account Transactions from DB...`, logSource, "Information");
-                let response = await api.transactions(ctx.Users[ctx.UserIndex].email);
-                setTransactions(response.data);
+                log(`[TRANSACTIONS] Accessing Account Transactions from User...`, logSource, `info`);
+                setTransactions(ctx.User.transactions);
+                setStatus(``);
 
             })();
-
         }
         else
         {
-            log(`Must be logged in to get Transactions..`, logSource, "Warning");
+            setStatus(log(`[TRANSACTIONS] Must be logged in to get Transactions...`, logSource, `warn`));
             setTransactions([]);
         }
 
-    }, [ctx.LoggedIn, ctx.UserIndex, ctx.Users]);
+    }, [ctx.LoggedIn, ctx.User]);
 
 
     // Build an HTML List of all our User Account Transactions
@@ -150,41 +145,25 @@ function Transactions()
 
         if (transactions)
         {
+            log(`[TRANSACTIONS] Returning Transactions listing...`, logSource, `info`);
+
             // remove MongoDB IDs before using in App Context
             transactions.forEach(element =>
             {
+                key++;
+
                 delete element["_id"];
+
+                // pick up the Transactions array, convert to JSX
+                transactionArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(element))}</li>);
             });
-
-            // Update our App Context
-            ctx.Transactions = transactions;
-
-            log(`Returning Transactions listing...`, logSource, "Information");
-
-            for (var i in ctx)
-            {
-                if (i === "Transactions")
-                {
-                    for (var j in ctx[i])
-                    {
-                        if (ctx[i][j])
-                        {
-                            key++;
-
-                            // pick up the Transactions array, skipping "users" tag (which is not an array)
-                            transactionArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(ctx[i][j]))}</li>);
-                        }
-                    }
-                }
-            }
         }
         else
         {
-            log(`Awaiting Server response...`, logSource, "Warning");
+            log(`[TRANSACTIONS] Must be logged in to get Transactions...`, logSource, `warn`);
+            setTransactions([]);
 
-            transactionArray.push(<li key={key} className="list-group-item">Awaiting badbank-backend response...</li>);
         }
-
         return transactionArray;
     };
 
@@ -200,7 +179,8 @@ function Transactions()
         <BankCard
             bgcolor="info"
             header="Transactions"
-            width="30rem"
+            width="60rem"
+            status={status}
             body={(
                 <>
                     <h5>Account Transactions</h5>

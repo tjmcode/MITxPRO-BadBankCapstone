@@ -60,7 +60,7 @@
 
 // #region  I M P O R T S
 
-import React from 'react';
+import React, {useState} from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
@@ -68,7 +68,7 @@ import BankCard from './BankCard';
 import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -94,13 +94,11 @@ var logSource = path.basename(__filename);
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Balance() – the Bad Bank Balance Component.
- *
+ * @func Balance
+ * @desc the Bad Bank Balance Component.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -113,6 +111,8 @@ function Balance()
 
     // initialize STATE and define accessors...
     const [balance, setBalance] = React.useState(0);
+    const [status, setStatus] = useState('');
+
 
     // access CONTEXT for reference...
     const ctx = React.useContext(AppContext);
@@ -126,20 +126,40 @@ function Balance()
         {
             (async () =>
             {
-                log(`Getting Account Balance from DB...`, logSource, "Information");
-                let response = await api.balance(ctx.Users[ctx.UserIndex].email);
-                setBalance(response.data);
+                try
+                {
+                    // Get Account Balance in Database
+                    api.balance(ctx.User.email)
+                        .then((account) =>
+                        {
+                            if (!account)
+                            {
+                                setStatus(log(`[BALANCE] failed, check for an account with: ${ctx.User.email}`, logSource, `error`));
+                            }
+                            else
+                            {
+                                setBalance(account.balance);
+                                log(`[BALANCE] Account: ${JSON.stringify(account)}`, logSource, `warn`);
+                                log(`[BALANCE] Account Balance succeeded - Email: ${account.email}`, logSource, `info`);
+                                setStatus(``);
+                            }
+                        });
+                }
+                catch (exception)
+                {
+                    setStatus(exp(`[BALANCE] CRASHED - User: ${ctx.User.email}`, logSource, exception));
+                }
 
             })();
 
         }
         else
         {
-            log(`Must be logged in to get Balance..`, logSource, "Warning");
+            log(`[BALANCE] Must be logged in to get Balance...`, logSource, `warn`);
             setBalance(0);
         }
 
-    }, [ctx.LoggedIn, ctx.UserIndex, ctx.Users]);
+    }, [ctx]);
 
     // #endregion
 
@@ -154,6 +174,7 @@ function Balance()
             bgcolor="info"
             header="Balance"
             width="30rem"
+            status={status}
             body={(
                 <form>
                     Current Balance<br />

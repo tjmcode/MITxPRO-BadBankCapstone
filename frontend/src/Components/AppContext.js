@@ -77,21 +77,13 @@ const defaultValue = {
     Version: "<No Context Provider>",
     setVersion: () => { },
 
-    // Index to the active User, currently logged in
-    UserIndex: 0,
-    setUserIndex: () => { },
-
     // Value indicating whether or not anyone is currently logged in
     LoggedIn: false,
     setLoggedIn: () => { },
 
-    // Value indicating who is currently logged in
-    CurrentUser: '',
-    setCurrentUser: () => { },
-
-    // User List
-    Users: {},
-    setUsers: () => { },
+    // Value representing who is currently logged in
+    User: '',
+    setUser: () => { },
 
     // Value indicating whether or not anyone can see all other Users
     RevealUsers: false,
@@ -106,9 +98,8 @@ const AppContextProvider = (props) =>
 {
     const [Version, setVersion] = useState(`Version ${process.env.REACT_APP_VERSION}`);
     const [LoggedIn, setLoggedIn] = useState(false);
-    const [UserIndex, setUserIndex] = useState(0);
-    const [CurrentUser, setCurrentUser] = useState('');
-    const [Users, setUsers] = useState([]);
+    const [User, setUser] = useState('');
+    const [RevealUsers, setRevealUsers] = useState(false);
 
     return (
         <AppContext.Provider
@@ -118,17 +109,14 @@ const AppContextProvider = (props) =>
                 Version,
                 setVersion,
 
-                Users,
-                setUsers,
-
                 LoggedIn,
                 setLoggedIn,
 
-                UserIndex,
-                setUserIndex,
+                User,
+                setUser,
 
-                CurrentUser,
-                setCurrentUser,
+                RevealUsers,
+                setRevealUsers,
             }}
         >
             {props.children}

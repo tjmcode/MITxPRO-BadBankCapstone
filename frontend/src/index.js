@@ -115,7 +115,7 @@ const envSorted = Object.keys(process.env)
         return accumulator;
     }, {});
 
-log(`process.env (sorted):${JSON.stringify(envSorted)}`, logSource, `Information`);
+log(`INDEX: process.env (sorted):${JSON.stringify(envSorted)}`, logSource, `info`);
 
 ReactDOM.render(
 

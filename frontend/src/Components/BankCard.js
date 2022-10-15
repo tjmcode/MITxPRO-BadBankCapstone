@@ -81,13 +81,11 @@ import React from 'react';
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Card() – a common App 'Card' definitions for all derived Components.
- *
+ * @func BankCard
+ * @desc a common App 'Card' definitions for all derived Components.
  * @api public
- *
  * @param {type} props component properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -114,6 +112,35 @@ function BankCard(props)
         return 'card mb-3 ' + bg + txt;
     }
 
+    /*
+     * bootstrapSuccess() - builds a Bootstrap Card Class name from success display.
+     */
+    function bootstrapSuccess()
+    {
+        const bg = ' bg-success';
+        const txt = ' text-white';
+        return 'card mb-3 ' + bg + txt;
+    }
+
+    /*
+     * bootstrapWarn() - builds a Bootstrap Card Class name from warning display.
+     */
+    function bootstrapWarn()
+    {
+        const bg = ' bg-warning';
+        const txt = ' text-black';
+        return 'card mb-3 ' + bg + txt;
+    }
+
+    /*
+     * bootstrapDanger() - builds a Bootstrap Card Class name from error display.
+     */
+    function bootstrapDanger()
+    {
+        const bg = ' bg-danger';
+        const txt = ' text-white';
+        return 'card mb-3 ' + bg + txt;
+    }
     // #endregion
 
     // #region  E V E N T   H A N D L E R S
@@ -127,18 +154,37 @@ function BankCard(props)
 
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (
-        <div className={bootstrapCard()} style={{maxWidth: props.width}}>
-
-            <div className="card-header"><b><h4>{props.header}</h4></b></div>
-
-            <div className="card-body">
-                {props.title && (<h5 className="card-title">{props.title}</h5>)}
-                {props.text && (<p className="card-text">{props.text}</p>)}
-                {props.body}
-                {props.status && (<div id='createStatus'>{props.status}</div>)}
+        <>
+            <div className={bootstrapCard()} style={{maxWidth: props.width}}>
+                <div className="card-header"><b><h4>{props.header}</h4></b></div>
+                <div className="card-body">
+                    {props.title && (<h5 className="card-title">{props.title}</h5>)}
+                    {props.text && (<p className="card-text">{props.text}</p>)}
+                    {props.body}
+                </div>
             </div>
-
-        </div>
+            {props.status && props.status.includes("success") && (
+                <div className={bootstrapSuccess()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b><h4>Confirmation</h4></b></div>
+                    <div className="card-body">
+                        <div id='status'>{props.status}</div>
+                    </div>
+                </div>)}
+            {props.status && props.status.includes("warn") && (
+                <div className={bootstrapWarn()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b><h4>Warning</h4></b></div>
+                    <div className="card-body">
+                        <div id='status'>{props.status}</div>
+                    </div>
+                </div>)}
+            {props.status && props.status.includes("error") && (
+                <div className={bootstrapDanger()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b><h4>Error</h4></b></div>
+                    <div className="card-body">
+                        <div id='status'>{props.status}</div>
+                    </div>
+                </div>)}
+        </>
     );
 }
 

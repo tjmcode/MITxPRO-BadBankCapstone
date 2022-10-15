@@ -63,10 +63,12 @@
 import React, {useContext, useState} from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
-import axios from 'axios';
+
+// include the Back-End API
+import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -79,15 +81,9 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 3000;
+const TIMEOUT_MSEC = 2500;
 const MINIMUM_PASSWORD_LENGTH = 8;
 const MINIMUM_OPENING_DEPOSIT = 100;
-
-//    localhost:8080 for development
-//    https://appname.tjmcode.io/backend for frontend
-// or http://appname.tjmcode.io:8080 for backend
-//
-const API_URL = `${process.env.REACT_APP_BACKEND_URL}`;
 
 // #endregion
 
@@ -102,13 +98,11 @@ const API_URL = `${process.env.REACT_APP_BACKEND_URL}`;
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Account() – the Bad Bank Account Component.
- *
+ * @func Account
+ * @desc The Bad Bank Account Component.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -125,7 +119,7 @@ function Account()
     const [status, setStatus] = useState('');
     const [submitDisabled, setSubmitDisabled] = useState('');
 
-    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [balance, setBalance] = useState(0);
@@ -148,19 +142,11 @@ function Account()
 
         if (label === "email")
         {
-            // make sure this email is not already in use
-            var emailInUse = false;
-            for (let i = 0; i < ctx.Users.length; i++)
+            const regexEmail = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+            if (!field.match(regexEmail))
             {
-                if (ctx.Users[i].email === field)
-                {
-                    emailInUse = true;
-                    break;
-                }
-            }
-            if (emailInUse)
-            {
-                setStatus(`Error: The supplied email is already in use.`);
+                setStatus(`Error: A valid email is required.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmitDisabled('Disabled');
                 return false;
@@ -192,12 +178,12 @@ function Account()
         return true;
     }
 
-    // validates all form fields
-    function checkFields()
+    // validates all form fields for CREATE
+    function checkCreateFields()
     {
         setSubmitDisabled('Disabled');
 
-        if (!validate(name, 'name')) return false;
+        if (!validate(username, 'username')) return false;
         if (!validate(email, 'email')) return false;
         if (!validate(password, 'password')) return false;
         if (!validate(balance, 'balance')) return false;
@@ -208,10 +194,24 @@ function Account()
         return true;
     }
 
+    // validates all form fields for DELETE
+    function checkDeleteFields()
+    {
+        setSubmitDisabled('Disabled');
+
+        if (!validate(username, 'username')) return false;
+        if (!validate(email, 'email')) return false;
+        if (!validate(password, 'password')) return false;
+
+        setSubmitDisabled('');
+
+        return true;
+    }
+
     // clear fields and prepares for new data
     function clearForm()
     {
-        setName('');
+        setUsername('');
         setEmail('');
         setPassword('');
         setBalance('');
@@ -233,37 +233,105 @@ function Account()
 
         clearForm();
         setNeedInput(true);
+        setStatus(``);
     }
 
     // creates a User Account if passed validate input fields
     async function createAccount_Click(e)
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
-        let needInput = true;  // in case we fail
 
-        log(`Creating new Account - name: ${name} email: ${email} password: ${password}`, logSource, "Information");
+        log(`[ACCOUNT] Creating new Account - name: ${username} email: ${email} password: ${password}`, logSource, `info`);
 
-        if (!checkFields())
+        if (!checkCreateFields())
         {
+            log(`[ACCOUNT] Create failed - email: ${email} password: ${password}`, logSource, `warn`);
+
             return;
         }
 
-        log(`Attempting Create User: ${API_URL}/account/create...`, logSource, `Waiting`);
+        log(`[ACCOUNT] Attempting to Create User...`, logSource, `Waiting`);
 
         try
         {
-            await axios.get(API_URL + `/account/create/${name}/${email}/${password}/${balance}`);
-            ctx.Users.push({name, email, password, balance});
-            log(`Create Account succeeded - User: ${name}`, logSource, `Information`);
-            needInput = false;
+            // Create Account in Database
+            api.create(username, email, password, balance)
+                .then((account) =>
+                {
+                    if (!account)
+                    {
+                        setStatus(log(`[ACCOUNT] Create Account failed, ${email} is already used.`, logSource, `error`));
+                        setNeedInput(true);
+                    }
+                    else
+                    {
+                        // immediately log them in on create
+                        delete account._id;  // the MongoDB ID is not part of our Client 'user'
+                        ctx.setUser(account);
+                        ctx.setLoggedIn(true);
+
+                        setStatus(log(`[ACCOUNT] Create succeeded - User: ${account.email}`, logSource, `success`));
+                        setNeedInput(false);
+                    }
+                });
         }
-        catch
+        catch (exception)
         {
-            log(`Create Account failed: ${API_URL}/account/create...`, logSource, `Error`);
-            needInput = true;
+            setStatus(exp(`[ACCOUNT] Create Account failed - User: ${email}`, logSource, exception));
+            setNeedInput(true);
+            setSubmitDisabled('Disabled');
+            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+        }
+    }
+
+    // deletes a User Account given proper credentials
+    async function deleteAccount_Click(e)
+    {
+        e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
+
+        log(`[ACCOUNT] Deleting old Account - name: ${username} email: ${email} password: ${password}`, logSource, `info`);
+
+        if (!checkDeleteFields())
+        {
+            log(`[ACCOUNT] Delete failed - email: ${email} password: ${password}`, logSource, `warn`);
+
+            return;
         }
 
-        setNeedInput(needInput);
+        log(`[ACCOUNT] Attempting to Delete User...`, logSource, `Waiting`);
+
+        try
+        {
+            // Delete Account from Database
+            api.delete(username, email, password)
+                .then((account) =>
+                {
+                    if (!account)
+                    {
+                        setStatus(log(`[ACCOUNT] Delete failed, ${email} does not exist.`, logSource, `error`));
+                        setNeedInput(true);
+                    }
+                    else
+                    {
+                        setStatus(log(`[ACCOUNT] Delete succeeded - User: ${email}`, logSource, `success`));
+                        setNeedInput(true);
+                        setUsername(``);
+                        setEmail(``);
+                        setPassword(``);
+                        setBalance(0);
+
+                        ctx.setUser({});
+                        ctx.setLoggedIn(false);
+                    }
+                });
+        }
+        catch (exception)
+        {
+            setStatus(exp(`[ACCOUNT] Delete Account CRASHED - User: ${email}`, logSource, exception));
+            setNeedInput(true);
+            setSubmitDisabled('Disabled');
+            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+        }
     }
 
     // #endregion
@@ -286,10 +354,10 @@ function Account()
                 <form>
                     Name<br />
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="name"
-                        placeholder="Enter name" value={name} onChange={e =>
+                        placeholder="Enter name" value={username} onChange={e =>
                         {
                             setSubmitDisabled('');
-                            setName(e.currentTarget.value);
+                            setUsername(e.currentTarget.value);
                             validate(e.currentTarget.value, 'name');
                         }} /><br />
 
@@ -323,6 +391,8 @@ function Account()
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
                     <button type="submit" className="btn btn-light" onClick={createAccount_Click} disabled={submitDisabled}>Create</button>
+                    <> </>
+                    <button type="submit" className="btn btn-light" onClick={deleteAccount_Click} disabled={submitDisabled}>Delete</button>
                     <br />
                 </form>
             ) : (

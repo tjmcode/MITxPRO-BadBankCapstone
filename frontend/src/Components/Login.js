@@ -62,8 +62,11 @@ import React, {useContext, useState} from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
+// include the Back-End API
+import {api} from '../api/api.js';
+
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -76,7 +79,7 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 3000;
+const TIMEOUT_MSEC = 2500;
 
 // #endregion
 
@@ -91,13 +94,11 @@ const TIMEOUT_MSEC = 3000;
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Login() – controls a user logging into their Bad Bank Account.
- *
+ * @func Login
+ * @desc Controls a user logging into their Bad Bank Account.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -112,8 +113,7 @@ function Login()
     const [cleared, setCleared] = useState(false);
     const [needInput, setNeedInput] = useState(true);
     const [status, setStatus] = useState('');
-    const [submitDisabled, setSubmitDisabled] = useState('');
-
+    const [submit, setSubmit] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -129,27 +129,19 @@ function Login()
         {
             setStatus(`Error: ${label} is required`);
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             return false;
         }
 
         if (label === "email")
         {
-            // make sure this email is not already in use
-            var emailExists = false;
-            for (let i = 0; i < ctx.Users.length; i++)
+            const regexEmail = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+            if (!field.match(regexEmail))
             {
-                if (ctx.Users[i].email === field)
-                {
-                    emailExists = true;
-                    break;
-                }
-            }
-            if (!emailExists)
-            {
-                setStatus(`Error: The supplied email has no Account.`);
+                setStatus(`Error: A valid email is required.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 return false;
             }
         }
@@ -160,12 +152,12 @@ function Login()
     // checks all form fields
     function checkFields()
     {
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
 
         if (!validate(email, 'email')) return false;
         if (!validate(password, 'password')) return false;
 
-        setSubmitDisabled('');
+        setSubmit('');
 
         return true;
     }
@@ -175,9 +167,9 @@ function Login()
     {
         setEmail('');
         setPassword('');
-
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
         setNeedInput(true);
+        setStatus('');
     }
 
     // #endregion
@@ -193,49 +185,56 @@ function Login()
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
         clearForm();
-        setNeedInput(true);
     }
 
     // logs into the selected User Account
-    function logIn_Click(e)
+    async function logIn_Click(e)
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`Login attempt - email: ${email} password: ${password}`, logSource, "Information");
+        log(`[LOGIN] Login attempt - email: ${email} password: ${password}`, logSource, `info`);
 
         if (!checkFields())
         {
-            log(`Login failed - email: ${email} password: ${password}`, logSource, "Warning");
+            setStatus(log(`[LOGIN] Login failed - email: ${email} password: ${password}`, logSource, `warn`));
             return;
         }
 
-        // make sure this email Account exists
-        var loginSuccess = false;
-        for (let i = 0; i < ctx.Users.length; i++)
+        log(`[LOGIN] Attempting User Login...`, logSource, `Waiting`);
+
+        try
         {
-            if (ctx.Users[i].email === email)
-            {
-                if (ctx.Users[i].password === password)
+            // Log into Account in Database
+            api.login(email, password)
+                .then((account) =>
                 {
-                    loginSuccess = true;
+                    if (!account)
+                    {
+                        setStatus(log(`[LOGIN] Account Login failed, check other account with: ${email}`, logSource, `error`));
+                        setSubmit('Disabled');
+                        setNeedInput(true);
+                    }
+                    else
+                    {
+                        delete account._id;  // the MongoDB ID is not part of our Client 'user'
+                        ctx.setUser(account);  // update current user
+                        ctx.setLoggedIn(true);
 
-                    ctx.LoggedIn = true;
-                    ctx.CurrentUser = email;
-                    ctx.UserIndex = i;
-
-                    break;
-                }
-            }
+                        log(`[LOGIN] Account contents: ${JSON.stringify(account)}`, logSource, `warn`);
+                        log(`[LOGIN] Account Login succeeded - Email: ${account.email}`, logSource, `info`);
+                        setStatus(``);
+                        setSubmit('Disabled');
+                        setNeedInput(false);
+                    }
+                });
         }
-        if (!loginSuccess)
+        catch (exception)
         {
-            setStatus(`Error: Login failed, check email and password.`);
+            setStatus(exp(`[LOGIN] Login to Account CRASHED.`, logSource, exception));
+            setSubmit('Disabled');
+            setNeedInput(true);
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-            setSubmitDisabled('Disabled');
-            return false;
         }
-
-        setNeedInput(false);
     }
 
     // logs out of the current User Account
@@ -243,12 +242,12 @@ function Login()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`Logout occurring - name:  ${ctx.Users[ctx.UserIndex].name}`, logSource, "Information");
+        log(`[LOGIN] Logout occurring - name:  ${ctx.User.username}`, logSource, `info`);
 
-        ctx.LoggedIn = false;
-        ctx.CurrentUser = 'You must log in...';
-        ctx.UserIndex = 0;
+        ctx.setLoggedIn(false);
+        ctx.setUser({"username": "You must log in..."});
 
+        setSubmit('');
         setNeedInput(true);
     }
 
@@ -276,7 +275,7 @@ function Login()
                     <input type="email" autoComplete="new-password" required={true} className="form-control" id="email"
                         placeholder="Enter email" value={email} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setEmail(e.currentTarget.value);
                             validate(e.currentTarget.value, 'email');
                         }} /><br />
@@ -285,19 +284,19 @@ function Login()
                     <input type="password" autoComplete="new-password" required={true} className="form-control" id="password"
                         placeholder="Enter password" value={password} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setPassword(e.currentTarget.value);
                             validate(e.currentTarget.value, 'password');
                         }} /><br />
 
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
-                    <button type="submit" className="btn btn-light" onClick={logIn_Click} disabled={submitDisabled}>Log In</button>
+                    <button type="submit" className="btn btn-light" onClick={logIn_Click} disabled={submit}>Log In</button>
                     <br />
                 </form>
             ) : (
                 <>
-                    <h5>{ctx.CurrentUser} is logged in.</h5>
+                    <h5>{ctx.User.username} is logged in.</h5>
                     <br />
                     <button type="submit" className="btn btn-light" onClick={logOut_Click}>Log Out</button>
                 </>

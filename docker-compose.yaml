@@ -87,13 +87,17 @@
 #           by Maikel Venn
 #           https://maikelveen.com/blog/how-to-solve-module-not-found-cant-resolve-fs-in-nextjs
 #
+#       13. How to use docker-compose, volumes, networks, and more
+#           by Dvir Segal
+#           Complete Docker Course is linked in...
+#           https://faun.pub/how-to-use-docker-compose-volumes-networks-and-more-24f82169c077
 #
 #
 #
 #       NOTES:
 #       ------
 #
-#       o  To create a volume use teh command:
+#       o  To create a volume use the command:
 #
 #           $  docker volume create [volume-name]
 #
@@ -120,10 +124,26 @@
 #
 version: '3'
 #
+#  V O L U M E S -- NOTE: can't use ${APP_NAME} here, and internal are auto-prefixed with <appname>_<name-specified>
+#                         with <appname>_<name-specified> if you don't use [name: <volume-name>]
+#  -------------
 #
 volumes:
-  badbank-mongodata:  # our MongoDB storage volume -- NOTE: can't use ${APP_NAME} here
-    external: true  # keep after Containers are destroyed
+  frontend-volume:  # our Frontend/Client execution volume
+    name: "badbank-frontend"
+    external: false  # temporary, build specific
+#
+  backend-volume:  # our Backend/Server execution volume
+    name: "badbank-backend"
+    external: false  # temporary, build specific
+#
+  database-volume:  # our Database configuration volume
+    name: "badbank-database"
+    external: false  # temporary, build specific
+#
+  mongodb-volume:  # our Database/MongoDB storage volume
+    name: "badbank-mongodb"
+    external: true  # keep after all Containers are destroyed
 #
 services:
   #
@@ -143,6 +163,8 @@ services:
         NODE_ENV: ${NODE_ENV:-development}
     ports:
       - '${APP_FRONTEND_PORT:-3000}:${APP_FRONTEND_PORT:-3000}'
+    volumes:
+      - frontend-volume:/exe/frontend  # temporary volume
     restart: always
     networks:
       - react-express  # frontend to backend connection
@@ -165,6 +187,8 @@ services:
         NODE_ENV: ${NODE_ENV:-development}
     ports:
       - '${APP_BACKEND_PORT:-8080}:${APP_BACKEND_PORT:-8080}'
+    volumes:
+      - backend-volume:/exe/frontend  # temporary volume
     restart: always
     networks:
       - react-express  # frontend to backend connection
@@ -189,7 +213,8 @@ services:
     ports:
       - '${APP_DATABASE_PORT:-27017}:${APP_DATABASE_PORT:-27017}'
     volumes:
-      - badbank-mongodata:/data/db  # persist our database in a volume -- NOTE: can't use ${APP_NAME} here
+      - database-volume:/data/configdb  # temporary volume -- NOTE: /data/configdb/ is the path required by MongoDB
+      - mongodb-volume:/data/db  # persist our database in this volume -- NOTE: /data/db/ is the path required by MongoDB
     restart: always
     networks:
       - express-mongo  # backend to database connection

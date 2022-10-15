@@ -11,7 +11,7 @@ const testLoginPage = async () =>
 {
     try
     {
-        log(`Puppeteer is running...`, logSource, "Information");
+        log(`Puppeteer is running...`, logSource, `info`);
 
         // Step 1 - Launch Puppeteer and assign response to the browser variable
         let browser = await puppeteer.launch();
@@ -26,7 +26,7 @@ const testLoginPage = async () =>
         // Step 4 - Using the page variable, use the click method by passing the ".create-user" class name
         //await page.click(`.create-user`);
         //let status = await page.$(`.user-name`);
-        //log(await status.evaluate(node => node.innerHTML), logSource, "Information");
+        //log(await status.evaluate(node => node.innerHTML), logSource, `info`);
 
         // Step 5 - Using the page variable, use the screenshot method to generate a screenshot of the React app with the newly created user
         await page.screenshot({path: `screen.png`});
@@ -37,7 +37,7 @@ const testLoginPage = async () =>
     }
     catch (e)
     {
-        log(e, logSource, "Error");
+        log(e, logSource, `error`);
     }
 };
 

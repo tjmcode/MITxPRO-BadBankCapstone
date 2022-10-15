@@ -83,13 +83,11 @@ import logo from '../logo.svg';
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Home() – controls a user logging into their Bad Bank Account.
- *
+ * @func Home
+ * @desc controls a user logging into their Bad Bank Account.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *

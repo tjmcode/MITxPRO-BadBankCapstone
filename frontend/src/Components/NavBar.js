@@ -81,13 +81,11 @@ import {AppContext} from './AppContext';
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * NavBar() – the Bad Bank Navigation Bar.
- *
+ * @func NavBar
+ * @desc the Bad Bank Navigation Bar.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -178,7 +176,7 @@ function NavBar()
                             {!ctx.LoggedIn ? (
                                 <a className="nav-link disabled" tooltip="No User logged in" href="#/user/" aria-disabled="true">Log in required...</a>
                             ) : (
-                                <a className="nav-link disabled" tooltip="Current User" href="#/user/" aria-disabled="true">Welcome {ctx.Users[ctx.UserIndex].name}!</a>
+                                <a className="nav-link disabled" tooltip="Current User" href="#/user/" aria-disabled="true">Welcome {ctx.User.username}!</a>
                             )}
                         </li>
                     </ul>

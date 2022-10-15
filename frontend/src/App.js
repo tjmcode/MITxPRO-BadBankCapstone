@@ -125,7 +125,7 @@ const apiUrl = `${process.env.REACT_APP_BACKEND_URL}`;
  *
  * @param {nil} no properties.
  *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -150,7 +150,7 @@ function App()
     // #endregion
 
     // perform component COMPUTATION to generate output
-    log(`Front-End is starting using ${apiUrl} to access Back-End.`, logSource, `Information`);
+    log(`APP: Front-End is running using ${apiUrl} to access Back-End.`, logSource, `info`);
 
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (

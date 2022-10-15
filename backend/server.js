@@ -5,7 +5,7 @@
 /*
  *      Title:    MicroCODE
  *      Module:   index (.\backend\server.js)
- *      Project:  MicroCODE 3-Tier MERN App 'BadBank'
+ *      Project:  MicroCODE 3-Tier MERN App `BadBank`
  *      Customer: MIT xPRO Course
  *      Creator:  MicroCODE Incorporated
  *      Date:     October 2022
@@ -23,11 +23,11 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the MicroCODE JavaScript Class for 'backend\server'
- *      to implement the MIT 'Bad Bank' Fire Hydrant project.
- *      This was reused in the refactoring of the React App version of my 'Bad Bank' app.
+ *      This module implements the MicroCODE JavaScript Class for `backend\server`
+ *      to implement the MIT `Bad Bank` Fire Hydrant project.
+ *      This was reused in the refactoring of the React App version of my `Bad Bank` app.
  *
- *      This implements the Server-side, the 'BACK-END'.
+ *      This implements the Server-side, the `BACK-END`.
  *
  *
  *
@@ -60,7 +60,7 @@
  *
  *  Date:         By-Group:   Rev:     Description:
  *
- *  25-Aug-2022   TJM-MCODE  {0002}    Copied from 'Fire Hydrant' project to move React App to MERN Architecture.
+ *  25-Aug-2022   TJM-MCODE  {0002}    Copied from `Fire Hydrant` project to move React App to MERN Architecture.
  *
  *
  */
@@ -89,37 +89,36 @@ const APP_URL = `https://${process.env.APP_SUBDOMAIN}:${APP_PORT}`;
 /*
  * SERVER: FILE SYSTEM, STORAGE, and STRUCTURES
  * --------------------------------------------
- * These define the Server it's File System, Storage mechanisms, and stored Objects/Structures.
+ * These define the Server it`s File System, Storage mechanisms, and stored Objects/Structures.
  *
  */
 
 // load ExpressJS
-const express = require('express');
+const express = require(`express`);
 
 // allow Cross Origin Resource Sharing (for development only)
-const cors = require('cors');
+const cors = require(`cors`);
 
-// support .env file variables -- this bring the .env file variables into the 'process.env' object
-require('dotenv').config();
+// support .env file variables -- this bring the .env file variables into the `process.env` object
+require(`dotenv`).config();
 
 // instantiate ExpressJS
 const app = express();
 
 // load Faker to generate test data
-const faker = require(`faker`);
 
 // include our common MicroCODE Server Library
-var mcode = require('./src/mcodeServer.js');
+var mcode = require(`./src/mcodeServer.js`);
 
 // load our Data Abstraction Layer (DAL)
-const dal = require('./src/dal.js');
+const dal = require(`./src/dal.js`);
+
+// load our DB Scheme and Constructors
+const model = require(`./src/models/account.model.js`);
 
 // get our current file name for logging events
-var path = require('path');
+var path = require(`path`);
 var logSource = path.basename(__filename);
-
-// and our Account Schema
-const User = require(`./src/models/account.model`);
 
 // Required data store structure
 /*
@@ -164,7 +163,7 @@ const User = require(`./src/models/account.model`);
  */
 
 // configure express to serve static files from public directory
-app.use(express.static('public'));
+app.use(express.static(`public`));
 
 // configure CORS to share resources
 app.use(cors());
@@ -174,7 +173,7 @@ app.use(cors());
 app.listen(APP_PORT, function ()
 {
     // show that our listener is alive
-    mcode.log(`Running on Port: ${APP_PORT}!  Path: ${APP_URL}`, logSource, `Information`);
+    mcode.log(`SERVER -- Running on Port: ${APP_PORT}!  Path: ${APP_URL}`, logSource, `info`);
 });
 
 /*
@@ -188,18 +187,18 @@ app.listen(APP_PORT, function ()
 /**
  * Define a ROUTE - from Browser to Server.
  *
- * '/' = ROOT
- * 'req' = REQUEST
- * 'res' = RESPONSE
+ * `/` = ROOT
+ * `req` = REQUEST
+ * `res` = RESPONSE
  *
  */
-app.get('/', function (req, res)
+app.get(`/`, function (req, res)
 {
     // a simple response to a request
     res.send("Bad Bank Server is online. [NOTE: This should never be seen if the React App is being served properly.]");
 });
 
-app.get('/test', function (req, res)
+app.get(`/test`, function (req, res)
 {
     // a simple response to a request
     res.send("Bad Bank Server was test scucessful. [NOTE: Changes to this file are *not* dynamic, they are loaded at Page Display.]");
@@ -211,33 +210,137 @@ app.get('/test', function (req, res)
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get('/account/create/:username/:email/:password/:deposit', function (req, res)
+app.get(`/account/create/:username/:email/:password/:deposit`, function (req, res)
 {
-    mcode.log(`Creating Account...`, logSource, `Information`);
+    mcode.log(`CREATE -- Creating Account for ${req.params.email}`, logSource, `info`);
 
-    let amount = parseFloat(req.params.deposit);
-
-    dal.createAccount(req.params.username, req.params.email, req.params.password, amount)
-        .then((account) =>
+    // Check for existing Account from Database
+    dal.findAccount(req.params.email)
+        .then((res_find) =>
         {
-            mcode.log(`Successfully created User Account: ${account.email}`, logSource, `Information`);
-            res.send(account);
+            if (res_find)
+            {
+                const find_msg = `CREATE -- Create Account FAILED, account exists for: ${req.params.email}`;
+                mcode.log(find_msg, logSource, `error`);
+                res.status(401).json({error: find_msg});
+            }
+            else
+            {
+                let account = model.accountRecord(req.params.username, req.params.email, req.params.password, parseFloat(req.params.deposit));
+
+                dal.createAccount(account)
+                    .then(() =>
+                    {
+                        mcode.log(`CREATE -- Successfully created User Account: ${account.email}`, logSource, `info`);
+                        res.send(account);
+                    })
+                    .catch((exp_create) =>
+                    {
+                        const exp_msg = mcode.exp(`CREATE -- dal.createAccount CRASHED.`, logSource, exp_create);
+                        res.status(401).json({error: exp_msg});
+                    })
+                    .finally(() =>
+                    {
+
+                    });
+            }
+        })
+        .catch((exp_find) =>
+        {
+            res.status(401).json({error: exp_find});
+        })
+        .finally(() =>
+        {
+
         });
 });
 
+/**
+ * @function api.delete() -- delete account route
+ *
+ * @returns {object} account object if successful
+ * @returns {string} 401 status with error message if unsucessful
+ */
+app.get(`/account/delete/:username/:email/:password`, function (req, res)
+{
+    mcode.log(`DELETE -- Deleting Account for ${req.params.email}`, logSource, `info`);
+
+    // Check for existing Account from Database
+    dal.findAccount(req.params.email)
+        .then((res_find) =>
+        {
+            if (!res_find)
+            {
+                const find_msg = `DELETE -- Delete Account FAILED, account does not exists for: ${req.params.email}`;
+                mcode.log(find_msg, logSource, `error`);
+                res.status(401).json({error: find_msg});
+            }
+            else
+            {
+                let account = model.accountRecord(req.params.username, req.params.email, req.params.password, 0);
+
+                dal.deleteAccount(account)
+                    .then(() =>
+                    {
+                        mcode.log(`DELETE -- Successfully delete User Account: ${account.email}`, logSource, `info`);
+                        res.send(account);
+                    })
+                    .catch((exp_create) =>
+                    {
+                        const exp_msg = mcode.exp(`DELETE -- dal.deleteAccount CRASHED.`, logSource, exp_create);
+                        res.status(401).json({error: exp_msg});
+                    })
+                    .finally(() =>
+                    {
+
+                    });
+            }
+        })
+        .catch((exp_find) =>
+        {
+            const exp_msg = mcode.exp(`DELETE -- dal.findAccount CRASHED.`, logSource, exp_find);
+            res.status(401).json({error: exp_find});
+        })
+        .finally(() =>
+        {
+
+        });
+});
 /**
  * @function api.login() -- user confirm credentials
  *
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get('/account/login/:email/:password', function (req, res)
+app.get(`/account/login/:email/:password`, function (req, res)
 {
-    console.log();
-    console.log("Logging into Account...");
+    mcode.log(`LOGIN -- Logging into Account of ${req.params.email}`, logSource, `info`);
 
-    // done in Client with a current copy of 'AllData'
+    // Get Account from Database
+    dal.findAccount(req.params.email)
+        .then((res_find) =>
+        {
+            if (!res_find)
+            {
+                const find_msg = `LOGIN -- Login to Account FAILED, account does not exists for: ${req.params.email}`;
+                mcode.log(find_msg, logSource, `error`);
+                res.status(401).json({error: find_msg});
+            }
+            else
+            {
+                mcode.log(`LOGIN -- Login to Account SUCEEDED with ${res_find.email}`, logSource, `info`);
+                res.send(res_find);
+            }
+        })
+        .catch((exp_find) =>
+        {
+            const exp_msg = mcode.exp(`LOGIN -- dal.findAccount CRASHED.`, logSource, exp_find);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
 
+        });
 });
 
 /**
@@ -246,19 +349,34 @@ app.get('/account/login/:email/:password', function (req, res)
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get('/account/deposit/:email/:amount', function (req, res)
+app.get(`/account/deposit/:email/:amount`, function (req, res)
 {
-    mcode.log(`Depositing Funds...`, logSource, `Information`);
+    mcode.log(`DEPOSIT -- Depositing Funds into Account of ${req.params.email}`, logSource, `info`);
 
-    let amount = parseFloat(req.params.amount);
-
-    mcode.log(`About to add ${amount} to balance.`, logSource, `Information`);
-
-    dal.depositFunds(req.params.email, amount)
-        .then((account) =>
+    // Deposit directly into Account in Database
+    dal.depositFunds(req.params.email, req.params.amount)
+        .then((res_deposit) =>
         {
-            mcode.log(`Successfully deposited User funds, new balance: ${account.balance}`, logSource, `Information`);
-            res.send(account);
+            if (!res_deposit)
+            {
+                const deposit_msg = `DEPOSIT -- Login to Account FAILED, account does not exists for: ${req.params.email}`;
+                mcode.log(deposit_msg, logSource, `error`);
+                res.status(401).json({error: deposit_msg});
+            }
+            else
+            {
+                mcode.log(`DEPOSIT -- Successfully deposited User funds, new balance: ${res_deposit.balance}`, logSource, `info`);
+                res.send(res_deposit);
+            }
+        })
+        .catch((exp_deposit) =>
+        {
+            const exp_msg = mcode.exp(`DEPOSIT -- dal.depositFunds CRASHED.`, logSource, exp_deposit);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
         });
 });
 
@@ -268,19 +386,34 @@ app.get('/account/deposit/:email/:amount', function (req, res)
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get('/account/withdraw/:email/:amount', function (req, res)
+app.get(`/account/withdraw/:email/:amount`, function (req, res)
 {
-    mcode.log(`Withdrawing Funds...`, logSource, `Information`);
+    mcode.log(`WITHDRAW -- Withdrawing Funds from Account of ${req.params.email}`, logSource, `info`);
 
-    let amount = parseFloat(req.params.amount);
-
-    console.log(`About to subtract ${amount} from balance.`);
-
-    dal.withdrawFunds(req.params.email, amount)
-        .then((account) =>
+    // Withdraw directly from Account in Database
+    dal.withdrawFunds(req.params.email, req.params.amount)
+        .then((res_withdraw) =>
         {
-            mcode.log(`Successfully withdrew User funds: ${account.balance}`, logSource, `Information`);
-            res.send(account);
+            if (!res_withdraw)
+            {
+                const withdraw_msg = `WITHDRAW -- Login to Account FAILED, account does not exists for: ${req.params.email}`;
+                mcode.log(withdraw_msg, logSource, `error`);
+                res.status(401).json({error: withdraw_msg});
+            }
+            else
+            {
+                mcode.log(`WITHDRAW -- Successfully withdrew User funds, new balance: ${res_withdraw.balance}`, logSource, `info`);
+                res.send(res_withdraw);
+            }
+        })
+        .catch((exp_withdraw) =>
+        {
+            const exp_msg = mcode.exp(`WITHDRAW -- dal.withdrawFunds CRASHED.`, logSource, exp_withdraw);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
         });
 });
 
@@ -289,16 +422,25 @@ app.get('/account/withdraw/:email/:amount', function (req, res)
  *
  * @returns {object} accounts JSON data object if successful
  */
-app.get('/account/balance/:email', function (req, res)
+app.get(`/account/balance/:email`, function (req, res)
 {
-    mcode.log(`Returning Account Balance...`, logSource, `Information`);
+    mcode.log(`BALANCE -- Returning Account Balance for ${req.params.email}`, logSource, `info`);
 
     // returns balance in the database
-    dal.balance()
-        .then((balance) =>
+    dal.accountBalance(req.params.email)
+        .then((res_balance) =>
         {
-            mcode.log(`balance:${JSON.stringify(balance)}`, logSource, `Information`);
-            res.send(balance);
+            mcode.log(`BALANCE -- Account Balance: $${res_balance.balance}`, logSource, `info`);
+            res.send(res_balance);
+        })
+        .catch((exp_balance) =>
+        {
+            const exp_msg = mcode.exp(`BALANCE -- dal.accountBalance CRASHED.`, logSource, exp_balance);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
         });
 });
 
@@ -307,16 +449,25 @@ app.get('/account/balance/:email', function (req, res)
  *
  * @returns {object} accounts JSON data object if successful
  */
-app.get('/account/all', function (req, res)
+app.get(`/account/all`, function (req, res)
 {
-    mcode.log(`Returning all Account Data...`, logSource, `Information`);
+    mcode.log(`ALL DATA -- Returning all Account Data...`, logSource, `info`);
 
     // returns all data in the database
     dal.allAccounts()
-        .then((users) =>
+        .then((res_allAccounts) =>
         {
-            mcode.log(`users:${JSON.stringify(users)}`, logSource, `Information`);
-            res.send(users);
+            mcode.log(`ALL DATA -- Users: ${JSON.stringify(res_allAccounts)}`, logSource, `info`);
+            res.send(res_allAccounts);
+        })
+        .catch((exp_allAccounts) =>
+        {
+            const exp_msg = mcode.exp(`BALANCE -- dal.allAccounts CRASHED.`, logSource, exp_allAccounts);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
         });
 });
 

@@ -64,8 +64,11 @@ import React from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
+// include the Back-End API
+import {api} from '../api/api.js';
+
 // include our common MicroCODE Client Library
-import {log} from '../mcodeClient.js';
+import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -78,7 +81,7 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 3000;
+const TIMEOUT_MSEC = 2500;
 const MINIMUM_WITHDRAW = 5;
 
 // #endregion
@@ -94,14 +97,11 @@ const MINIMUM_WITHDRAW = 5;
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * Withdraw() – the Bad Bank Withdraw Component.
- *
+ * @func Withdraw
+ * @desc the Bad Bank Withdraw Component.
  * @api public
- *
  * @param {nil} no properties.
- *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
- *
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  * @example
  *
  *      Withdraw();
@@ -161,7 +161,7 @@ function Withdraw()
                 return false;
             }
 
-            if (field > ctx.Users[ctx.UserIndex].balance)
+            if (field > ctx.User.balance)
             {
                 setStatus('OVERDRAFT: Withdraw is more than your balance.');
             }
@@ -210,24 +210,52 @@ function Withdraw()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`Making Account Withdraw - name: ${ctx.Users[ctx.UserIndex].name} withdraw: ${withdraw}`, logSource, "Information");
+        log(`[WITHDRAW] Making Account Withdraw - name: ${ctx.User.username} withdraw: ${withdraw}`, logSource, `info`);
 
         if (!checkFields())
         {
-            log(`Withdraw failed checks - name: ${ctx.Users[ctx.UserIndex].name} withdraw: ${withdraw}`, logSource, "Warning");
+            log(`[WITHDRAW] Withdraw failed checks - name: ${ctx.User.username} withdraw: ${withdraw}`, logSource, `warn`);
             return;
         }
 
-        // add withdraw to Account balance
-        ctx.Users[ctx.UserIndex].balance = parseInt(ctx.Users[ctx.UserIndex].balance) - parseInt(withdraw);
+        log(`[WITHDRAW] Attempting User Withdraw...`, logSource, `Waiting`);
 
-        if (ctx.Users[ctx.UserIndex].balance < 0)
+        try
         {
-            window.alert("You have OVERDRAWN your Account, you were charged an additional $35 fee.");
-            ctx.Users[ctx.UserIndex].balance = parseInt(ctx.Users[ctx.UserIndex].balance) - 35;
+            // Withdraw into Account in Database
+            api.withdraw(ctx.User.email, withdraw)
+                .then((account) =>
+                {
+                    if (!account)
+                    {
+                        setStatus(log(`Account Withdraw failed, check account for: ${ctx.User.email}`, logSource, `error`));
+                        setSubmitDisabled('Disabled');
+                        setNeedInput(true);
+                    }
+                    else
+                    {
+                        ctx.setUser(account);  // update .balance and .transactions
+                        log(`[WITHDRAW] Account Withdraw succeeded - Email: ${account.email}`, logSource, `info`);
+                        setStatus(``);
+                        setSubmitDisabled('Disabled');
+                        setNeedInput(false);
+                    }
+                });
+        }
+        catch (exception)
+        {
+            setStatus(exp(`[WITHDRAW] Account Withdraw CRASHED - User: ${ctx.User.email}`, logSource, exception));
+            setNeedInput(true);
+            setSubmitDisabled('Disabled');
+            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
 
-        setNeedInput(false);
+        if ((ctx.User.balance - withdraw) < 0)
+        {
+            window.alert("You have OVERDRAWN your Account, you were charged an additional $35 fee.");
+        }
+
+        setNeedInput(needInput);
     }
 
     // #endregion
@@ -250,7 +278,7 @@ function Withdraw()
                 <form>
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.Users[ctx.UserIndex].balance} /><br />
+                        placeholder="Current balance" value={ctx.User.balance} /><br />
 
                     Withdraw<br />
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="withdraw"
@@ -272,7 +300,7 @@ function Withdraw()
                     <br />
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.Users[ctx.UserIndex].balance} /><br />
+                        placeholder="Current balance" value={ctx.User.balance} /><br />
                     <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another withdraw</button>
                 </>
             )}

@@ -69,26 +69,8 @@
 var methods = {};
 
 /**
- * log() -- function to log App Events to the Console in a standardized format.
- *
- * Example from our other Apps:
- ++
-   Message: `Station SYNCHRONIZED to new Job from TRACKING IMAGE`
-
-       Class: JobIdZone                                  Audience: Operator
-      Object: 8                                         Condition: Takt=[0%]  Memory in use=[1,659,216.00]
-       Event: 14                                         Severity: Confirmation
-     Targets: AppLog, AppBanner, AppDatabase, AppSound
-
-       Event: (see `Message:` above)                      Time: Tuesday, August 10, 2021 06:57:47.623 AM
-       Class: MicroCODE.AppBanner                         Type: App.Information                              CSN:[1GA4174210 ]
---
- *
- * @param {string} message pre-formatted message to be logged.
- * @param {string} source where the message orginated.
- * @param {string} severity Event.Severity: Information, Warning, Error, Fatal.
- * @api public
- *
+ * @const vt
+ * @desc Colors constants for changing Console appearance ala DEC`s VT52 + VT100 + VT220.
  *
     ANSI Color Escape Sequence
 
@@ -137,62 +119,85 @@ var methods = {};
     90–97	Set bright foreground color	aixterm (not in standard)
     100–107	Set bright background color	aixterm (not in standard)
  *
+ */
+methods.vt =
+{
+    // special effects
+    reset: "\x1b[0m",
+    bright: "\x1b[1m",
+    dim: "\x1b[2m",
+    underscore: "\x1b[4m",
+    blink: "\x1b[5m",
+    reverse: "\x1b[7m",
+    hidden: "\x1b[8m",
+
+    // foreground color
+    fg: {
+        black: "\x1b[30m",
+        red: "\x1b[31m",
+        green: "\x1b[32m",
+        yellow: "\x1b[33m",
+        blue: "\x1b[34m",
+        magenta: "\x1b[35m",
+        cyan: "\x1b[36m",
+        white: "\x1b[37m",
+        crimson: "\x1b[38m"
+    },
+
+    // background color
+    bg: {
+        black: "\x1b[40m",
+        red: "\x1b[41m",
+        green: "\x1b[42m",
+        yellow: "\x1b[43m",
+        blue: "\x1b[44m",
+        magenta: "\x1b[45m",
+        cyan: "\x1b[46m",
+        white: "\x1b[47m",
+        crimson: "\x1b[48m"
+    },
+
+    // Extended 256-Color codes
+    gray: "\x1b[38;5;255m",  // `Set Foreground Color` -- 5; means 256 Color Code follows
+
+    // custom event colors
+    info: "\x1b[36m",  // cyan
+    warn: "\x1b[33m",  // yellow
+    errr: "\x1b[31m",  // red
+    dead: "\x1b[35m",  // magenta
+    hmmm: "\x1b[37m",  // white
+};
+
+/**
+ * @method log
+ * @desc Logs App Events to the Console in a standardized format.
+ *
+ * Example from our other Apps:
+ ++
+   Message: `Station SYNCHRONIZED to new Job from TRACKING IMAGE`
+
+       Class: JobIdZone                                  Audience: Operator
+      Object: 8                                         Condition: Takt=[0%]  Memory in use=[1,659,216.00]
+       Event: 14                                         Severity: Confirmation
+     Targets: AppLog, AppBanner, AppDatabase, AppSound
+
+       Event: (see `Message:` above)                      Time: Tuesday, August 10, 2021 06:57:47.623 AM
+       Class: MicroCODE.AppBanner                         Type: App.Information                              CSN:[1GA4174210 ]
+--
+ *
+ * @api public
+ * @param {string} message pre-formatted message to be logged.
+ * @param {string} source where the message orginated.
+ * @param {string} severity Event.Severity: 'info', 'warn', 'error', and 'fatal'.
+ * @returns  {String} "<severiy>: <message>".
  *
  */
 methods.log = function (message, source, severity)
 {
+    let vt = methods.vt;
     let logifiedMessage = ``;
 
-    // Colors constants for changing Console appearance ala DEC`s VT52 + VT100 + VT220.
-    var vt =
-    {
-        // special effects
-        reset: "\x1b[0m",
-        bright: "\x1b[1m",
-        dim: "\x1b[2m",
-        underscore: "\x1b[4m",
-        blink: "\x1b[5m",
-        reverse: "\x1b[7m",
-        hidden: "\x1b[8m",
-
-        // foreground color
-        fg: {
-            black: "\x1b[30m",
-            red: "\x1b[31m",
-            green: "\x1b[32m",
-            yellow: "\x1b[33m",
-            blue: "\x1b[34m",
-            magenta: "\x1b[35m",
-            cyan: "\x1b[36m",
-            white: "\x1b[37m",
-            crimson: "\x1b[38m"
-        },
-
-        // background color
-        bg: {
-            black: "\x1b[40m",
-            red: "\x1b[41m",
-            green: "\x1b[42m",
-            yellow: "\x1b[43m",
-            blue: "\x1b[44m",
-            magenta: "\x1b[45m",
-            cyan: "\x1b[46m",
-            white: "\x1b[47m",
-            crimson: "\x1b[48m"
-        },
-
-        // Extended 256-Color codes
-        gray: "\x1b[38;5;255m",  // `Set Foreground Color` -- 5; means 256 Color Code follows
-
-        // custom event colors
-        info: "\x1b[36m",  // cyan
-        warn: "\x1b[33m",  // yellow
-        errr: "\x1b[31m",  // red
-        dead: "\x1b[35m",  // magenta
-        hmmm: "\x1b[37m",  // white
-    };
-
-    if (methods.isJson(message))
+    if (methods.hasJson(message))
     {
         logifiedMessage = methods.logifyText(message);
     }
@@ -201,20 +206,20 @@ methods.log = function (message, source, severity)
         logifiedMessage = message;
     }
 
-    console.log(vt.reset + `++`);
+    console.log(vt.reset + vt.gray + `++`);
 
     switch (severity)
     {
-        case `Information`:
+        case `info`:
             console.log(vt.info + `ℹ ｢mcode｣:'${logifiedMessage}'`);
             break;
-        case `Warning`:
+        case `warn`:
             console.log(vt.warn + `⚠ ｢mcode｣:'${logifiedMessage}'`);
             break;
-        case `Error`:
+        case `error`:
             console.log(vt.errr + `✖ ｢mcode｣:'${logifiedMessage}'`);
             break;
-        case `Fatal`:
+        case `fatal`:
             console.log(vt.dead + `✖ ｢mcode｣:'${logifiedMessage}'`);
             break;
         default:
@@ -227,15 +232,58 @@ methods.log = function (message, source, severity)
         vt.gray + `from: ` + vt.reset + `backend ${source}    ` +
         vt.gray + `severity: ` + vt.reset + `${severity}`);
 
-    console.log(`--` + vt.reset);
+    console.log(vt.gray + `--` + vt.reset);
 
-    return true;  // logged
+    return `${severity}: ` + message;  // for caller to return
 };
 
 /**
- * timestamp() -- function to generate timestamp string: YYYY-MM-DD HH:MM:SS.mmm.
- * @returns  {String} "YYYY-MM-DD HH:MM:SS.mmm".
+ * @method exp
+ * @desc Logs exceptions to the Console in a standardized format.
  * @api public
+ * @param {string} message pre-formatted message to be logged.
+ * @param {string} source where the message orginated.
+ * @param {string} exception the underlying exception message that was caught.
+ * @returns  {String} "message: <message> - exception: <exception>".
+ *
+ */
+methods.exp = function (message, source, exception)
+{
+    let vt = methods.vt;
+    let logifiedMessage = ``;
+
+    if (methods.hasJson(message))
+    {
+        logifiedMessage = methods.logifyText(message);
+    }
+    else
+    {
+        logifiedMessage = message;
+    }
+
+    // Exceptions are always logged as 'Fatal' -- NOTE: do not use 'collapsed' for Server Log
+    console.group();
+    console.log(vt.reset + vt.gray + `++`);
+    console.log(vt.dead + `✖ ｢mcode｣:'${logifiedMessage}'`);
+    console.log(vt.dead + `exception: ` + vt.dead + `${exception}`);
+    console.log(
+        vt.gray + `     ` + vt.reset +
+        vt.gray + `time: ` + vt.reset + `${methods.timeStamp()}    ` +
+        vt.gray + `from: ` + vt.reset + `backend ${source}    ` +
+        vt.gray + `severity: ` + vt.reset + `fatal`);
+    console.log(vt.dead);
+    console.trace();
+    console.log(vt.gray + `--`);
+    console.groupEnd();
+
+    return `message: ` + message + ` - exception: ` + exception;  // for caller to return
+};
+
+/**
+ * @method timestamp
+ * @desc Generates timestamp string: YYYY-MM-DD HH:MM:SS.mmm.
+ * @api public
+ * @returns  {String} "YYYY-MM-DD HH:MM:SS.mmm".
  */
 methods.timeStamp = function ()
 {
@@ -260,11 +308,11 @@ methods.timeStamp = function ()
 };
 
 /**
- * simplifyText() -- Strips a string of BRACES, BRACKETS, QUOTES, etc.
- *
+ * @method simplifyText
+ * @desc Strips a string of BRACES, BRACKETS, QUOTES, etc.
+ * @api public
  * @param {string} textToSimplify the string to be simplified to data
  * @returns {string} the simplified text
- * @api public
  */
 methods.simplifyText = function (textToSimplify)
 {
@@ -294,14 +342,16 @@ methods.simplifyText = function (textToSimplify)
 };
 
 /**
- * logifyText() -- Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
- *
+ * @method logifyText
+ * @desc Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
+ * No formatting occurs until the opening brace '{' of the JSON Data.
+ * @api public
  * @param {string} textToLogiify the string to be formatted for the event log
  * @returns {string} the simplified text
- * @api public
  */
 methods.logifyText = function (textToLogify)
 {
+    let inJson = false;
     let logifiedText = ``;
     let firstColon = true;
     let tabStop = 0;
@@ -325,61 +375,76 @@ methods.logifyText = function (textToLogify)
 
     for (let i = 0; i < textToLogify.length; i++)
     {
-        switch (textToLogify[i])
+        if (!inJson)
         {
-            case `{`:
-                logifiedText += indent() + `{`;
-                lineEmpty = false;
-                tabStop++;
-                logifiedText += indent();
-                break;
-            case `[`:
-                logifiedText += indent() + `[`;
-                lineEmpty = false;
-                tabStop++;
-                logifiedText += indent();
-                break;
-            case `}`:
-                tabStop--;
-                logifiedText += indent() + `}`;
-                firstColon = true;
-                lineEmpty = false;
-                break;
-            case `]`:
-                tabStop--;
-                logifiedText += indent() + `]`;
-                firstColon = true;
-                lineEmpty = false;
-                break;
-            case `,`:
-                logifiedText += indent();
-                firstColon = true;
-                lineEmpty = true;
-                break;
-            case `"`:
-                break;
-            case `:`:
-                if (firstColon)
-                {
+            if (textToLogify[i] === `{`)
+            {
+                inJson = true; --i;  // flag and reprocess
+            }
+            else
+            {
+                logifiedText += textToLogify[i];
+            }
+        }
+        else
+        {
+            switch (textToLogify[i])
+            {
+                case `{`:
+                    logifiedText += indent() + `{`;
+                    lineEmpty = false;
+                    tabStop++;
+                    logifiedText += indent();
+                    break;
+                case `[`:
+                    logifiedText += indent() + `[`;
+                    lineEmpty = false;
+                    tabStop++;
+                    logifiedText += indent();
+                    break;
+                case `}`:
+                    tabStop--;
+                    inJson = (tabStop <= 0) ? false : true;  // closed opening '{'
+                    logifiedText += indent() + `}`;
+                    firstColon = true;
+                    lineEmpty = false;
+                    break;
+                case `]`:
+                    tabStop--;
+                    logifiedText += indent() + `]`;
+                    firstColon = true;
+                    lineEmpty = false;
+                    break;
+                case `,`:
+                    logifiedText += indent();
+                    firstColon = true;
+                    lineEmpty = true;
+                    break;
+                case `"`:
+                    break;
+                case `:`:
+                    if (firstColon)
+                    {
+                        logifiedText += textToLogify[i];
+                        logifiedText += ` `;
+                        firstColon = false;
+                    }
+                    else
+                    {
+                        logifiedText += textToLogify[i];
+                    }
+                    break;
+                case ` `:
                     logifiedText += textToLogify[i];
-                    logifiedText += ` `;
-                    firstColon = false;
-                }
-                else
-                {
+                    break;
+                case `\t`:
                     logifiedText += textToLogify[i];
-                }
-                break;
-            case ` `:
-                logifiedText += textToLogify[i];
-                break;
-            case `\t`:
-                logifiedText += textToLogify[i];
-                break;
-            default:
-                lineEmpty = false;
-                logifiedText += textToLogify[i];
-                break;
+                    break;
+                default:
+                    lineEmpty = false;
+                    logifiedText += textToLogify[i];
+                    break;
+            }
         }
     }
 
@@ -387,10 +452,11 @@ methods.logifyText = function (textToLogify)
 };
 
 /**
- * Checks for NaN.
- *
+ * @method NotaNumber
+ * @desc Checks for NaN.
+ * @api public
  * @param {any} numberToCheck as a number of some type
- * @returns a value indicating whether or not it is NaN.
+ * @returns {boolean} a value indicating whether or not it is NaN.
  */
 methods.NotaNumber = function (numberToCheck)
 {
@@ -398,10 +464,11 @@ methods.NotaNumber = function (numberToCheck)
 };
 
 /**
- * Rounds a floating point number that represents dollars and cents to 2 decimals digits (pennies).
- *
+ * @method roundToCents
+ * @desc Rounds a floating point number that represents dollars and cents to 2 decimals digits (pennies).
+ * @api public
  * @param {float} numberToRound as a floating point value
- * @returns number rounded to dollars and cents (2 decimals place)
+ * @returns {boolean} number rounded to dollars and cents (2 decimals place)
  */
 methods.roundToCents = function (numberToRound)
 {
@@ -409,8 +476,9 @@ methods.roundToCents = function (numberToRound)
 };
 
 /**
- * Rounds a floating point number to any number of places.
- *
+ * @method roundOff
+ * @desc Rounds a floating point number to any number of places.
+ * @api public
  * @param {float} numberToRound as a floating point value
  * @param {integer} numberOfPlaces number of decimal places to round
  * @returns number rounded to dollars and cents (2 decimals place)
@@ -430,29 +498,30 @@ methods.roundOff = function (numberToRound, numberOfPlaces)
 };
 
 /**
- * isString() -- Checks the type of an Object for String.
- *
+ * @method isString
+ * @desc Checks the type of an Object for String.
+ * @api public
  * @param {object} object to be tested
- * @returns a value indicating whether or not the object is a string
+ * @returns {boolean} a value indicating whether or not the object is a string
  */
 methods.isString = function (object)
 {
     return Object.prototype.toString.call(object) === '[object String]';
 };
 
-
 /**
- * isJson() -- Checks a string for JAON data.
- *
- * @param {object} object to be tested
- * @returns a value indicating whether or not the object is a JSON string
+ * @method hasJson
+ * @desc Checks a string for embedded JSON data.
+ * @api public
+ * @param {object} object string to be tested
+ * @returns {boolean} a value indicating whether or not the object contains a JSON string
  */
-methods.isJson = function (object)
+methods.hasJson = function (object)
 {
     try
     {
         if (typeof object != 'string') return false;
-        if (object.includes(`{`)) return true;  // treat as JSON -- JSON.parse() if overkill
+        if (object.includes(`{`)) return true;  // treat as JSON -- JSON.parse() is overkill here
         return false; // *not* JSON
     }
     catch

@@ -40,10 +40,10 @@
 #
 #
 # use official "mongo" image
-FROM mongo
+FROM mongo:latest
 #
 # signature
-LABEL ${APP_NAME:-badbank}.frontend.constructor=${APP_CONSTRUCTOR:-tmcguire@mcode.com}
+LABEL ${APP_NAME:-badbank}.database.constructor=${APP_CONSTRUCTOR:-tmcguire@mcode.com}
 #
 # default all required ENVIRONMENT VARIABLES to '.env.production' values
 # these of overridden by the 'Docker-Compose.yaml' during development

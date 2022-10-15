@@ -98,7 +98,7 @@ var logSource = path.basename(__filename);
  *
  * @param {nil} no properties.
  *
- * @returns JavaScript Extension (JSX) code representing the current state of the component.
+ * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
  *
@@ -125,9 +125,9 @@ function AllData()
     {
         (async () =>
         {
-            log(`Getting all Accounts from DB...`, logSource, "Information");
-            let response = await api.allData();
-            setAccounts(response.data);
+            log(`[ALLDATA] Getting all Accounts from DB...`, logSource, `info`);
+            let data = await api.allData();
+            setAccounts(data);
 
         })();
 
@@ -141,37 +141,22 @@ function AllData()
 
         if (accounts)
         {
+            log(`[ALLDATA] Returning All Data listing...`, logSource, `info`);
+
             // remove MongoDB IDs before using in App Context
             accounts.forEach(element =>
             {
+                key++;
+
                 delete element["_id"];
+
+                // pick up the Users array, skipping "users" tag (which is not an array)
+                accountArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(element))}</li>);
             });
-
-            // Update our App Context
-            ctx.Users = accounts;
-
-            log(`Returning All Data listing...`, logSource, "Information");
-
-            for (var i in ctx)
-            {
-                if (i === "Users")
-                {
-                    for (var j in ctx[i])
-                    {
-                        if (ctx[i][j])
-                        {
-                            key++;
-
-                            // pick up the Users array, skipping "users" tag (which is not an array)
-                            accountArray.push(<li key={key} className="list-group-item">{simplifyText(JSON.stringify(ctx[i][j]))}</li>);
-                        }
-                    }
-                }
-            }
         }
         else
         {
-            log(`Awaiting Server response...`, logSource, "Warning");
+            log(`[ALLDATA] Awaiting Server response...`, logSource, `warn`);
 
             accountArray.push(<li key={key} className="list-group-item">Awaiting badbank-backend response...</li>);
         }
