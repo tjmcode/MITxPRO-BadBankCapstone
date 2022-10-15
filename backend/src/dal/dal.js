@@ -77,10 +77,10 @@ const {MongoClient} = require(`mongodb`);
 // NOTE: Build as CommonJS Module for NodeJS Version v16.7.0
 
 // include our common MicroCODE Server Library
-const mcode = require(`./mcodeServer.js`);
+const mcode = require(`../mcodeServer.js`);
 
 // load our DB Scheme and Constructors
-const model = require(`./models/account.model.js`);
+const model = require(`../models/account.model.js`);
 
 // get our current file name for logging events
 const path = require('path');
@@ -168,8 +168,8 @@ MongoClient.connect(DB_URL, {useUnifiedTopology: true}, (err, client) =>
  * @func createAccount
  * @desc Create a new Account with an initial deposit.
  * @api public
- * @param {JSON} account a JSON object representing the initial data for a new account.
- * @returns {JSON} JSON data for Account.
+ * @param {object} account an object representing the initial data for a new account.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -204,8 +204,8 @@ function createAccount(account)
  * @func deleteAccount
  * @desc Delete an existing Account. NOTE: This deletes all copies matching 'account.email' and can be used to clean-up the DB.
  * @api public
- * @param {JSON} account a JSON object representing the initial data for a new account.
- * @returns {JSON} JSON data for Account.
+ * @param {object} account a object representing the initial data for a new account.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -242,7 +242,7 @@ function deleteAccount(account)
  * @api public
  * @param {string} email User's email account - UNIQUE KEY.
  * @param {float} amount New funds for account - FLOATING POINT.
- * @returns {JSON} JSON data for Account.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -268,7 +268,7 @@ function depositFunds(email, amount)
                     {
                         mcode.log(`DAL: depositFunds - MongoDB res: ${JSON.stringify(res_update)}`, logSource, `info`);
 
-                        // return the updated RECORD, not the RESPONSE from MongoDB
+                        // return the updated RECORD, *not* the .updateOne RESPONSE from MongoDB
                         resolve(res_find);
                     })
                     .catch((exp_update) =>
@@ -299,7 +299,7 @@ function depositFunds(email, amount)
  * @api public
  * @param {string} email User's email account - UNIQUE KEY.
  * @param {float} amount Funds taken from account - FLOATING POINT.
- * @returns {JSON} JSON data for Account.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -338,7 +338,7 @@ function withdrawFunds(email, amount)
                                 {
                                     mcode.log(`DAL: withdrawFunds - MongoDB OVERDRAFT res: ${JSON.stringify(res_overdraft)}`, logSource, `info`);
 
-                                    // return the updated RECORD, not the RESPONSE from MongoDB
+                                    // return the updated RECORD, *not* the .updateOne RESPONSE from MongoDB
                                     resolve(res_find);
                                 })
                                 .catch((exp_overdraft) =>
@@ -352,7 +352,7 @@ function withdrawFunds(email, amount)
                                 });
                         }
 
-                        // return the updated RECORD, not the RESPONSE from MongoDB
+                        // return the updated RECORD, *not* the .updateOne RESPONSE from MongoDB
                         resolve(res_find);
                     })
                     .catch((exp_update) =>
@@ -382,7 +382,7 @@ function withdrawFunds(email, amount)
  * @desc Get Balance in an Account.
  * @api public
  * @param {string} email User's email account - UNIQUE KEY.
- * @returns {JSON} JSON data for Account.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -398,6 +398,8 @@ function accountBalance(email)
             .then((res_find) =>
             {
                 mcode.log(`DAL: accountBalance - MongoDB response: ${JSON.stringify(res_find)}`, logSource, `info`);
+
+                // return the current RECORD, the RESPONSE from MongoDB
                 resolve(res_find);
             })
             .catch((exp_find) =>
@@ -413,10 +415,47 @@ function accountBalance(email)
 };
 
 /**
+ * @func accountTransactions
+ * @desc Get Transactions in an Account.
+ * @api public
+ * @param {string} email User's email account - UNIQUE KEY.
+ * @returns {object} current data for Account from DB.
+ *
+ * @example
+ *
+ *      accountTransactions('pparker@mit.edu');
+ *
+ */
+function accountTransactions(email)
+{
+    return new Promise(async (resolve, reject) =>
+    {
+        db.collection('Accounts')
+            .findOne({"email": email})
+            .then((res_find) =>
+            {
+                mcode.log(`DAL: accountTransactions - MongoDB response: ${JSON.stringify(res_find)}`, logSource, `info`);
+
+                // return the current RECORD, the RESPONSE from MongoDB
+                resolve(res_find);
+            })
+            .catch((exp_find) =>
+            {
+                mcode.exp(`DAL: accountTransactions - .findOne CRASHED for email: [${email}]`, logSource, exp_find);
+                reject(exp_find);
+            })
+            .finally(() =>
+            {
+
+            });
+    });
+};
+
+/**
  * @func allAccounts
  * @desc Return all data for all Accounts.
  * @api public
- * @returns {JSON} JSON data for all Accounts.
+ * @returns {array} current data for All Account from DB as an array of objects.
  *
  * @example
  *
@@ -437,8 +476,8 @@ function allAccounts()
                 }
                 else
                 {
-                    mcode.log(`DAL: allAccounts - Get data succeeded, number = ${res_array.length}.`, logSource, `info`);
                     // debug only -- mcode.log(`DAL: allAccounts - MongoDB response: ${JSON.stringify(res_array)}`, logSource, `info`);
+                    mcode.log(`DAL: allAccounts - Get data succeeded, number = ${res_array.length}.`, logSource, `info`);
 
                     // return the RESPONSE from MongoDB which is the ARRAY of RECORDs
                     resolve(res_array);
@@ -461,7 +500,7 @@ function allAccounts()
  * @desc Return Account object if found.
  * @api public
  * @param {string} email User's email account - UNIQUE KEY.
- * @returns {JSON} JSON data for Account if present.
+ * @returns {object} current data for Account from DB.
  *
  * @example
  *
@@ -496,7 +535,7 @@ function findAccount(email)
 
 // #region  M E T H O D - E X P O R T S
 
-module.exports = {createAccount, deleteAccount, depositFunds, withdrawFunds, accountBalance, allAccounts, findAccount};
+module.exports = {createAccount, deleteAccount, depositFunds, withdrawFunds, accountBalance, accountTransactions, allAccounts, findAccount};
 
 // #endregion
 

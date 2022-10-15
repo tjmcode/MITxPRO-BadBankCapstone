@@ -81,6 +81,10 @@ const defaultValue = {
     LoggedIn: false,
     setLoggedIn: () => { },
 
+    // Value indicating whether or not the current User is Privileged.
+    Privileged: false,
+    setPrivileged: () => { },
+
     // Value representing who is currently logged in
     User: '',
     setUser: () => { },
@@ -98,6 +102,7 @@ const AppContextProvider = (props) =>
 {
     const [Version, setVersion] = useState(`Version ${process.env.REACT_APP_VERSION}`);
     const [LoggedIn, setLoggedIn] = useState(false);
+    const [Privileged, setPrivileged] = useState(false);
     const [User, setUser] = useState('');
     const [RevealUsers, setRevealUsers] = useState(false);
 
@@ -111,6 +116,9 @@ const AppContextProvider = (props) =>
 
                 LoggedIn,
                 setLoggedIn,
+
+                Privileged,
+                setPrivileged,
 
                 User,
                 setUser,

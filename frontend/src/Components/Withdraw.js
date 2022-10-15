@@ -124,6 +124,21 @@ function Withdraw()
 
     // #region  P R I V A T E   F U N C T I O N S
 
+    // useEffect to update on unexpected events
+    React.useEffect(() =>
+    {
+        if (ctx.LoggedIn)
+        {
+            // {TBD}
+        }
+        else
+        {
+            setStatus(log(`[WITHDRAW] Must be logged in to make Withdraws...`, logSource, `warn`));
+            setWithdraw(0);
+        }
+
+    }, [ctx.LoggedIn]);
+
     // field validation...
     function validate(field, label)
     {

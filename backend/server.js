@@ -58,9 +58,10 @@
  *      MODIFICATIONS:
  *      --------------
  *
- *  Date:         By-Group:   Rev:     Description:
+ *  Date:         By-Group:   Rev:    Description:
  *
- *  25-Aug-2022   TJM-MCODE  {0002}    Copied from `Fire Hydrant` project to move React App to MERN Architecture.
+ *  25-Aug-2022   TJM-MCODE  {0002}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
+ *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
  *
  *
  */
@@ -111,7 +112,7 @@ const app = express();
 var mcode = require(`./src/mcodeServer.js`);
 
 // load our Data Abstraction Layer (DAL)
-const dal = require(`./src/dal.js`);
+const dal = require(`./src/dal/dal.js`);
 
 // load our DB Scheme and Constructors
 const model = require(`./src/models/account.model.js`);
@@ -128,9 +129,10 @@ var logSource = path.basename(__filename);
         name        : "",
         email       : "",
         password    : "",
+        role        : "",
         balance     : 0.00,
         created     : "YYYY-MM-DD HH:MM:SS.mmm"
-        transaction : []
+        transaction : [ ]
     }
 
     transaction:
@@ -210,7 +212,7 @@ app.get(`/test`, function (req, res)
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get(`/account/create/:username/:email/:password/:deposit`, function (req, res)
+app.get(`/account/create/:username/:email/:password/:role/:deposit`, function (req, res)
 {
     mcode.log(`CREATE -- Creating Account for ${req.params.email}`, logSource, `info`);
 
@@ -226,7 +228,8 @@ app.get(`/account/create/:username/:email/:password/:deposit`, function (req, re
             }
             else
             {
-                let account = model.accountRecord(req.params.username, req.params.email, req.params.password, parseFloat(req.params.deposit));
+                let account = model.accountRecord(req.params.username, req.params.email, req.params.password,
+                    req.params.role, parseFloat(req.params.deposit));
 
                 dal.createAccount(account)
                     .then(() =>
@@ -420,13 +423,13 @@ app.get(`/account/withdraw/:email/:amount`, function (req, res)
 /**
  * @function api.balance() -- Return balance for specific accounts
  *
- * @returns {object} accounts JSON data object if successful
+ * @returns {object} accounts data object if successful
  */
 app.get(`/account/balance/:email`, function (req, res)
 {
     mcode.log(`BALANCE -- Returning Account Balance for ${req.params.email}`, logSource, `info`);
 
-    // returns balance in the database
+    // returns balance from the database
     dal.accountBalance(req.params.email)
         .then((res_balance) =>
         {
@@ -445,9 +448,36 @@ app.get(`/account/balance/:email`, function (req, res)
 });
 
 /**
+ * @function api.transactions() -- Return transactions for specific accounts
+ *
+ * @returns {object} accounts data object if successful
+ */
+app.get(`/account/transactions/:email`, function (req, res)
+{
+    mcode.log(`TRANSACTIONS -- Returning Account Transactions for ${req.params.email}`, logSource, `info`);
+
+    // returns transactions from the database
+    dal.accountTransactions(req.params.email)
+        .then((res_transactions) =>
+        {
+            mcode.log(`TRANSACTIONS -- Number of Account Transactions: ${res_transactions.transactions.length}`, logSource, `info`);
+            res.send(res_transactions);
+        })
+        .catch((exp_transactions) =>
+        {
+            const exp_msg = mcode.exp(`TRANSACTIONS -- dal.accountTransactions CRASHED.`, logSource, exp_transactions);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
+        });
+});
+
+/**
  * @function api.allData() -- Return data for all accounts
  *
- * @returns {object} accounts JSON data object if successful
+ * @returns {object} accounts data object if successful
  */
 app.get(`/account/all`, function (req, res)
 {

@@ -60,12 +60,15 @@
 
 // #region  I M P O R T S
 
-import React, {useState} from 'react';
+import React from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
+// include the Back-End API
+import {api} from '../api/api.js';
+
 // include our common MicroCODE Client Library
-import {log, simplifyText} from '../mcodeClient.js';
+import {log, exp, simplifyText} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -107,8 +110,8 @@ function Transactions()
     // validate PROPS input(s) if required
 
     // initialize STATE and define accessors...
-    const [transactions, setTransactions] = React.useState([]);
-    const [status, setStatus] = useState('');
+    const [transactions, setTransactions] = React.useState(0);
+    const [status, setStatus] = React.useState('');
 
     // access CONTEXT for reference...
     const ctx = React.useContext(AppContext);
@@ -122,20 +125,39 @@ function Transactions()
         {
             (async () =>
             {
-                log(`[TRANSACTIONS] Accessing Account Transactions from User...`, logSource, `info`);
-                setTransactions(ctx.User.transactions);
-                setStatus(``);
+                try
+                {
+                    // Get Account Transactions in Database
+                    api.transactions(ctx.User.email)
+                        .then((account) =>
+                        {
+                            if (!account)
+                            {
+                                setStatus(log(`[TRANSACTIONS] failed, check for an account with: ${ctx.User.email}`, logSource, `error`));
+                            }
+                            else
+                            {
+                                setTransactions(account.transactions);
+                                log(`[TRANSACTIONS] Account: ${JSON.stringify(account)}`, logSource, `warn`);
+                                log(`[TRANSACTIONS] Account Transactions succeeded - Email: ${account.email}`, logSource, `info`);
+                                setStatus(``);
+                            }
+                        });
+                }
+                catch (exception)
+                {
+                    setStatus(exp(`[TRANSACTIONS] CRASHED - User: ${ctx.User.email}`, logSource, exception));
+                }
 
             })();
         }
         else
         {
             setStatus(log(`[TRANSACTIONS] Must be logged in to get Transactions...`, logSource, `warn`));
-            setTransactions([]);
+            setTransactions(0);
         }
 
-    }, [ctx.LoggedIn, ctx.User]);
-
+    }, [ctx.LoggedIn, ctx.User.email]);
 
     // Build an HTML List of all our User Account Transactions
     function buildTransactionsList()

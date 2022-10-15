@@ -62,11 +62,12 @@
  *      MODIFICATIONS:
  *      --------------
  *
- *  Date:         By-Group:   Rev:     Description:
+ *  Date:         By-Group:   Rev:    Description:
  *
- *  24-Dec-2021   TJM-MCODE  {0001}    New module for MIT Fire Hydrant assignment.
- *  05-Mar-2022   TJM-MCODE  {0002}    Documentation updates.
- *  11-Oct-2022   TJM-MCODE  {0003}    Brought into React App version to encapsulate the API.
+ *  24-Dec-2021   TJM-MCODE  {0001}   New module for MIT Fire Hydrant assignment.
+ *  05-Mar-2022   TJM-MCODE  {0002}   Documentation updates.
+ *  11-Oct-2022   TJM-MCODE  {0003}   Brought into React App version to encapsulate the API.
+ *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
  *
  *
  */
@@ -169,6 +170,7 @@ var api = {};
  * @param {string} username user selected display name.
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
+ * @param {string} role account type.
  * @param {string} deposit initial deposit.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
@@ -177,10 +179,10 @@ var api = {};
  *    res = api.create("username", "user@company.com", "secret01", 1111.22);
  *
  */
-api.create = async (username, email, password, deposit) =>
+api.create = async (username, email, password, role, deposit) =>
 {
     var functionName = "Create Account";
-    var url = `${API_URL}/account/create/${username}/${email}/${password}/${deposit}`;
+    var url = `${API_URL}/account/create/${username}/${email}/${password}/${role}/${deposit}`;
     return getResData(functionName, url);
 };
 

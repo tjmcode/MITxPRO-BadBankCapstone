@@ -170,7 +170,11 @@ function NavBar()
                             )}
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" tooltip="Check all bank accounts" href="#/alldata/">AllData</a>
+                            {(ctx.LoggedIn && ctx.Privileged) ? (
+                                <a className="nav-link" tooltip="Check all bank accounts" href="#/alldata/" aria-disabled="true">All Data</a>
+                            ) : (
+                                <a className="nav-link disabled" tooltip="Log as BANKER to view" href="#/alldata/" aria-disabled="true">All Data</a>
+                            )}
                         </li>
                         <li className="nav-item">
                             {!ctx.LoggedIn ? (

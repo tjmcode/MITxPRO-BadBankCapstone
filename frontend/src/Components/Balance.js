@@ -60,7 +60,7 @@
 
 // #region  I M P O R T S
 
-import React, {useState} from 'react';
+import React from 'react';
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
@@ -111,8 +111,7 @@ function Balance()
 
     // initialize STATE and define accessors...
     const [balance, setBalance] = React.useState(0);
-    const [status, setStatus] = useState('');
-
+    const [status, setStatus] = React.useState('');
 
     // access CONTEXT for reference...
     const ctx = React.useContext(AppContext);
@@ -151,15 +150,14 @@ function Balance()
                 }
 
             })();
-
         }
         else
         {
-            log(`[BALANCE] Must be logged in to get Balance...`, logSource, `warn`);
+            setStatus(log(`[BALANCE] Must be logged in to get Balance...`, logSource, `warn`));
             setBalance(0);
         }
 
-    }, [ctx]);
+    }, [ctx.LoggedIn, ctx.User.email]);
 
     // #endregion
 
@@ -180,7 +178,6 @@ function Balance()
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
                         placeholder="Current balance" value={balance} /><br />
-                    <br />
                 </form>
             )}
         />

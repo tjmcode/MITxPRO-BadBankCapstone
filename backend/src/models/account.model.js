@@ -47,9 +47,10 @@
  *      MODIFICATIONS:
  *      --------------
  *
- *  Date:         By-Group:   Rev:     Description:
+ *  Date:         By-Group:   Rev:      Description:
  *
- *  03-Oct-2022   TJM-MCODE  {0001}    New module for common reusable MERN Template 'AppName'.
+ *  03-Oct-2022   TJM-MCODE  {0001}     New module for common reusable MERN Template 'AppName'.
+ *  14-Oct-2022   TJM-MCODE  {0002}     Added Roles for controlling access to ALL DATA.
  *
  *
  */
@@ -99,6 +100,9 @@ const accountSchema = new mongoose.Schema(
         balance: {
             type: Number,
         },
+        role: {
+            enum: ['BANKER', 'CUSTOMER', 'AUDITOR'],
+        },
         created: {
             type: String,
         },
@@ -125,16 +129,18 @@ const accountSchema = new mongoose.Schema(
  * @param {string} username selected by the user.
  * @param {string} email email address supplied by the user.
  * @param {string} password set by the user.
+ * @param {string} role what type of account.
  * @param {number} deposit initial deposit, or $0.00.
  * @returns {object} newly created account object with its initial transaction.
  */
-var accountRecord = function (username, email, password, deposit)
+var accountRecord = function (username, email, password, role, deposit)
 {
     let account =
     {
         username: username,
         email: email,
         password: password,
+        role: role,
         balance: parseFloat(deposit),
         created: mcode.timeStamp(),
         transactions: []

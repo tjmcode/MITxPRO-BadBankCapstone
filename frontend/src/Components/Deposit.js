@@ -125,6 +125,21 @@ function Deposit()
 
     // #region  P R I V A T E   F U N C T I O N S
 
+    // useEffect to update on unexpected events
+    React.useEffect(() =>
+    {
+        if (ctx.LoggedIn)
+        {
+            // {TBD}
+        }
+        else
+        {
+            setStatus(log(`[DEPOSIT] Must be logged in to make Deposits...`, logSource, `warn`));
+            setDeposit(0);
+        }
+
+    }, [ctx.LoggedIn]);
+
     // field validation...
     function validate(field, label)
     {

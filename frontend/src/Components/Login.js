@@ -220,6 +220,8 @@ function Login()
                         ctx.setUser(account);  // update current user
                         ctx.setLoggedIn(true);
 
+                        ctx.setPrivileged((account.role === "BANKER") || (account.role === "AUDITOR"));
+
                         log(`[LOGIN] Account contents: ${JSON.stringify(account)}`, logSource, `warn`);
                         log(`[LOGIN] Account Login succeeded - Email: ${account.email}`, logSource, `info`);
                         setStatus(``);

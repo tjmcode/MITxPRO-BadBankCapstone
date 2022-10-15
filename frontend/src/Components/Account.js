@@ -47,9 +47,10 @@
  *      MODIFICATIONS:
  *      --------------
  *
- *  Date:         By-Group:   Rev:     Description:
+ *  Date:         By-Group:   Rev:      Description:
  *
- *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the creation Bad Bank Accounts.
+ *  02-Jun-2022   TJM-MCODE  {0001}     New module implementing the creation Bad Bank Accounts.
+ *  14-Oct-2022   TJM-MCODE  {0002}     Added Roles for controlling access to ALL DATA.
  *
  *
  */
@@ -122,6 +123,7 @@ function Account()
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState('CUSTOMER');
     const [balance, setBalance] = useState(0);
 
     // access CONTEXT for reference...
@@ -158,6 +160,19 @@ function Account()
             if (field.length < MINIMUM_PASSWORD_LENGTH)
             {
                 setStatus(`Error: Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`);
+                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setSubmitDisabled('Disabled');
+                return false;
+            }
+        }
+
+        if (label === "role")
+        {
+            if ((field !== "BANKER")
+                && (field !== "CUSTOMER")
+                && (field !== "AUDITOR"))
+            {
+                setStatus(`Error: Role must be one of: BANKER, CUSTOMER, AUDITOR.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmitDisabled('Disabled');
                 return false;
@@ -202,6 +217,7 @@ function Account()
         if (!validate(username, 'username')) return false;
         if (!validate(email, 'email')) return false;
         if (!validate(password, 'password')) return false;
+        if (!validate(role, 'role')) return false;
 
         setSubmitDisabled('');
 
@@ -214,6 +230,7 @@ function Account()
         setUsername('');
         setEmail('');
         setPassword('');
+        setRole('CUSTOMER');
         setBalance('');
 
         setSubmitDisabled('Disabled');
@@ -241,7 +258,7 @@ function Account()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`[ACCOUNT] Creating new Account - name: ${username} email: ${email} password: ${password}`, logSource, `info`);
+        log(`[ACCOUNT] Creating new Account - name: ${username} email: ${email} password: ${password} role: ${role}`, logSource, `info`);
 
         if (!checkCreateFields())
         {
@@ -255,7 +272,7 @@ function Account()
         try
         {
             // Create Account in Database
-            api.create(username, email, password, balance)
+            api.create(username, email, password, role, balance)
                 .then((account) =>
                 {
                     if (!account)
@@ -289,7 +306,7 @@ function Account()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`[ACCOUNT] Deleting old Account - name: ${username} email: ${email} password: ${password}`, logSource, `info`);
+        log(`[ACCOUNT] Deleting old Account - name: ${username} email: ${email} password: ${password} role: ${role}`, logSource, `info`);
 
         if (!checkDeleteFields())
         {
@@ -377,6 +394,15 @@ function Account()
                             setSubmitDisabled('');
                             setPassword(e.currentTarget.value);
                             validate(e.currentTarget.value, 'password');
+                        }} /><br />
+
+                    Account Type<br />
+                    <input type="role" autoComplete="new-role" required={true} className="form-control" id="role"
+                        placeholder="Enter BANKER, CUSTOMER, or AUDITOR" value={role} onChange={e =>
+                        {
+                            setSubmitDisabled('');
+                            setRole(e.currentTarget.value);
+                            validate(e.currentTarget.value, 'role');
                         }} /><br />
 
                     Initial Deposit<br />
