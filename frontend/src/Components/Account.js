@@ -284,8 +284,8 @@ function Account()
                     {
                         // immediately log them in on create
                         delete account._id;  // the MongoDB ID is not part of our Client 'user'
-                        ctx.setUser(account);
                         ctx.setLoggedIn(true);
+                        ctx.setUser(account);
 
                         setStatus(log(`[ACCOUNT] Create succeeded - User: ${account.email}`, logSource, `success`));
                         setNeedInput(false);

@@ -210,7 +210,7 @@ function Login()
                 {
                     if (!account)
                     {
-                        setStatus(log(`[LOGIN] Account Login failed, check other account with: ${email}`, logSource, `error`));
+                        setStatus(log(`[LOGIN] Account Login failed, check email and password for: ${email}`, logSource, `error`));
                         setSubmit('Disabled');
                         setNeedInput(true);
                     }
