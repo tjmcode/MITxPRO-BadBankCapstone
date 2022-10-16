@@ -118,7 +118,7 @@ function Account()
     const [cleared, setCleared] = useState(false);
     const [needInput, setNeedInput] = useState(true);
     const [status, setStatus] = useState('');
-    const [submitDisabled, setSubmitDisabled] = useState('');
+    const [submit, setSubmit] = useState('');
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -138,7 +138,7 @@ function Account()
         {
             setStatus(`Error: ${label} is required`);
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             return false;
         }
 
@@ -150,7 +150,7 @@ function Account()
             {
                 setStatus(`Error: A valid email is required.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 return false;
             }
         }
@@ -161,7 +161,7 @@ function Account()
             {
                 setStatus(`Error: Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 return false;
             }
         }
@@ -174,7 +174,7 @@ function Account()
             {
                 setStatus(`Error: Role must be one of: BANKER, CUSTOMER, AUDITOR.`);
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 return false;
             }
         }
@@ -185,7 +185,7 @@ function Account()
             {
                 setStatus('Error: Opening deposit is less than minimum.');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 return false;
             }
         }
@@ -196,7 +196,7 @@ function Account()
     // validates all form fields for CREATE
     function checkCreateFields()
     {
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
 
         if (!validate(username, 'username')) return false;
         if (!validate(email, 'email')) return false;
@@ -204,7 +204,7 @@ function Account()
         if (!validate(balance, 'balance')) return false;
         if (parseInt(balance) < MINIMUM_OPENING_DEPOSIT) return false;
 
-        setSubmitDisabled('');
+        setSubmit('');
 
         return true;
     }
@@ -212,14 +212,14 @@ function Account()
     // validates all form fields for DELETE
     function checkDeleteFields()
     {
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
 
         if (!validate(username, 'username')) return false;
         if (!validate(email, 'email')) return false;
         if (!validate(password, 'password')) return false;
         if (!validate(role, 'role')) return false;
 
-        setSubmitDisabled('');
+        setSubmit('');
 
         return true;
     }
@@ -233,7 +233,7 @@ function Account()
         setRole('CUSTOMER');
         setBalance('');
 
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
     };
 
     // #endregion
@@ -296,7 +296,7 @@ function Account()
         {
             setStatus(exp(`[ACCOUNT] Create Account failed - User: ${email}`, logSource, exception));
             setNeedInput(true);
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
@@ -346,7 +346,7 @@ function Account()
         {
             setStatus(exp(`[ACCOUNT] Delete Account CRASHED - User: ${email}`, logSource, exception));
             setNeedInput(true);
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
@@ -373,7 +373,7 @@ function Account()
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="name"
                         placeholder="Enter name" value={username} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setUsername(e.currentTarget.value);
                             validate(e.currentTarget.value, 'name');
                         }} /><br />
@@ -382,7 +382,7 @@ function Account()
                     <input type="email" autoComplete="new-password" required={true} className="form-control" id="email"
                         placeholder="Enter email" value={email} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setEmail(e.currentTarget.value);
                             validate(e.currentTarget.value, 'email');
                         }} /><br />
@@ -391,7 +391,7 @@ function Account()
                     <input type="password" autoComplete="new-password" required={true} className="form-control" id="password"
                         placeholder="Enter password" value={password} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setPassword(e.currentTarget.value);
                             validate(e.currentTarget.value, 'password');
                         }} /><br />
@@ -400,7 +400,7 @@ function Account()
                     <input type="role" autoComplete="new-role" required={true} className="form-control" id="role"
                         placeholder="Enter BANKER, CUSTOMER, or AUDITOR" value={role} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setRole(e.currentTarget.value);
                             validate(e.currentTarget.value, 'role');
                         }} /><br />
@@ -409,16 +409,16 @@ function Account()
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="balance"
                         placeholder="Initial balance ($100 min.)" value={balance} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setBalance(e.currentTarget.value);
                             validate(e.currentTarget.value, 'balance');
                         }} /><br />
 
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
-                    <button type="submit" className="btn btn-light" onClick={createAccount_Click} disabled={submitDisabled}>Create</button>
+                    <button type="submit" className="btn btn-light" onClick={createAccount_Click} disabled={submit}>Create</button>
                     <> </>
-                    <button type="submit" className="btn btn-light" onClick={deleteAccount_Click} disabled={submitDisabled}>Delete</button>
+                    <button type="submit" className="btn btn-light" onClick={deleteAccount_Click} disabled={submit}>Delete</button>
                     <br />
                 </form>
             ) : (

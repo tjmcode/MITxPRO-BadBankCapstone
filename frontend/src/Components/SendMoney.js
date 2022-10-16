@@ -1,10 +1,10 @@
 // #region  H E A D E R
-// <copyright file="withdraw.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
+// <copyright file="sendMoney.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI</copyright><author>Timothy J. McGuire</author>
 // #region  P R E A M B L E
 // #region  D O C U M E N T A T I O N
 /*
- *      Title:    MicroCODE Bad Bank React Withdraw
- *      Module:   Modules (./withdraw.js)
+ *      Title:    MicroCODE Bad Bank React SendMoney
+ *      Module:   Modules (./sendMoney.js)
  *      Project:  MicroCODE Bad Bank React App
  *      Customer: Internal
  *      Creator:  MicroCODE Incorporated
@@ -23,7 +23,7 @@
  *      DESCRIPTION:
  *      ------------
  *
- *      This module implements the MicroCODE's Bad Bank React Withdraw.
+ *      This module implements the MicroCODE's Bad Bank React SendMoney.
  *
  *
  *      REFERENCES:
@@ -47,9 +47,10 @@
  *      MODIFICATIONS:
  *      --------------
  *
- *  Date:         By-Group:   Rev:     Description:
+ *  Date:         By-Group:   Rev:    Description:
  *
- *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the creation Bad Bank Withdraws.
+ *  15-Oct-2022   TJM-MCODE  {0001}   New module implementing the creation Bad Bank SendMoney.
+ *  15-Oct-2022   TJM-MCODE  {0002}   Added 'Send Money' feature.
  *
  *
  */
@@ -67,7 +68,7 @@ import BankCard from './BankCard';
 // include the Back-End API
 import {api} from '../api/api.js';
 
-// include our common MicroCODE Client Library
+// include our common MicroCODE Client Libraryey
 import {log, exp} from '../mcodeClient.js';
 
 // get our current file name for logging events
@@ -82,7 +83,7 @@ var logSource = path.basename(__filename);
 // #region  C O N S T A N T S
 
 const TIMEOUT_MSEC = 2500;
-const MINIMUM_WITHDRAW = 5;
+const MINIMUM_SENDMONEY = 10;
 
 // #endregion
 
@@ -97,17 +98,17 @@ const MINIMUM_WITHDRAW = 5;
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * @func Withdraw
- * @desc the Bad Bank Withdraw Component.
+ * @func SendMoney
+ * @desc the Bad Bank SendMoney Component.
  * @api public
  * @param {nil} no properties.
  * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  * @example
  *
- *      Withdraw();
+ *      SendMoney();
  *
  */
-function Withdraw()
+function SendMoney()
 {
     // validate PROPS input(s) if required
 
@@ -116,8 +117,8 @@ function Withdraw()
     const [needInput, setNeedInput] = React.useState(true);
     const [status, setStatus] = React.useState('');
     const [submit, setSubmit] = React.useState('');
-
-    const [withdraw, setWithdraw] = React.useState(0);
+    const [receiver, setReceiver] = React.useState('');
+    const [sendMoney, setSendMoney] = React.useState(0);
 
     // access CONTEXT for reference...
     const ctx = React.useContext(AppContext);
@@ -129,15 +130,16 @@ function Withdraw()
     {
         if (ctx.LoggedIn)
         {
-            // {TBD}
+            setSendMoney(0);
+            setReceiver(ctx.Receiver.email);
         }
         else
         {
-            setStatus(log(`[WITHDRAW] Must be logged in to make Withdraws...`, logSource, `warn`));
-            setWithdraw(0);
+            setStatus(log(`[SENDMONEY] Must be logged in to make Send Money...`, logSource, `warn`));
+            setSendMoney(0);
         }
 
-    }, [ctx.LoggedIn]);
+    }, [ctx.LoggedIn, ctx.Receiver, ctx.User]);
 
     // field validation...
     function validate(field, label)
@@ -150,11 +152,24 @@ function Withdraw()
             return false;
         }
 
-        if (label === "withdraw")
+        if (label === "email")
+        {
+            const regexEmail = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
+            if (!field.match(regexEmail))
+            {
+                setStatus(`Error: A valid email is required.`);
+                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setSubmit('Disabled');
+                return false;
+            }
+        }
+
+        if (label === "sendMoney")
         {
             if (isNaN(field))
             {
-                setStatus('Error NaN: Withdraw must be a number.');
+                setStatus('Error NaN: Send Amount must be a number.');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmit('Disabled');
                 return false;
@@ -162,15 +177,15 @@ function Withdraw()
 
             if (field < 0)
             {
-                setStatus('Error: Withdraw cannot be negative.');
+                setStatus('Error: Send Amount cannot be negative.');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmit('Disabled');
                 return false;
             }
 
-            if (field < MINIMUM_WITHDRAW)
+            if (field < MINIMUM_SENDMONEY)
             {
-                setStatus('Error: Withdraw is less than minimum.');
+                setStatus('Error: Send Amount is less than minimum.');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 setSubmit('Disabled');
                 return false;
@@ -178,7 +193,7 @@ function Withdraw()
 
             if (field > ctx.User.balance)
             {
-                setStatus('OVERDRAFT: Withdraw is more than your balance.');
+                setStatus('OVERDRAFT: Send Amountis more than your balance.');
             }
         }
 
@@ -189,8 +204,9 @@ function Withdraw()
     {
         setSubmit('Disabled');
 
-        if (!validate(withdraw, 'withdraw')) return false;
-        if (parseInt(withdraw) < MINIMUM_WITHDRAW) return false;
+        if (!validate(receiver, 'email')) return false;
+        if (!validate(sendMoney, 'sendMoney')) return false;
+        if (parseInt(sendMoney) < MINIMUM_SENDMONEY) return false;
 
         setSubmit('');
 
@@ -199,7 +215,8 @@ function Withdraw()
 
     function clearForm()
     {
-        setWithdraw('');
+        setReceiver('');
+        setSendMoney('');
 
         setSubmit('Disabled');
     };
@@ -211,7 +228,7 @@ function Withdraw()
      * *_Click() - 'on click' event handlers for UI elements.
      */
 
-    // clears the UI fields for Withdraw creation unconditionally
+    // clears the UI fields for SendMoney creation unconditionally
     function clearForm_Click(e)
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
@@ -220,38 +237,57 @@ function Withdraw()
         setNeedInput(true);
     }
 
-    // makes a User Withdraw if passed validate input fields
-    function makeWithdraw_Click(e)
+    // makes a User SendMoney if passed validate input fields
+    function makeSendMoney_Click(e)
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`[WITHDRAW] Making Account Withdraw - name: ${ctx.User.username} withdraw: ${withdraw}`, logSource, `info`);
+        log(`[SENDMONEY] Making Account SendMoney - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `info`);
 
         if (!checkFields())
         {
-            log(`[WITHDRAW] Withdraw failed checks - name: ${ctx.User.username} withdraw: ${withdraw}`, logSource, `warn`);
+            log(`[SENDMONEY] SendMoney failed checks - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `warn`);
             return;
         }
 
-        log(`[WITHDRAW] Attempting User Withdraw...`, logSource, `Waiting`);
+        log(`[SENDMONEY] Attempting User SendMoney...`, logSource, `Waiting`);
 
         try
         {
-            // Withdraw into Account in Database
-            api.withdraw(ctx.User.email, withdraw)
-                .then((account) =>
+            // SendMoney into Account in Database
+            api.sendMoney(ctx.User.email, sendMoney, receiver)
+                .then((senderAccount) =>
                 {
-                    if (!account)
+                    if (!senderAccount)
                     {
-                        setStatus(log(`Account Withdraw failed, check account for: ${ctx.User.email}`, logSource, `error`));
+                        setStatus(log(`Account SendMoney failed, check for an account with: ${ctx.User.email}`, logSource, `error`));
                         setSubmit('Disabled');
                         setNeedInput(true);
                     }
                     else
                     {
-                        delete account._id;  // the MongoDB ID is not part of our Client 'user'
-                        ctx.setUser(account);  // update .balance and .transactions
-                        log(`[WITHDRAW] Account Withdraw succeeded - Email: ${account.email}`, logSource, `info`);
+                        delete senderAccount._id;  // the MongoDB ID is not part of our Client 'user'
+                        ctx.setUser(senderAccount);  // update for .balance and .transactions
+
+                        log(`[SENDMONEY] Account SendMoney succeeded - sent to Email: ${receiver}`, logSource, `info`);
+
+                        // Get Reciever's Balance from Database (Baaaad Bank)
+                        api.balance(receiver)
+                            .then((receiverAccount) =>
+                            {
+                                if (!receiverAccount)
+                                {
+                                    setStatus(log(`[SENDMONEY] failed, check for an account with: ${receiver}`, logSource, `error`));
+                                }
+                                else
+                                {
+                                    delete receiverAccount._id;  // the MongoDB ID is not part of our Client 'user'
+                                    ctx.setReceiver(receiverAccount);  // update for .balance and .transactions
+                                    log(`[SENDMONEY] Receiver Account: ${JSON.stringify(receiverAccount)}`, logSource, `warn`);
+                                    log(`[SENDMONEY] Account Transfer succeeded - Email: ${receiverAccount.email}`, logSource, `info`);
+                                }
+                            });
+
                         setStatus(``);
                         setSubmit('Disabled');
                         setNeedInput(false);
@@ -260,13 +296,13 @@ function Withdraw()
         }
         catch (exception)
         {
-            setStatus(exp(`[WITHDRAW] Account Withdraw CRASHED - User: ${ctx.User.email}`, logSource, exception));
+            setStatus(exp(`[SENDMONEY] Account SendMoney CRASHED - User: ${ctx.User.email}`, logSource, exception));
             setNeedInput(true);
             setSubmit('Disabled');
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
 
-        if ((ctx.User.balance - withdraw) < 0)
+        if ((ctx.User.balance - sendMoney) < 0)
         {
             window.alert("You have OVERDRAWN your Account, you were charged an additional $35 fee.");
         }
@@ -287,7 +323,7 @@ function Withdraw()
     return (
         <BankCard
             bgcolor="danger"
-            header="Withdraw"
+            header="SendMoney"
             width="30rem"
             status={status}
             body={needInput ? (
@@ -296,28 +332,42 @@ function Withdraw()
                     <input type="text" readOnly={true} className="form-control" id="balance"
                         placeholder="Current balance" value={ctx.User.balance} /><br />
 
-                    Withdraw<br />
-                    <input type="input" autoComplete="new-password" required={true} className="form-control" id="withdraw"
-                        placeholder="New withdraw ($10 min.)" value={withdraw} onChange={e =>
+                    SendMoney<br />
+                    <input type="input" autoComplete="new-password" required={true} className="form-control" id="sendMoney"
+                        placeholder="New Send Amount ($10 min.)" value={sendMoney} onChange={e =>
                         {
                             setSubmit('');
-                            setWithdraw(e.currentTarget.value);
-                            validate(e.currentTarget.value, 'withdraw');
+                            setSendMoney(e.currentTarget.value);
+                            validate(e.currentTarget.value, 'sendMoney');
+                        }} /><br />
+
+                    Receiver's Email Address<br />
+                    <input type="email" autoComplete="new-password" required={true} className="form-control" id="email"
+                        placeholder="Enter email to get the money" value={receiver} onChange={e =>
+                        {
+                            setSubmit('');
+                            setReceiver(e.currentTarget.value);
+                            validate(e.currentTarget.value, 'email');
                         }} /><br />
 
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
-                    <button type="submit" className="btn btn-light" onClick={makeWithdraw_Click} disabled={submit}>Withdraw</button>
+                    <button type="submit" className="btn btn-light" onClick={makeSendMoney_Click} disabled={submit}>SendMoney</button>
                     <br />
                 </form>
             ) : (
                 <>
                     <h5>Success</h5>
                     <br />
-                    Current Balance<br />
+                    Your Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.User.balance} /><br />
-                    <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another withdraw</button>
+                        placeholder="Your balance" value={ctx.User.balance} />
+                    <br />
+                    Your Friend's Balance<br />
+                    <input type="text" readOnly={true} className="form-control" id="balance"
+                        placeholder="Their balance" value={ctx.Receiver.balance} />
+                    <br />
+                    <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another Transfer</button>
                 </>
             )}
         />
@@ -328,7 +378,7 @@ function Withdraw()
 
 // #region  C O M P O N E N T - E X P O R T S
 
-export default Withdraw;
+export default SendMoney;
 
 // #endregion
 

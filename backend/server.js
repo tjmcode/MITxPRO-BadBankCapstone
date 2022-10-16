@@ -62,6 +62,7 @@
  *
  *  25-Aug-2022   TJM-MCODE  {0002}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
+ *  15-Oct-2022   TJM-MCODE  {0002}   Added 'Send Money' feature.
  *
  *
  */
@@ -439,6 +440,97 @@ app.get(`/account/balance/:email`, function (req, res)
         .catch((exp_balance) =>
         {
             const exp_msg = mcode.exp(`BALANCE -- dal.accountBalance CRASHED.`, logSource, exp_balance);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
+        });
+});
+
+/**
+ * @function api.sendMoney() -- sendMoney money from account by email
+ *
+ * @returns {object} account object if successful
+ * @returns {string} 401 status with error message if unsucessful
+ */
+app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
+{
+    mcode.log(`SENDMONEY -- Sending Money from Account of ${req.params.email} to Account of ${req.params.receiver}`, logSource, `info`);
+    let sendersAccount = {};
+
+    // 1) Check for receiver in Bad Bank
+    // 2) Attempt Withdraw from User (allow Overdraft to make money LOL, 'Bad Bank')
+    // 3) Deposit the money in other personal Account
+
+    // 1) Check for receiver in Bad Bank
+    dal.findAccount(req.params.receiver)
+        .then((res_find) =>
+        {
+            if (!res_find)
+            {
+                const sendMoney_msg = `SENDMONEY -- Receiver doesn't have a Bad Bank Account, email: ${req.params.receiver}`;
+                mcode.log(sendMoney_msg, logSource, `error`);
+                res.status(401).json({error: sendMoney_msg});
+            }
+        })
+        .catch((exp_find) =>
+        {
+            const exp_msg = mcode.exp(`SENDMONEY -- dal.findAccount CRASHED.`, logSource, exp_find);
+            res.status(401).json({error: exp_find});
+        })
+        .finally(() =>
+        {
+
+        });
+
+    // 2) Attempt Withdraw from User (allow Overdraft to make money LOL, 'Bad Bank')
+    dal.withdrawFunds(req.params.email, req.params.amount)
+        .then((res_withdrawMoney) =>
+        {
+            if (!res_withdrawMoney)
+            {
+                const sendMoney_msg = `SENDMONEY -- User access FAILED, account does not exists for: ${req.params.email}`;
+                mcode.log(sendMoney_msg, logSource, `error`);
+                res.status(401).json({error: sendMoney_msg});
+            }
+            else
+            {
+                sendersAccount = res_withdrawMoney;  // hold to return after deposit into Receiver's
+                mcode.log(`SENDMONEY -- Successfully withdrew User funds, new balance: ${res_withdrawMoney.balance}`, logSource, `info`);
+            }
+        })
+        .catch((exp_withdrawMoney) =>
+        {
+            const exp_msg = mcode.exp(`SENDMONEY -- dal.withdrawFunds CRASHED.`, logSource, exp_withdrawMoney);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+
+        });
+
+    // 3) Deposit the money in other personal Account
+    dal.depositFunds(req.params.receiver, req.params.amount)
+        .then((res_depositMoney) =>
+        {
+            if (!res_depositMoney)
+            {
+                const deposit_msg = `SENDMONEY -- Receiver access FAILED, account does not exists for: ${req.params.receiver}`;
+                mcode.log(deposit_msg, logSource, `error`);
+                res.status(401).json({error: deposit_msg});
+            }
+            else
+            {
+                mcode.log(`SENDMONEY -- Successfully deposited User funds, new balance: ${res_depositMoney.balance}`, logSource, `info`);
+
+                // final response to API -- Sender's Account
+                res.send(sendersAccount);
+            }
+        })
+        .catch((exp_depositMoney) =>
+        {
+            const exp_msg = mcode.exp(`SENDMONEY -- dal.depositFunds CRASHED.`, logSource, exp_depositMoney);
             res.status(401).json({error: exp_msg});
         })
         .finally(() =>

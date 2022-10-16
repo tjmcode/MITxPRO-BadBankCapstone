@@ -48,6 +48,9 @@
  *  Date:         By-Group:   Rev:     Description:
  *
  *  03-Jun-2022   TJM-MCODE  {0001}    New module implementing the Bad Bank App Entry.
+ *  15-Oct-2022   TJM-MCODE  {0002}    Added 'Send Money' feature.
+ *
+ *
  *
  *
  */
@@ -71,6 +74,7 @@ import Balance from './Components/Balance';
 import Deposit from './Components/Deposit';
 import Home from './Components/Home';
 import Login from './Components/Login';
+import SendMoney from './Components/SendMoney';
 import Transactions from './Components/Transactions';
 import Withdraw from './Components/Withdraw';
 
@@ -167,6 +171,7 @@ function App()
                         <Route path="/Deposit/" element={<Deposit />}></Route>
                         <Route path="/Withdraw/" element={<Withdraw />}></Route>
                         <Route path="/Balance/" element={<Balance />}></Route>
+                        <Route path="/SendMoney/" element={<SendMoney />}></Route>
                         <Route path="/Transactions/" element={<Transactions />}></Route>
                         <Route path="/AllData/" element={<AllData />}></Route>
                     </Routes>

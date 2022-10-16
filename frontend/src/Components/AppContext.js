@@ -49,6 +49,7 @@
  *  Date:         By-Group:   Rev:     Description:
  *
  *  02-Jun-2022   TJM-MCODE  {0001}    New module for Bad Bank as a React App.
+ *  15-Oct-2022   TJM-MCODE  {0002}    Added 'Send Money' feature -- added 'Receiver' to Context.
  *
  *
  */
@@ -89,6 +90,10 @@ const defaultValue = {
     User: '',
     setUser: () => { },
 
+    // Value representing who is currently receiving money ('Send Money' feature) in
+    Receiver: '',
+    setReceiver: () => { },
+
     // Value indicating whether or not anyone can see all other Users
     RevealUsers: false,
     setRevealUsers: () => { },
@@ -104,6 +109,7 @@ const AppContextProvider = (props) =>
     const [LoggedIn, setLoggedIn] = useState(false);
     const [Privileged, setPrivileged] = useState(false);
     const [User, setUser] = useState('');
+    const [Receiver, setReceiver] = useState('');
     const [RevealUsers, setRevealUsers] = useState(false);
 
     return (
@@ -122,6 +128,9 @@ const AppContextProvider = (props) =>
 
                 User,
                 setUser,
+
+                Receiver,
+                setReceiver,
 
                 RevealUsers,
                 setRevealUsers,

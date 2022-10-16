@@ -48,6 +48,7 @@
  *  Date:         By-Group:   Rev:     Description:
  *
  *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the Bad Bank Nav Bar.
+ *  15-Oct-2022   TJM-MCODE  {0002}    Added 'Send Money' feature.
  *
  *
  */
@@ -160,6 +161,13 @@ function NavBar()
                                 <a className="nav-link disabled" tooltip="Log in to check balance" href="#/balance/" aria-disabled="true">Balance</a>
                             ) : (
                                 <a className="nav-link" tooltip="Check Balance in your account" href="#/balance/" aria-disabled="true">Balance</a>
+                            )}
+                        </li>
+                        <li className="nav-item">
+                            {!ctx.LoggedIn ? (
+                                <a className="nav-link disabled" tooltip="Log in to send money" href="#/sendMoney/" aria-disabled="true">Send Money</a>
+                            ) : (
+                                <a className="nav-link" tooltip="Send money to another user" href="#/sendMoney/" aria-disabled="true">Send Money</a>
                             )}
                         </li>
                         <li className="nav-item">

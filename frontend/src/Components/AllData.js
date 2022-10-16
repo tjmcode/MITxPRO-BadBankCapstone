@@ -187,7 +187,7 @@ function AllData()
     return (
         <BankCard
             bgcolor="warning"
-            header="All Account Data"
+            header="All Accounts"
             width="60rem"
             body={needInput ? (
                 <form>
@@ -199,7 +199,7 @@ function AllData()
                 </form>
             ) : (
                 <>
-                    <h5>All Account Data</h5>
+                    <h5>All Account Configuration and Transactions</h5>
                     <br />
                     <ul className="list-group">
                         {/* the rest of the list is built from the Account array returned from the Back-End */}

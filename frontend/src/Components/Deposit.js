@@ -116,7 +116,7 @@ function Deposit()
     const [cleared, setCleared] = React.useState(false);
     const [needInput, setNeedInput] = React.useState(true);
     const [status, setStatus] = React.useState('');
-    const [submitDisabled, setSubmitDisabled] = React.useState('');
+    const [submit, setSubmit] = React.useState('');
 
     const [deposit, setDeposit] = React.useState(0);
 
@@ -147,7 +147,7 @@ function Deposit()
         {
             setStatus(`Error: ${label} is required`);
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             return false;
         }
 
@@ -157,7 +157,7 @@ function Deposit()
             if (isNaN(field))
             {
                 setStatus('Error NaN: Deposit must be a number.');
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
@@ -165,7 +165,7 @@ function Deposit()
             if (field < 0)
             {
                 setStatus('Error: Deposit cannot be negative.');
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
@@ -173,7 +173,7 @@ function Deposit()
             if (field < MINIMUM_DEPOSIT)
             {
                 setStatus('Error: Deposit is less than minimum.');
-                setSubmitDisabled('Disabled');
+                setSubmit('Disabled');
                 setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
@@ -184,12 +184,12 @@ function Deposit()
 
     function checkFields()
     {
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
 
         if (!validate(deposit, 'deposit')) return false;
         if (parseInt(deposit) < MINIMUM_DEPOSIT) return false;
 
-        setSubmitDisabled('');
+        setSubmit('');
 
         return true;
     }
@@ -197,7 +197,7 @@ function Deposit()
     function clearForm()
     {
         setDeposit('');
-        setSubmitDisabled('Disabled');
+        setSubmit('Disabled');
         setNeedInput(true);
     };
 
@@ -241,15 +241,16 @@ function Deposit()
                     if (!account)
                     {
                         setStatus(log(`Account Deposit failed, check account for: ${ctx.User.email}`, logSource, `error`));
-                        setSubmitDisabled('Disabled');
+                        setSubmit('Disabled');
                         setNeedInput(true);
                     }
                     else
                     {
+                        delete account._id;  // the MongoDB ID is not part of our Client 'user'
                         ctx.setUser(account);  // update .balance and .transactions
                         log(`[DEPOSIT] Account Deposit succeeded - Email: ${account.email}`, logSource, `info`);
                         setStatus(``);
-                        setSubmitDisabled('Disabled');
+                        setSubmit('Disabled');
                         setNeedInput(false);
                     }
                 });
@@ -257,7 +258,7 @@ function Deposit()
         catch (exception)
         {
             setStatus(exp(`[DEPOSIT] Account Deposit CRASHED - User: ${ctx.User.email}`, logSource, exception));
-            setSubmitDisabled('Disabled');
+            setSubmit('Disabled');
             setNeedInput(true);
             setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
@@ -289,14 +290,14 @@ function Deposit()
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="deposit"
                         placeholder="New deposit ($10 min.)" value={deposit} onChange={e =>
                         {
-                            setSubmitDisabled('');
+                            setSubmit('');
                             setDeposit(e.currentTarget.value);
                             validate(e.currentTarget.value, 'deposit');
                         }} /><br />
 
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
-                    <button type="submit" className="btn btn-light" onClick={makeDeposit_Click} disabled={submitDisabled}>Deposit</button>
+                    <button type="submit" className="btn btn-light" onClick={makeDeposit_Click} disabled={submit}>Deposit</button>
                     <br />
                 </form>
             ) : (

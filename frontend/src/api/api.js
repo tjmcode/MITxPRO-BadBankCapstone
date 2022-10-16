@@ -68,6 +68,7 @@
  *  05-Mar-2022   TJM-MCODE  {0002}   Documentation updates.
  *  11-Oct-2022   TJM-MCODE  {0003}   Brought into React App version to encapsulate the API.
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
+ *  15-Oct-2022   TJM-MCODE  {0002}   Added 'Send Money' feature.
  *
  *
  */
@@ -136,6 +137,7 @@ const getResData = async (functionName, url) =>
     let res = {};
     try
     {
+        // the one line of code that references 'AXIOS'
         res = await axios.get(url);
 
         if (res.status === RES_SUCCESS)
@@ -301,6 +303,26 @@ api.balance = async (email) =>
 {
     var functionName = "View Balance";
     var url = `${API_URL}/account/balance/${email}`;
+    return getResData(functionName, url);
+};
+
+/**
+ * @func sendMoney
+ * @desc SEND MONEY to another Bad Bank user from Back-End.
+ * @api public
+ * @param {string} email user's email - UNIQUE ACCOUNT KEY.
+ * @param {string} withdraw withdraw amount.
+ * @param {string} receiver payee's email - UNIQUE ACCOUNT KEY.
+ * @returns {object} the Backend Response DATA only as an JavaScript value.
+ *
+ * @example
+ *
+ *    res = api.create("username", "user@company.com", "secret01", 1111.22);
+ */
+api.sendMoney = async (email, withdraw, receiver) =>
+{
+    var functionName = "Send Money";
+    var url = `${API_URL}/account/sendMoney/${email}/${withdraw}/${receiver}`;
     return getResData(functionName, url);
 };
 
