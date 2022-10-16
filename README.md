@@ -129,7 +129,7 @@ Contributors names and contact info
 ## Future Development
 
 * 0.6
-    * Correct NavBar nor re-rendering on Context changes.
+    * Correct issue with 'Send Money' if attempted during first session during Account creation.
 
 
 ## License
