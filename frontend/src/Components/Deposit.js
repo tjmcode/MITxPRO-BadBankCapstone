@@ -81,7 +81,6 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 2500;
 const MINIMUM_DEPOSIT = 10;
 
 // #endregion
@@ -145,36 +144,31 @@ function Deposit()
     {
         if (!field)
         {
-            setStatus(`Error: ${label} is required`);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+            setStatus(`warn: A ${label} is required`);
             setSubmit('Disabled');
             return false;
         }
 
         if (label === "deposit")
         {
-
             if (isNaN(field))
             {
-                setStatus('Error NaN: Deposit must be a number.');
+                setStatus(`warn: NaN - Deposit must be a number.`);
                 setSubmit('Disabled');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
 
             if (field < 0)
             {
-                setStatus('Error: Deposit cannot be negative.');
+                setStatus(`warn: Deposit cannot be negative.`);
                 setSubmit('Disabled');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
 
             if (field < MINIMUM_DEPOSIT)
             {
-                setStatus('Error: Deposit is less than minimum.');
+                setStatus(`warn: Deposit is less than minimum.`);
                 setSubmit('Disabled');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
                 return false;
             }
         }
@@ -190,6 +184,7 @@ function Deposit()
         if (parseInt(deposit) < MINIMUM_DEPOSIT) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -260,7 +255,6 @@ function Deposit()
             setStatus(exp(`[DEPOSIT] Account Deposit CRASHED - User: ${ctx.User.email}`, logSource, exception));
             setSubmit('Disabled');
             setNeedInput(true);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
 
@@ -291,6 +285,7 @@ function Deposit()
                         placeholder="New deposit ($10 min.)" value={deposit} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setDeposit(e.currentTarget.value);
                             validate(e.currentTarget.value, 'deposit');
                         }} /><br />

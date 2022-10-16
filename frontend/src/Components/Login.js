@@ -79,8 +79,6 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 2500;
-
 // #endregion
 
 // #region  P R I V A T E   F I E L D S
@@ -127,8 +125,7 @@ function Login()
     {
         if (!field)
         {
-            setStatus(`Error: ${label} is required`);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+            setStatus(`error: A ${label} is required`);
             setSubmit('Disabled');
             return false;
         }
@@ -139,8 +136,7 @@ function Login()
 
             if (!field.match(regexEmail))
             {
-                setStatus(`Error: A valid email is required.`);
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`error: A valid email is required.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -158,6 +154,7 @@ function Login()
         if (!validate(password, 'password')) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -235,7 +232,6 @@ function Login()
             setStatus(exp(`[LOGIN] Login to Account CRASHED.`, logSource, exception));
             setSubmit('Disabled');
             setNeedInput(true);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
 
@@ -278,6 +274,7 @@ function Login()
                         placeholder="Enter email" value={email} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setEmail(e.currentTarget.value);
                             validate(e.currentTarget.value, 'email');
                         }} /><br />
@@ -287,6 +284,7 @@ function Login()
                         placeholder="Enter password" value={password} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setPassword(e.currentTarget.value);
                             validate(e.currentTarget.value, 'password');
                         }} /><br />

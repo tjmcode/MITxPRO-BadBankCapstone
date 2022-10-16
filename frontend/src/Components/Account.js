@@ -82,7 +82,6 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 2500;
 const MINIMUM_PASSWORD_LENGTH = 8;
 const MINIMUM_OPENING_DEPOSIT = 100;
 
@@ -136,8 +135,7 @@ function Account()
     {
         if (!field)
         {
-            setStatus(`Error: ${label} is required`);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+            setStatus(`warn: A ${label} is required`);
             setSubmit('Disabled');
             return false;
         }
@@ -148,8 +146,7 @@ function Account()
 
             if (!field.match(regexEmail))
             {
-                setStatus(`Error: A valid email is required.`);
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: A valid email is required.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -159,8 +156,7 @@ function Account()
         {
             if (field.length < MINIMUM_PASSWORD_LENGTH)
             {
-                setStatus(`Error: Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`);
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -172,8 +168,7 @@ function Account()
                 && (field !== "CUSTOMER")
                 && (field !== "AUDITOR"))
             {
-                setStatus(`Error: Role must be one of: BANKER, CUSTOMER, AUDITOR.`);
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`error: Role must be one of: BANKER, CUSTOMER, AUDITOR.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -183,8 +178,7 @@ function Account()
         {
             if (field < MINIMUM_OPENING_DEPOSIT)
             {
-                setStatus('Error: Opening deposit is less than minimum.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Opening deposit is less than minimum.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -205,6 +199,7 @@ function Account()
         if (parseInt(balance) < MINIMUM_OPENING_DEPOSIT) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -220,6 +215,7 @@ function Account()
         if (!validate(role, 'role')) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -298,7 +294,6 @@ function Account()
             setStatus(exp(`[ACCOUNT] Create Account failed - User: ${email}`, logSource, exception));
             setNeedInput(true);
             setSubmit('Disabled');
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
 
@@ -348,7 +343,6 @@ function Account()
             setStatus(exp(`[ACCOUNT] Delete Account CRASHED - User: ${email}`, logSource, exception));
             setNeedInput(true);
             setSubmit('Disabled');
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
     }
 
@@ -375,6 +369,7 @@ function Account()
                         placeholder="Enter name" value={username} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setUsername(e.currentTarget.value);
                             validate(e.currentTarget.value, 'name');
                         }} /><br />
@@ -384,6 +379,7 @@ function Account()
                         placeholder="Enter email" value={email} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setEmail(e.currentTarget.value);
                             validate(e.currentTarget.value, 'email');
                         }} /><br />
@@ -393,6 +389,7 @@ function Account()
                         placeholder="Enter password" value={password} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setPassword(e.currentTarget.value);
                             validate(e.currentTarget.value, 'password');
                         }} /><br />
@@ -411,6 +408,7 @@ function Account()
                         placeholder="Initial balance ($100 min.)" value={balance} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setBalance(e.currentTarget.value);
                             validate(e.currentTarget.value, 'balance');
                         }} /><br />

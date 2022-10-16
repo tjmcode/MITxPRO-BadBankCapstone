@@ -81,7 +81,6 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 2500;
 const MINIMUM_WITHDRAW = 5;
 
 // #endregion
@@ -144,8 +143,7 @@ function Withdraw()
     {
         if (!field)
         {
-            setStatus(`Error: ${label} is required`);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+            setStatus(`warn: A ${label} is required`);
             setSubmit('Disabled');
             return false;
         }
@@ -154,31 +152,28 @@ function Withdraw()
         {
             if (isNaN(field))
             {
-                setStatus('Error NaN: Withdraw must be a number.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: NaN - Withdraw must be a number.`);
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field < 0)
             {
-                setStatus('Error: Withdraw cannot be negative.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Withdraw cannot be negative.`);
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field < MINIMUM_WITHDRAW)
             {
-                setStatus('Error: Withdraw is less than minimum.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Withdraw is less than minimum.`);
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field > ctx.User.balance)
             {
-                setStatus('OVERDRAFT: Withdraw is more than your balance.');
+                setStatus(`error: OVERDRAFT Withdraw is more than your balance.`);
             }
         }
 
@@ -193,6 +188,7 @@ function Withdraw()
         if (parseInt(withdraw) < MINIMUM_WITHDRAW) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -263,7 +259,6 @@ function Withdraw()
             setStatus(exp(`[WITHDRAW] Account Withdraw CRASHED - User: ${ctx.User.email}`, logSource, exception));
             setNeedInput(true);
             setSubmit('Disabled');
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
 
         if ((ctx.User.balance - withdraw) < 0)
@@ -301,6 +296,7 @@ function Withdraw()
                         placeholder="New withdraw ($10 min.)" value={withdraw} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setWithdraw(e.currentTarget.value);
                             validate(e.currentTarget.value, 'withdraw');
                         }} /><br />

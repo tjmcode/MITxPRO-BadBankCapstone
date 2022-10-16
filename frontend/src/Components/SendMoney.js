@@ -82,7 +82,6 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-const TIMEOUT_MSEC = 2500;
 const MINIMUM_SENDMONEY = 10;
 
 // #endregion
@@ -146,8 +145,7 @@ function SendMoney()
     {
         if (!field)
         {
-            setStatus(`Error: ${label} is required`);
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+            setStatus(`warn: A ${label} is required`);
             setSubmit('Disabled');
             return false;
         }
@@ -158,8 +156,7 @@ function SendMoney()
 
             if (!field.match(regexEmail))
             {
-                setStatus(`Error: A valid email is required.`);
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: A valid email is required.`);
                 setSubmit('Disabled');
                 return false;
             }
@@ -169,31 +166,28 @@ function SendMoney()
         {
             if (isNaN(field))
             {
-                setStatus('Error NaN: Send Amount must be a number.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus('warn: NaN - Send Amount must be a number.');
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field < 0)
             {
-                setStatus('Error: Send Amount cannot be negative.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Send Amount cannot be negative.`);
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field < MINIMUM_SENDMONEY)
             {
-                setStatus('Error: Send Amount is less than minimum.');
-                setTimeout(() => setStatus(''), TIMEOUT_MSEC);
+                setStatus(`warn: Send Amount is less than minimum.`);
                 setSubmit('Disabled');
                 return false;
             }
 
             if (field > ctx.User.balance)
             {
-                setStatus('OVERDRAFT: Send Amountis more than your balance.');
+                setStatus('error: OVERDRAFT Send Amount is more than your balance.');
             }
         }
 
@@ -209,6 +203,7 @@ function SendMoney()
         if (parseInt(sendMoney) < MINIMUM_SENDMONEY) return false;
 
         setSubmit('');
+        setStatus('');
 
         return true;
     }
@@ -299,7 +294,6 @@ function SendMoney()
             setStatus(exp(`[SENDMONEY] Account SendMoney CRASHED - User: ${ctx.User.email}`, logSource, exception));
             setNeedInput(true);
             setSubmit('Disabled');
-            setTimeout(() => setStatus(''), TIMEOUT_MSEC);
         }
 
         if ((ctx.User.balance - sendMoney) < 0)
@@ -337,6 +331,7 @@ function SendMoney()
                         placeholder="New Send Amount ($10 min.)" value={sendMoney} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setSendMoney(e.currentTarget.value);
                             validate(e.currentTarget.value, 'sendMoney');
                         }} /><br />
@@ -346,6 +341,7 @@ function SendMoney()
                         placeholder="Enter email to get the money" value={receiver} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setReceiver(e.currentTarget.value);
                             validate(e.currentTarget.value, 'email');
                         }} /><br />

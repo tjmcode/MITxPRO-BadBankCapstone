@@ -72,6 +72,8 @@ import React from 'react';
 
 // #region  P R I V A T E   F I E L D S
 
+let statusDisplayed = ``;
+
 // #endregion
 
 // #region  E N U M E R A T I O N S
@@ -113,12 +115,13 @@ function BankCard(props)
     }
 
     /*
-     * bootstrapSuccess() - builds a Bootstrap Card Class name from success display.
+     * bootstrapSuccess() - builds a Bootstrap Card Class name from info display.
      */
-    function bootstrapSuccess()
+    function bootstrapInfo()
     {
-        const bg = ' bg-success';
-        const txt = ' text-white';
+        statusDisplayed = props.status.replace(`info: `, ``);
+        const bg = ' border-primary';
+        const txt = '';  // the 'border-' cards pick text color
         return 'card mb-3 ' + bg + txt;
     }
 
@@ -127,20 +130,45 @@ function BankCard(props)
      */
     function bootstrapWarn()
     {
-        const bg = ' bg-warning';
-        const txt = ' text-black';
+        statusDisplayed = props.status.replace(`warn: `, ``);
+        const bg = ' border-warning';
+        const txt = '';  // the 'border-' cards pick text color
         return 'card mb-3 ' + bg + txt;
     }
 
     /*
      * bootstrapDanger() - builds a Bootstrap Card Class name from error display.
      */
-    function bootstrapDanger()
+    function bootstrapError()
     {
+        statusDisplayed = props.status.replace(`error: `, ``);
+        const bg = ' border-danger';
+        const txt = '';  // the 'border-' cards pick text color
+        return 'card mb-3 ' + bg + txt;
+    }
+
+    /*
+     * bootstrapSuccess() - builds a Bootstrap Card Class name from exception display.
+     */
+    function bootstrapFatal()
+    {
+        statusDisplayed = props.status.replace(`fatal: `, ``);
         const bg = ' bg-danger';
         const txt = ' text-white';
         return 'card mb-3 ' + bg + txt;
     }
+
+    /*
+     * bootstrapSuccess() - builds a Bootstrap Card Class name from success display.
+     */
+    function bootstrapSuccess()
+    {
+        statusDisplayed = props.status.replace(`success: `, ``);
+        const bg = ' border-success';
+        const txt = '';  // the 'border-' cards pick text color
+        return 'card mb-3 ' + bg + txt;
+    }
+
     // #endregion
 
     // #region  E V E N T   H A N D L E R S
@@ -163,25 +191,39 @@ function BankCard(props)
                     {props.body}
                 </div>
             </div>
-            {props.status && props.status.includes("success") && (
-                <div className={bootstrapSuccess()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b><h4>Confirmation</h4></b></div>
-                    <div className="card-body">
-                        <div id='status'>{props.status}</div>
+            {props.status && props.status.includes("info") && (
+                <div className={bootstrapInfo()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b>Infirmation</b></div>
+                    <div className="card-body text-primary">
+                        <div id='status'>{statusDisplayed}</div>
                     </div>
                 </div>)}
             {props.status && props.status.includes("warn") && (
                 <div className={bootstrapWarn()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b><h4>Warning</h4></b></div>
-                    <div className="card-body">
-                        <div id='status'>{props.status}</div>
+                    <div className="card-header"><b>Warning</b></div>
+                    <div className="card-body text-warning">
+                        <div id='status'>{statusDisplayed}</div>
                     </div>
                 </div>)}
             {props.status && props.status.includes("error") && (
-                <div className={bootstrapDanger()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b><h4>Error</h4></b></div>
-                    <div className="card-body">
-                        <div id='status'>{props.status}</div>
+                <div className={bootstrapError()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b>Error</b></div>
+                    <div className="card-body text-danger">
+                        <div id='status'>{statusDisplayed}</div>
+                    </div>
+                </div>)}
+            {props.status && props.status.includes("fatal") && (
+                <div className={bootstrapFatal()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b>Exception</b></div>
+                    <div className="card-body text-white">
+                        <div id='status'>{statusDisplayed}</div>
+                    </div>
+                </div>)}
+            {props.status && props.status.includes("success") && (
+                <div className={bootstrapSuccess()} style={{maxWidth: props.width}}>
+                    <div className="card-header"><b>Confirmation</b></div>
+                    <div className="card-body text-success">
+                        <div id='status'>{statusDisplayed}</div>
                     </div>
                 </div>)}
         </>
