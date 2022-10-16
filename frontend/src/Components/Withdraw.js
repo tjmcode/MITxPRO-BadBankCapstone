@@ -68,7 +68,7 @@ import BankCard from './BankCard';
 import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Library
-import {log, exp} from '../mcodeClient.js';
+import {log, exp, toCurrency} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -143,7 +143,7 @@ function Withdraw()
     {
         if (!field)
         {
-            setStatus(`warn: A ${label} is required`);
+            setStatus(`warn: A ${label} is required.`);
             setSubmit('Disabled');
             return false;
         }
@@ -247,7 +247,7 @@ function Withdraw()
                     {
                         delete account._id;  // the MongoDB ID is not part of our Client 'user'
                         ctx.setUser(account);  // update .balance and .transactions
-                        log(`[WITHDRAW] Account Withdraw succeeded - Email: ${account.email}`, logSource, `info`);
+                        log(`[WITHDRAW] Account Withdraw succeeded - Email: ${account.email}`, logSource, `success`);
                         setStatus(``);
                         setSubmit('Disabled');
                         setNeedInput(false);
@@ -289,7 +289,7 @@ function Withdraw()
                 <form>
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.User.balance} /><br />
+                        placeholder="Current balance" value={toCurrency(ctx.User.balance)} /><br />
 
                     Withdraw<br />
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="withdraw"
@@ -312,7 +312,7 @@ function Withdraw()
                     <br />
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.User.balance} /><br />
+                        placeholder="Current balance" value={toCurrency(ctx.User.balance)} /><br />
                     <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another withdraw</button>
                 </>
             )}

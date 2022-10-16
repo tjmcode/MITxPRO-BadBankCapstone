@@ -139,7 +139,7 @@ function Transactions()
                             {
                                 setTransactions(account.transactions);
                                 log(`[TRANSACTIONS] Account: ${JSON.stringify(account)}`, logSource, `warn`);
-                                log(`[TRANSACTIONS] Account Transactions succeeded - Email: ${account.email}`, logSource, `info`);
+                                log(`[TRANSACTIONS] Account Transactions succeeded - Email: ${account.email}`, logSource, `success`);
                                 setStatus(``);
                             }
                         });

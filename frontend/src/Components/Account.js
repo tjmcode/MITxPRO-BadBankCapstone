@@ -135,7 +135,7 @@ function Account()
     {
         if (!field)
         {
-            setStatus(`warn: A ${label} is required`);
+            setStatus(`warn: A ${label} is required.`);
             setSubmit('Disabled');
             return false;
         }
@@ -405,7 +405,7 @@ function Account()
                         }} /><br />
 
                     Initial Deposit<br />
-                    <input type="input" autoComplete="new-password" required={true} className="form-control" id="balance"
+                    <input type="input" autoComplete="new-deposit" required={true} className="form-control" id="balance"
                         placeholder="Initial balance ($100 min.)" value={balance} onChange={e =>
                         {
                             setSubmit('');

@@ -58,6 +58,7 @@
  *  04-May-0222   TJM-MCODE  {0003}    Corrected `month` in timeStamp.
  *  03-Oct-2022   TJM-MCODE  {0004}    Added `log()` to simplify console logging of app events.
  *  03-Oct-2022   TJM-MCODE  {0005}    Added use of `vt` for colorizing Console Log entries.
+ *  16-Oct-2022   TJM-MCODE  {0006}    Added 'success' as a severity.
  *
  *
  *
@@ -165,11 +166,14 @@ var vt =
     gray: "\x1b[38;5;255m",  // `Set Foreground Color` -- 5; means 256 Color Code follows
 
     // custom event colors
-    info: "\x1b[36m",  // cyan
-    warn: "\x1b[33m",  // yellow
     errr: "\x1b[31m",  // red
+    good: "\x1b[32m",  // green
+    warn: "\x1b[33m",  // yellow
+    cold: "\x1b[34m",  // blue
     dead: "\x1b[35m",  // magenta
+    info: "\x1b[36m",  // cyan
     hmmm: "\x1b[37m",  // white
+    uggh: "\x1b[38m",  // crimson
 };
 
 // #endregion
@@ -180,7 +184,7 @@ var vt =
  * @func log
  * @desc Logs App Events to the Console in a standardized format.
  *
- * Example from our other Apps:
+ * Example from our other MicroCODE Apps:
  ++
    Message: `Station SYNCHRONIZED to new Job from TRACKING IMAGE`
 
@@ -196,8 +200,8 @@ var vt =
  * @api public
  * @param {string} message pre-formatted message to be logged.
  * @param {string} source where the message orginated.
- * @param {string} severity Event.Severity: 'info', 'warn', 'error', and 'fatal'.
- * @returns  {String} "<severiy>: <message>".
+ * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'fatal', and 'success'.
+ * @returns  {String} "<severiy>: <message>" for display in UI.
  *
  */
 function log(message, source, severity)
@@ -229,6 +233,9 @@ function log(message, source, severity)
         case `fatal`:
             console.log(vt.dead + `✖ ｢mcode｣:'${logifiedMessage}'`);
             break;
+        case `success`:
+            console.log(vt.good + `✓ ｢mcode｣:'${logifiedMessage}'`);
+            break;
         default:
             console.log(vt.hmmm + `❔ ｢mcode｣:'${logifiedMessage}'`);
             break;
@@ -251,7 +258,7 @@ function log(message, source, severity)
  * @param {string} message pre-formatted message to be logged.
  * @param {string} source where the message orginated.
  * @param {string} exception the underlying exception message that was caught.
- * @returns  {String} "message: <message> - exception: <exception>".
+ * @returns  {String} "message: <message> - exception: <exception>" for display in UI.
  *
  */
 function exp(message, source, exception)
@@ -542,11 +549,71 @@ function hasJson(object)
     }
 };
 
+/**
+ * @func NotaNumber
+ * @desc Checks for NaN.
+ * @api public
+ * @param {any} numberToCheck as a number of some type
+ * @returns {boolean} a value indicating whether or not it is NaN.
+ */
+function NotaNumber(numberToCheck)
+{
+    // NOTE: this compare will fail for NaN
+    // eslint-disable-next-line no-self-compare
+    return (numberToCheck !== numberToCheck);
+};
+
+/**
+ * @func roundToCents
+ * @desc Rounds a floating point number that represents dollars and cents to 2 decimals digits (pennies).
+ * @api public
+ * @param {number} numberToRound as a floating point value
+ * @returns {number} number rounded to dollars and cents (2 decimals place)
+ */
+function roundToCents(numberToRound)
+{
+    return roundOff(numberToRound, 2);
+};
+
+/**
+ * @func roundOff
+ * @desc Rounds a floating point number to any number of places.
+ * @api public
+ * @param {number} numberToRound as a floating point value
+ * @param {number} numberOfPlaces number of decimal places to round
+ * @returns {number} number rounded to dollars and cents (2 decimals place)
+ */
+function roundOff(numberToRound, numberOfPlaces)
+{
+    // if NaN reset to ZERO
+    if (NotaNumber(numberToRound))
+    {
+        return 0.00;
+    }
+    else
+    {
+        const roundingFactor = Math.pow(10, numberOfPlaces);
+        return Math.round(numberToRound * roundingFactor) / roundingFactor;
+    }
+};
+
+/**
+ * @func toCurrency
+ * @desc Rounds a floating point number to any number of places.
+ * @api public
+ * @param {number} numberToDisplay as a floating point value
+ * @returns {string} number rounded to dollars and cents (2 decimals place)
+ */
+function toCurrency(numberToDisplay)
+{
+    return `$${roundToCents(numberToDisplay)}`;
+};
+
 // #endregion
 
 // #region  F U N C T I O N - E X P O R T S
 
-export {log, exp, timeStamp, simplifyText, listifyArrayHTML, listifyArrayJSX, isString, hasJson};
+export {log, exp, timeStamp, simplifyText, listifyArrayHTML, listifyArrayJSX, isString, hasJson, toCurrency};
 
 // #endregion
 

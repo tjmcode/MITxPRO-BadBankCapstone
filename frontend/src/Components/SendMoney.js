@@ -69,7 +69,7 @@ import BankCard from './BankCard';
 import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Libraryey
-import {log, exp} from '../mcodeClient.js';
+import {log, exp, toCurrency} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -145,7 +145,7 @@ function SendMoney()
     {
         if (!field)
         {
-            setStatus(`warn: A ${label} is required`);
+            setStatus(`warn: A ${label} is required.`);
             setSubmit('Disabled');
             return false;
         }
@@ -264,7 +264,7 @@ function SendMoney()
                         delete senderAccount._id;  // the MongoDB ID is not part of our Client 'user'
                         ctx.setUser(senderAccount);  // update for .balance and .transactions
 
-                        log(`[SENDMONEY] Account SendMoney succeeded - sent to Email: ${receiver}`, logSource, `info`);
+                        log(`[SENDMONEY] Account SendMoney succeeded - sent to Email: ${receiver}`, logSource, `success`);
 
                         // Get Reciever's Balance from Database (Baaaad Bank)
                         api.balance(receiver)
@@ -279,7 +279,7 @@ function SendMoney()
                                     delete receiverAccount._id;  // the MongoDB ID is not part of our Client 'user'
                                     ctx.setReceiver(receiverAccount);  // update for .balance and .transactions
                                     log(`[SENDMONEY] Receiver Account: ${JSON.stringify(receiverAccount)}`, logSource, `warn`);
-                                    log(`[SENDMONEY] Account Transfer succeeded - Email: ${receiverAccount.email}`, logSource, `info`);
+                                    log(`[SENDMONEY] Account Transfer succeeded - Email: ${receiverAccount.email}`, logSource, `success`);
                                 }
                             });
 
@@ -324,7 +324,7 @@ function SendMoney()
                 <form>
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={ctx.User.balance} /><br />
+                        placeholder="Current balance" value={toCurrency(ctx.User.balance)} /><br />
 
                     SendMoney<br />
                     <input type="input" autoComplete="new-password" required={true} className="form-control" id="sendMoney"
@@ -337,7 +337,7 @@ function SendMoney()
                         }} /><br />
 
                     Receiver's Email Address<br />
-                    <input type="email" autoComplete="new-password" required={true} className="form-control" id="email"
+                    <input type="email" autoComplete="new-email" required={true} className="form-control" id="email"
                         placeholder="Enter email to get the money" value={receiver} onChange={e =>
                         {
                             setSubmit('');
@@ -357,11 +357,11 @@ function SendMoney()
                     <br />
                     Your Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Your balance" value={ctx.User.balance} />
+                        placeholder="Your balance" value={toCurrency(ctx.User.balance)} />
                     <br />
                     Your Friend's Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Their balance" value={ctx.Receiver.balance} />
+                        placeholder="Their balance" value={toCurrency(ctx.Receiver.balance)} />
                     <br />
                     <button type="submit" className="btn btn-light" onClick={clearForm_Click}>Make another Transfer</button>
                 </>

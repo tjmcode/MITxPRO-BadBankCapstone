@@ -68,7 +68,7 @@ import BankCard from './BankCard';
 import {api} from '../api/api.js';
 
 // include our common MicroCODE Client Library
-import {log, exp} from '../mcodeClient.js';
+import {log, exp, toCurrency} from '../mcodeClient.js';
 
 // get our current file name for logging events
 var path = require('path');
@@ -118,7 +118,7 @@ function Balance()
 
     // #region  P R I V A T E   F U N C T I O N S
 
-    // useEffect with an empty dependency array
+    // get the Account Balance once from Database on load
     React.useEffect(() =>
     {
         if (ctx.LoggedIn)
@@ -139,7 +139,7 @@ function Balance()
                             {
                                 setBalance(account.balance);
                                 log(`[BALANCE] Account: ${JSON.stringify(account)}`, logSource, `warn`);
-                                log(`[BALANCE] Account Balance succeeded - Email: ${account.email}`, logSource, `info`);
+                                log(`[BALANCE] Account Balance succeeded - Email: ${account.email}`, logSource, `success`);
                                 setStatus(``);
                             }
                         });
@@ -177,7 +177,7 @@ function Balance()
                 <form>
                     Current Balance<br />
                     <input type="text" readOnly={true} className="form-control" id="balance"
-                        placeholder="Current balance" value={balance} /><br />
+                        placeholder="Current balance" value={toCurrency(balance)} /><br />
                 </form>
             )}
         />

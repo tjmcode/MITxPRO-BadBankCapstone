@@ -61,6 +61,13 @@
 
 import React from 'react';
 
+// include our common MicroCODE Client Library
+import {exp} from '../mcodeClient.js';
+
+// get our current file name for logging events
+var path = require('path');
+var logSource = path.basename(__filename);
+
 // #endregion
 
 // #region  J A V A S C R I P T
@@ -71,8 +78,6 @@ import React from 'react';
 // #endregion
 
 // #region  P R I V A T E   F I E L D S
-
-let statusDisplayed = ``;
 
 // #endregion
 
@@ -99,82 +104,107 @@ function BankCard(props)
     // validate PROPS input(s)
 
     // initialize STATE and define accessors...
+    const [cardClass, setCardClass] = React.useState('');
+    const [statusState, setStatusState] = React.useState('');
+    const [statusCard, setStatusCard] = React.useState('');
+    const [statusBody, setStatusBody] = React.useState('');
+    const [statusHeader, setStatusHeader] = React.useState('');
+    const [statusMessage, setStatusMessage] = React.useState('');
 
     // access CONTEXT for reference...
 
     // #region  P R I V A T E   F U N C T I O N S
 
-    /*
-     * bootstrapCard() - builds a Bootstrap Card Class name from passed properties.
-     */
-    function bootstrapCard()
+    // get the Account Balance once from Database on load
+    React.useEffect(() =>
     {
-        const bg = props.bgcolor ? ' bg-' + props.bgcolor : ' ';
-        const txt = props.txtcolor ? ' text-' + props.txtcolor : ' text-white';
-        return 'card mb-3 ' + bg + txt;
-    }
+        /**
+         * @func loadStatus
+         * @desc Loads styles and data for Bank Card display.
+         * @returns {string} id name 'loaded'
+         */
+        function loadStatus()
+        {
+            // check for optional 'Status' displayed under 'Card'
+            if (props.status)
+            {
+                // set 'Status' styling based on message prefix (see definitions in mcode.log() and mcode.exp())
+                if (props.status.includes(`info: `))
+                {
+                    setStatusHeader(`INFORMAION`);
+                    setStatusCard(`card mb-3 border-primary`);
+                    setStatusBody(`card-body text-primary`);
+                    setStatusMessage(props.status.replace(`info: `, ``));
+                }
+                else if (props.status.includes(`warn: `))
+                {
+                    setStatusHeader(`WARNING`);
+                    setStatusCard(`card mb-3 border-warning`);
+                    setStatusBody(`card-body text-warning`);
+                    setStatusMessage(props.status.replace(`warn: `, ``));
+                }
+                else if (props.status.includes(`error: `))
+                {
+                    setStatusHeader(`ERROR`);
+                    setStatusCard(`card mb-3 border-danger`);
+                    setStatusBody(`card-body text-danger`);
+                    setStatusMessage(props.status.replace(`error: `, ``));
+                }
+                else if (props.status.includes(`fatal: `))
+                {
+                    setStatusHeader(`EXCEPTION`);
+                    setStatusCard(`card mb-3 bg-danger text-white`);  // solid red
+                    setStatusBody(`card-body text-white`);
+                    setStatusMessage(props.status.replace(`fatal: `, ``));
+                }
+                else if (props.status.includes(`success: `))
+                {
+                    setStatusHeader(`SUCCESS`);
+                    setStatusCard(`card mb-3 border-success`);
+                    setStatusBody(`card-body text-success`);
+                    setStatusMessage(props.status.replace(`success: `, ``));
+                }
+            }
+            else
+            {
+                // no 'Status' to dsplay right now
+                setStatusCard(``);
+                setStatusBody(``);
+                setStatusMessage(``);
+            }
 
-    /*
-     * bootstrapSuccess() - builds a Bootstrap Card Class name from info display.
-     */
-    function bootstrapInfo()
-    {
-        statusDisplayed = props.status.replace(`info: `, ``);
-        const bg = ' border-primary';
-        const txt = '';  // the 'border-' cards pick text color
-        return 'card mb-3 ' + bg + txt;
-    }
+            // and finally the Bank Card itself
+            let cardback = props.bgcolor ? ' bg-' + props.bgcolor : ' ';
+            let cardtext = props.txtcolor ? ' text-' + props.txtcolor : ' text-white';
+            setCardClass('card mb-3 ' + cardback + cardtext);
 
-    /*
-     * bootstrapWarn() - builds a Bootstrap Card Class name from warning display.
-     */
-    function bootstrapWarn()
-    {
-        statusDisplayed = props.status.replace(`warn: `, ``);
-        const bg = ' border-warning';
-        const txt = '';  // the 'border-' cards pick text color
-        return 'card mb-3 ' + bg + txt;
-    }
+            return props.status;
+        }
 
-    /*
-     * bootstrapDanger() - builds a Bootstrap Card Class name from error display.
-     */
-    function bootstrapError()
-    {
-        statusDisplayed = props.status.replace(`error: `, ``);
-        const bg = ' border-danger';
-        const txt = '';  // the 'border-' cards pick text color
-        return 'card mb-3 ' + bg + txt;
-    }
+        // if the status passed in from the UI Component changes update our Bank Card Styling
+        if (props.state !== statusState)
+        {
+            (async () =>
+            {
+                try
+                {
+                    // load Bank Card and Status styling once on Props change
+                    setStatusState(loadStatus());
 
-    /*
-     * bootstrapSuccess() - builds a Bootstrap Card Class name from exception display.
-     */
-    function bootstrapFatal()
-    {
-        statusDisplayed = props.status.replace(`fatal: `, ``);
-        const bg = ' bg-danger';
-        const txt = ' text-white';
-        return 'card mb-3 ' + bg + txt;
-    }
+                }
+                catch (exception)
+                {
+                    exp(`[BANKCARD] CRASHED - props: ${JSON.stringify(props)}`, logSource, exception);
+                }
 
-    /*
-     * bootstrapSuccess() - builds a Bootstrap Card Class name from success display.
-     */
-    function bootstrapSuccess()
-    {
-        statusDisplayed = props.status.replace(`success: `, ``);
-        const bg = ' border-success';
-        const txt = '';  // the 'border-' cards pick text color
-        return 'card mb-3 ' + bg + txt;
-    }
+            })();
+        }
+
+    }, [props, statusState]);
 
     // #endregion
 
     // #region  E V E N T   H A N D L E R S
-    /*
-     * *_Click() - 'on click' event handlers for UI elements.
-     */
 
     // #endregion
 
@@ -183,7 +213,7 @@ function BankCard(props)
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (
         <>
-            <div className={bootstrapCard()} style={{maxWidth: props.width}}>
+            <div className={cardClass} style={{maxWidth: props.width}}>
                 <div className="card-header"><b><h4>{props.header}</h4></b></div>
                 <div className="card-body">
                     {props.title && (<h5 className="card-title">{props.title}</h5>)}
@@ -191,39 +221,11 @@ function BankCard(props)
                     {props.body}
                 </div>
             </div>
-            {props.status && props.status.includes("info") && (
-                <div className={bootstrapInfo()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b>Infirmation</b></div>
-                    <div className="card-body text-primary">
-                        <div id='status'>{statusDisplayed}</div>
-                    </div>
-                </div>)}
-            {props.status && props.status.includes("warn") && (
-                <div className={bootstrapWarn()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b>Warning</b></div>
-                    <div className="card-body text-warning">
-                        <div id='status'>{statusDisplayed}</div>
-                    </div>
-                </div>)}
-            {props.status && props.status.includes("error") && (
-                <div className={bootstrapError()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b>Error</b></div>
-                    <div className="card-body text-danger">
-                        <div id='status'>{statusDisplayed}</div>
-                    </div>
-                </div>)}
-            {props.status && props.status.includes("fatal") && (
-                <div className={bootstrapFatal()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b>Exception</b></div>
-                    <div className="card-body text-white">
-                        <div id='status'>{statusDisplayed}</div>
-                    </div>
-                </div>)}
-            {props.status && props.status.includes("success") && (
-                <div className={bootstrapSuccess()} style={{maxWidth: props.width}}>
-                    <div className="card-header"><b>Confirmation</b></div>
-                    <div className="card-body text-success">
-                        <div id='status'>{statusDisplayed}</div>
+            {props.status && (
+                <div className={statusCard} style={{maxWidth: props.width}}>
+                    <div className="card-header">{statusHeader}</div>
+                    <div className={statusBody}>
+                        <div id='status'>{statusMessage}</div>
                     </div>
                 </div>)}
         </>

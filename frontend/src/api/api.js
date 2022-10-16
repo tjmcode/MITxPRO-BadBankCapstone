@@ -142,13 +142,13 @@ const getResData = async (functionName, url) =>
 
         if (res.status === RES_SUCCESS)
         {
-            log(`API: ${functionName} - Data: ${JSON.stringify(res.data)}`, logSource, `info`);
+            log(`API: ${functionName} - succeeded Data: ${JSON.stringify(res.data)}`, logSource, `success`);
             return res.data;
         }
         else
         {
             const resMessage = JSON.parse(res.text);
-            log(`API: ${functionName} - Error: ${resMessage.error}`, logSource, `error`);
+            log(`API: ${functionName} - failed Error: ${resMessage.error}`, logSource, `error`);
             return null;
         }
     }

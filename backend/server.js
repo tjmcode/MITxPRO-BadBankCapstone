@@ -176,7 +176,7 @@ app.use(cors());
 app.listen(APP_PORT, function ()
 {
     // show that our listener is alive
-    mcode.log(`SERVER -- Running on Port: ${APP_PORT}!  Path: ${APP_URL}`, logSource, `info`);
+    mcode.log(`SERVER -- Running on Port: ${APP_PORT}!  Path: ${APP_URL}`, logSource, `success`);
 });
 
 /*
@@ -235,7 +235,7 @@ app.get(`/account/create/:username/:email/:password/:role/:deposit`, function (r
                 dal.createAccount(account)
                     .then(() =>
                     {
-                        mcode.log(`CREATE -- Successfully created User Account: ${account.email}`, logSource, `info`);
+                        mcode.log(`CREATE -- Successfully created User Account: ${account.email}`, logSource, `success`);
                         res.send(account);
                     })
                     .catch((exp_create) =>
@@ -286,7 +286,7 @@ app.get(`/account/delete/:username/:email/:password`, function (req, res)
                 dal.deleteAccount(account)
                     .then(() =>
                     {
-                        mcode.log(`DELETE -- Successfully delete User Account: ${account.email}`, logSource, `info`);
+                        mcode.log(`DELETE -- Successfully delete User Account: ${account.email}`, logSource, `success`);
                         res.send(account);
                     })
                     .catch((exp_create) =>
@@ -332,7 +332,7 @@ app.get(`/account/login/:email/:password`, function (req, res)
             }
             else
             {
-                mcode.log(`LOGIN -- Login to Account SUCEEDED with ${res_find.email}`, logSource, `info`);
+                mcode.log(`LOGIN -- Login to Account SUCCEEDED with ${res_find.email}`, logSource, `success`);
                 res.send(res_find);
             }
         })
@@ -369,7 +369,7 @@ app.get(`/account/deposit/:email/:amount`, function (req, res)
             }
             else
             {
-                mcode.log(`DEPOSIT -- Successfully deposited User funds, new balance: ${res_deposit.balance}`, logSource, `info`);
+                mcode.log(`DEPOSIT -- Successfully deposited User funds, new balance: ${res_deposit.balance}`, logSource, `success`);
                 res.send(res_deposit);
             }
         })
@@ -406,7 +406,7 @@ app.get(`/account/withdraw/:email/:amount`, function (req, res)
             }
             else
             {
-                mcode.log(`WITHDRAW -- Successfully withdrew User funds, new balance: ${res_withdraw.balance}`, logSource, `info`);
+                mcode.log(`WITHDRAW -- Successfully withdrew User funds, new balance: ${res_withdraw.balance}`, logSource, `success`);
                 res.send(res_withdraw);
             }
         })
@@ -497,7 +497,7 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
             else
             {
                 sendersAccount = res_withdrawMoney;  // hold to return after deposit into Receiver's
-                mcode.log(`SENDMONEY -- Successfully withdrew User funds, new balance: ${res_withdrawMoney.balance}`, logSource, `info`);
+                mcode.log(`SENDMONEY -- Successfully withdrew User funds, new balance: ${res_withdrawMoney.balance}`, logSource, `success`);
             }
         })
         .catch((exp_withdrawMoney) =>
@@ -522,7 +522,7 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
             }
             else
             {
-                mcode.log(`SENDMONEY -- Successfully deposited User funds, new balance: ${res_depositMoney.balance}`, logSource, `info`);
+                mcode.log(`SENDMONEY -- Successfully deposited User funds, new balance: ${res_depositMoney.balance}`, logSource, `success`);
 
                 // final response to API -- Sender's Account
                 res.send(sendersAccount);
@@ -579,7 +579,7 @@ app.get(`/account/all`, function (req, res)
     dal.allAccounts()
         .then((res_allAccounts) =>
         {
-            mcode.log(`ALL DATA -- Get data succeeded, number = ${res_allAccounts.length}.`, logSource, `info`);
+            mcode.log(`ALL DATA -- Get data succeeded, number = ${res_allAccounts.length}.`, logSource, `success`);
             // debug only --- mcode.log(`ALL DATA -- Users: ${JSON.stringify(res_allAccounts)}`, logSource, `info`);
             res.send(res_allAccounts);
         })

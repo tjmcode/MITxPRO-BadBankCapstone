@@ -220,7 +220,7 @@ function Login()
                         ctx.setPrivileged((account.role === "BANKER") || (account.role === "AUDITOR"));
 
                         log(`[LOGIN] Account contents: ${JSON.stringify(account)}`, logSource, `warn`);
-                        log(`[LOGIN] Account Login succeeded - Email: ${account.email}`, logSource, `info`);
+                        log(`[LOGIN] Account Login succeeded - Email: ${account.email}`, logSource, `success`);
                         setStatus(``);
                         setSubmit('Disabled');
                         setNeedInput(false);
