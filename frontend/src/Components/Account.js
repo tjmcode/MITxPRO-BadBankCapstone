@@ -399,6 +399,7 @@ function Account()
                         placeholder="Enter BANKER, CUSTOMER, or AUDITOR" value={role} onChange={e =>
                         {
                             setSubmit('');
+                            setStatus('');
                             setRole(e.currentTarget.value);
                             validate(e.currentTarget.value, 'role');
                         }} /><br />
