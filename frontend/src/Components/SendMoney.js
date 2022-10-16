@@ -322,7 +322,7 @@ function SendMoney()
     // OUTPUT the Component's JavaScript Extension (JSX) code...
     return (
         <BankCard
-            bgcolor="danger"
+            bgcolor="primary"
             header="SendMoney"
             width="30rem"
             status={status}
