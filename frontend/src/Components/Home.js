@@ -84,6 +84,7 @@ import logo from '../logo.svg';
 
 /**
  * @func Home
+ * @memberof app
  * @desc controls a user logging into their Bad Bank Account.
  * @api public
  * @param {nil} no properties.

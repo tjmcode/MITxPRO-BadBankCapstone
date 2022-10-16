@@ -83,6 +83,7 @@ import {AppContext} from './AppContext';
 
 /**
  * @func NavBar
+ * @memberof app
  * @desc the Bad Bank Navigation Bar.
  * @api public
  * @param {nil} no properties.

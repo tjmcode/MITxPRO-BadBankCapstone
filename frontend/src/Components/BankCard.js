@@ -89,6 +89,7 @@ var logSource = path.basename(__filename);
 
 /**
  * @func BankCard
+ * @memberof app
  * @desc a common App 'Card' definitions for all derived Components.
  * @api public
  * @param {type} props component properties.
@@ -118,11 +119,7 @@ function BankCard(props)
     // get the Account Balance once from Database on load
     React.useEffect(() =>
     {
-        /**
-         * @func loadStatus
-         * @desc Loads styles and data for Bank Card display.
-         * @returns {string} id name 'loaded'
-         */
+        // Loads styles and data for Bank Card display.
         function loadStatus()
         {
             // check for optional 'Status' displayed under 'Card'

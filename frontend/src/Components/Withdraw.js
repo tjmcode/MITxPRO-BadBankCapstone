@@ -97,6 +97,7 @@ const MINIMUM_WITHDRAW = 5;
 
 /**
  * @func Withdraw
+ * @memberof app
  * @desc the Bad Bank Withdraw Component.
  * @api public
  * @param {nil} no properties.

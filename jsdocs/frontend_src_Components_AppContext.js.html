@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: frontend/src/Components/AppContext.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: frontend/src/Components/AppContext.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region  H E A D E R
+// &lt;copyright file="context.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI&lt;/copyright>&lt;author>Timothy J. McGuire&lt;/author>
+// #region  P R E A M B L E
+// #region  D O C U M E N T A T I O N
+/*
+ *      Title:    MicroCODE Bad Bank Context
+ *      Module:   Modules (./context.js)
+ *      Project:  MicroCODE Common Code
+ *      Customer: Internal
+ *      Creator:  MicroCODE Incorporated
+ *      Date:     June 2022
+ *      Author:   Timothy J McGuire
+ *
+ *      Designed and Coded: 2022 MicroCODE Incorporated
+ *
+ *      This software and related materials are the property of
+ *      MicroCODE Incorporated and contain confidential and proprietary
+ *      information. This software and related materials shall not be
+ *      duplicated, disclosed to others, or used in any way without the
+ *      written of MicroCODE Incorported.
+ *
+ *
+ *      DESCRIPTION:
+ *      ------------
+ *
+ *      This module implements the MicroCODE's Common React Component Template.
+ *      This file is copied to start all MicroCODE React Component files.
+ *
+ *
+ *      REFERENCES:
+ *      -----------
+ *
+ *      1. MicroCODE JavaScript Style Guide
+ *         Local File: MCX-S02 (Internal JS Style Guide).docx
+ *         https://github.com/MicroCODEIncorporated/JavaScriptSG
+ *
+ *
+ *
+ *      DEMONSTRATION VIDEOS:
+ *      ---------------------
+ *
+ *      1. ...
+ *
+ *
+ *
+ *      MODIFICATIONS:
+ *      --------------
+ *
+ *  Date:         By-Group:   Rev:     Description:
+ *
+ *  02-Jun-2022   TJM-MCODE  {0001}    New module for Bad Bank as a React App.
+ *  15-Oct-2022   TJM-MCODE  {0002}    Added 'Send Money' feature -- added 'Receiver' to Context.
+ *
+ *
+ */
+
+// #endregion
+// #endregion
+// #endregion
+
+// #region  I M P O R T S
+
+import React, {useState} from 'react';
+
+// support .env file variables
+require('dotenv').config();
+
+// #endregion
+
+// #region  J A V A S C R I P T
+// #region  F U N C T I O N S
+
+// #region  C O N S T A N T S
+
+const defaultValue = {
+
+    // App version
+    Version: "&lt;No Context Provider>",
+    setVersion: () => { },
+
+    // Value indicating whether or not anyone is currently logged in
+    LoggedIn: false,
+    setLoggedIn: () => { },
+
+    // Value indicating whether or not the current User is Privileged.
+    Privileged: false,
+    setPrivileged: () => { },
+
+    // Value representing who is currently logged in
+    User: '',
+    setUser: () => { },
+
+    // Value representing who is currently receiving money ('Send Money' feature) in
+    Receiver: '',
+    setReceiver: () => { },
+
+    // Value indicating whether or not anyone can see all other Users
+    RevealUsers: false,
+    setRevealUsers: () => { },
+};
+
+// App Context holding User information
+/**
+ * @module AppContext
+ * @memberof app
+ * @desc App-wide context utilized by every Component for shared state.
+ *
+ */
+const AppContext = React.createContext(defaultValue);
+
+/**
+ * @const AppContextProvider
+ * @desc Our global Context Provider
+ * @param {object} props for the AppContext.
+ * @return {JSX} a provider for Context in the App.
+ */
+const AppContextProvider = (props) =>
+{
+    const [Version, setVersion] = useState(`Version ${process.env.REACT_APP_VERSION}`);
+    const [LoggedIn, setLoggedIn] = useState(false);
+    const [Privileged, setPrivileged] = useState(false);
+    const [User, setUser] = useState('');
+    const [Receiver, setReceiver] = useState('');
+    const [RevealUsers, setRevealUsers] = useState(false);
+
+    return (
+        &lt;AppContext.Provider
+
+            value={{
+
+                Version,
+                setVersion,
+
+                LoggedIn,
+                setLoggedIn,
+
+                Privileged,
+                setPrivileged,
+
+                User,
+                setUser,
+
+                Receiver,
+                setReceiver,
+
+                RevealUsers,
+                setRevealUsers,
+            }}
+        >
+            {props.children}
+
+        &lt;/AppContext.Provider>
+    );
+};
+
+// #endregion
+
+// #region  P R I V A T E   F I E L D S
+
+// #endregion
+
+// #region  E N U M E R A T I O N S
+
+// #endregion
+
+// #region  C O M P O N E N T – P U B L I C
+
+// #endregion
+
+// #region  C O M P O N E N T - E X P O R T S
+
+export {AppContext, AppContextProvider};
+
+// #endregion
+
+// #endregion
+// #endregion</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="app.module_AppContext.html">AppContext</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="app.html">app</a></li><li><a href="dal.html">dal</a></li><li><a href="mcodeClient.html">mcodeClient</a></li><li><a href="mcodeServer.html">mcodeServer</a></li><li><a href="server.html">server</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accountRecord">accountRecord</a></li><li><a href="global.html#transactionRecord">transactionRecord</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 16 2022 17:52:33 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -124,8 +124,9 @@ const accountSchema = new mongoose.Schema(
 // #region  M E T H O D S – P U B L I C
 
 /**
- * @function accountRecord() -- Create a User Account record.
- *
+ * @func accountRecord
+ * @desc Create a User Account record.
+ * @spai private
  * @param {string} username selected by the user.
  * @param {string} email email address supplied by the user.
  * @param {string} password set by the user.
@@ -156,8 +157,9 @@ var accountRecord = function (username, email, password, role, deposit)
 };
 
 /**
- * @function transactionRecord() -- Create an Account Transaction object.
- *
+ * @func transactionRecord
+ * @desc Create an Account Transaction object.
+ * @api private
  * @param {string} type One of: DEPOSIT, WITHDRAW, BALANCE, CLOSE.
  * @param {number} amount amount of money involved in this transaction.
  * @param {number} balance resulting balance after the transaction executed.

@@ -99,6 +99,7 @@ const MINIMUM_OPENING_DEPOSIT = 100;
 
 /**
  * @func Account
+ * @memberof app
  * @desc The Bad Bank Account Component.
  * @api public
  * @param {nil} no properties.
@@ -280,9 +281,10 @@ function Account()
                     {
                         // immediately log them in on create
                         delete account._id;  // the MongoDB ID is not part of our Client 'user'
+                        ctx.setUser(account);  // update current user
                         ctx.setLoggedIn(true);
+
                         ctx.setPrivileged((account.role === "BANKER") || (account.role === "AUDITOR"));
-                        ctx.setUser(account);
 
                         setStatus(log(`[ACCOUNT] Create succeeded - User: ${account.email}`, logSource, `success`));
                         setNeedInput(false);

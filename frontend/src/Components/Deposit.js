@@ -97,6 +97,7 @@ const MINIMUM_DEPOSIT = 10;
 
 /**
  * @func Deposit
+ * @memberof app
  * @desc Bad Bank Deposit Component.
  * @api public
  * @param {nil} no properties.

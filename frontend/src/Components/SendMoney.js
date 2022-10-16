@@ -98,6 +98,7 @@ const MINIMUM_SENDMONEY = 10;
 
 /**
  * @func SendMoney
+ * @memberof app
  * @desc the Bad Bank SendMoney Component.
  * @api public
  * @param {nil} no properties.
@@ -129,8 +130,7 @@ function SendMoney()
     {
         if (ctx.LoggedIn)
         {
-            setSendMoney(0);
-            setReceiver(ctx.Receiver.email);
+            // nothing to do here...
         }
         else
         {
@@ -214,6 +214,7 @@ function SendMoney()
         setSendMoney('');
 
         setSubmit('Disabled');
+        setStatus('');
     };
 
     // #endregion

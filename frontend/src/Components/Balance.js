@@ -95,6 +95,7 @@ var logSource = path.basename(__filename);
 
 /**
  * @func Balance
+ * @memberof app
  * @desc the Bad Bank Balance Component.
  * @api public
  * @param {nil} no properties.

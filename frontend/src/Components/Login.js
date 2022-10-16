@@ -93,6 +93,7 @@ var logSource = path.basename(__filename);
 
 /**
  * @func Login
+ * @memberof app
  * @desc Controls a user logging into their Bad Bank Account.
  * @api public
  * @param {nil} no properties.

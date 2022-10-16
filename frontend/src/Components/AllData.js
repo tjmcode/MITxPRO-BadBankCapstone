@@ -92,14 +92,12 @@ var logSource = path.basename(__filename);
 // #region  C O M P O N E N T – P U B L I C
 
 /**
- * AllData() – returns all data from our Bad Bank Accounts.
- *
+ * @func AllData
+ * @memberof app
+ * @desc returns all data from our Bad Bank Accounts.
  * @api public
- *
  * @param {nil} no properties.
- *
  * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
- *
  * @example
  *
  *      AllData();

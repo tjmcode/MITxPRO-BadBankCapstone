@@ -100,9 +100,20 @@ const defaultValue = {
 };
 
 // App Context holding User information
+/**
+ * @module AppContext
+ * @memberof app
+ * @desc App-wide context utilized by every Component for shared state.
+ *
+ */
 const AppContext = React.createContext(defaultValue);
 
-// Our global Context Provider
+/**
+ * @const AppContextProvider
+ * @desc Our global Context Provider
+ * @param {object} props for the AppContext.
+ * @return {JSX} a provider for Context in the App.
+ */
 const AppContextProvider = (props) =>
 {
     const [Version, setVersion] = useState(`Version ${process.env.REACT_APP_VERSION}`);

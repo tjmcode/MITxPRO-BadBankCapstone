@@ -75,8 +75,9 @@
 
 /**
  * @const vt
+ * @memberof mcodeClient
  * @desc Colors constants for changing Console appearance ala DEC`s VT52 + VT100 + VT220.
- *
+ * @example
     ANSI Color Escape Sequence
 
     \x1b[***m  -- where `***` is a series of command codes separated by semi-colons (;).
@@ -182,9 +183,16 @@ var vt =
 
 /**
  * @func log
+ * @memberof mcodeClient
  * @desc Logs App Events to the Console in a standardized format.
+ * @api public
+ * @param {string} message pre-formatted message to be logged.
+ * @param {string} source where the message orginated.
+ * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'fatal', and 'success'.
+ * @returns {string} "{severiy}: {message}" for display in UI.
  *
- * Example from our other MicroCODE Apps:
+ * @example
+ * From our other MicroCODE Apps:
  ++
    Message: `Station SYNCHRONIZED to new Job from TRACKING IMAGE`
 
@@ -196,13 +204,6 @@ var vt =
        Event: (see `Message:` above)                      Time: Tuesday, August 10, 2021 06:57:47.623 AM
        Class: MicroCODE.AppBanner                         Type: App.Information                              CSN:[1GA4174210 ]
 --
- *
- * @api public
- * @param {string} message pre-formatted message to be logged.
- * @param {string} source where the message orginated.
- * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'fatal', and 'success'.
- * @returns  {String} "<severiy>: <message>" for display in UI.
- *
  */
 function log(message, source, severity)
 {
@@ -253,12 +254,13 @@ function log(message, source, severity)
 
 /**
  * @func exp
+ * @memberof mcodeClient
  * @desc Exceptions to the Console in a standardized format.
  * @api public
  * @param {string} message pre-formatted message to be logged.
  * @param {string} source where the message orginated.
  * @param {string} exception the underlying exception message that was caught.
- * @returns  {String} "message: <message> - exception: <exception>" for display in UI.
+ * @returns {string} "message: {message} - exception: {exception}" for display in UI.
  *
  */
 function exp(message, source, exception)
@@ -296,9 +298,10 @@ function exp(message, source, exception)
 
 /**
  * @func timestamp
+ * @memberof mcodeClient
  * @desc Generates timestamp string: YYYY-MM-DD HH:MM:SS.mmm.
  * @api public
- * @returns  {String} "YYYY-MM-DD HH:MM:SS.mmm".
+ * @returns {string} "YYYY-MM-DD HH:MM:SS.mmm".
  */
 function timeStamp()
 {
@@ -324,6 +327,7 @@ function timeStamp()
 
 /**
  * @func simplifyText
+ * @memberof mcodeClient
  * @desc Strips a string of BRACES, BRACKETS, QUOTES, etc.
  * @api public
  * @param {string} textToSimplify the string to be simplified to data
@@ -362,6 +366,7 @@ function simplifyText(textToSimplify)
 
 /**
  * @func logifyText
+ * @memberof mcodeClient
  * @desc Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
  * No formatting occurs until the opening brace '{' of the JSON Data.
  * @api public
@@ -472,6 +477,7 @@ function logifyText(textToLogify)
 
 /**
  * @func listifyArrayHTML
+ * @memberof mcodeClient
  * @desc Converts an array of text items into a BOOTSTRAP CARD LIST.
  * @api public
  * @param {array} arrayToListify the array to be convert to a HTML List.
@@ -493,6 +499,7 @@ function listifyArrayHTML(arrayToListify)
 
 /**
  * @func listifyArrayJSX
+ * @memberof mcodeClient
  * @desc Converts an array of text items into a BOOTSTRAP CARD LIST - JSX code.
  * @api public
  * @param {array} arrayToListify the array to be convert to a HTML List.
@@ -518,6 +525,7 @@ function listifyArrayJSX(arrayToListify)
 
 /**
  * @func isString
+ * @memberof mcodeClient
  * @desc Checks the type of an Object for String.
  * @api public
  * @param {object} object to be tested
@@ -530,6 +538,7 @@ function isString(object)
 
 /**
  * @func hasJson
+ * @memberof mcodeClient
  * @desc Checks a string for embedded JSON data.
  * @api public
  * @param {object} object string to be tested
@@ -551,6 +560,7 @@ function hasJson(object)
 
 /**
  * @func NotaNumber
+ * @memberof mcodeClient
  * @desc Checks for NaN.
  * @api public
  * @param {any} numberToCheck as a number of some type
@@ -565,6 +575,7 @@ function NotaNumber(numberToCheck)
 
 /**
  * @func roundToCents
+ * @memberof mcodeClient
  * @desc Rounds a floating point number that represents dollars and cents to 2 decimals digits (pennies).
  * @api public
  * @param {number} numberToRound as a floating point value
@@ -577,6 +588,7 @@ function roundToCents(numberToRound)
 
 /**
  * @func roundOff
+ * @memberof mcodeClient
  * @desc Rounds a floating point number to any number of places.
  * @api public
  * @param {number} numberToRound as a floating point value
@@ -599,6 +611,7 @@ function roundOff(numberToRound, numberOfPlaces)
 
 /**
  * @func toCurrency
+ * @memberof mcodeClient
  * @desc Rounds a floating point number to any number of places.
  * @api public
  * @param {number} numberToDisplay as a floating point value
@@ -606,7 +619,15 @@ function roundOff(numberToRound, numberOfPlaces)
  */
 function toCurrency(numberToDisplay)
 {
-    return `$${roundToCents(numberToDisplay)}`;
+    // if NaN reset to ZERO
+    if (NotaNumber(numberToDisplay))
+    {
+        return `$0.00`;
+    }
+    else
+    {
+        return `$${roundToCents(numberToDisplay)}`;
+    }
 };
 
 // #endregion

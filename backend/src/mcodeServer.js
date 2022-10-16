@@ -71,8 +71,9 @@ var methods = {};
 
 /**
  * @const vt
+ * @memberof mcodeServer
  * @desc Colors constants for changing Console appearance ala DEC`s VT52 + VT100 + VT220.
- *
+ * @example
     ANSI Color Escape Sequence
 
     \x1b[***m  -- where `***` is a series of command codes separated by semi-colons (;).
@@ -174,9 +175,16 @@ methods.vt =
 
 /**
  * @method log
+ * @memberof mcodeServer
  * @desc Logs App Events to the Console in a standardized format.
+ * @api public
+ * @param {string} message pre-formatted message to be logged.
+ * @param {string} source where the message orginated.
+ * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'fatal', and 'success'.
+ * @returns {string} "{severiy}: {message}" for display in UI.
  *
- * Example from our other MicroCODE Apps:
+ * @example
+ * From our other MicroCODE Apps:
  ++
    Message: `Station SYNCHRONIZED to new Job from TRACKING IMAGE`
 
@@ -188,13 +196,6 @@ methods.vt =
        Event: (see `Message:` above)                      Time: Tuesday, August 10, 2021 06:57:47.623 AM
        Class: MicroCODE.AppBanner                         Type: App.Information                              CSN:[1GA4174210 ]
 --
- *
- * @api public
- * @param {string} message pre-formatted message to be logged.
- * @param {string} source where the message orginated.
- * @param {string} severity Event.Severity: 'info', 'warn', 'error', 'fatal', and 'success'.
- * @returns  {String} "<severiy>: <message>" for display in UI.
- *
  */
 methods.log = function (message, source, severity)
 {
@@ -246,12 +247,13 @@ methods.log = function (message, source, severity)
 
 /**
  * @method exp
+ * @memberof mcodeServer
  * @desc Logs exceptions to the Console in a standardized format.
  * @api public
  * @param {string} message pre-formatted message to be logged.
  * @param {string} source where the message orginated.
  * @param {string} exception the underlying exception message that was caught.
- * @returns  {String} "message: <message> - exception: <exception>" for display in UI.
+ * @returns {string} "message: {message} - exception: {exception}" for display in UI.
  *
  */
 methods.exp = function (message, source, exception)
@@ -288,9 +290,10 @@ methods.exp = function (message, source, exception)
 
 /**
  * @method timestamp
+ * @memberof mcodeServer
  * @desc Generates timestamp string: YYYY-MM-DD HH:MM:SS.mmm.
  * @api public
- * @returns  {String} "YYYY-MM-DD HH:MM:SS.mmm".
+ * @returns {string} "YYYY-MM-DD HH:MM:SS.mmm".
  */
 methods.timeStamp = function ()
 {
@@ -316,6 +319,7 @@ methods.timeStamp = function ()
 
 /**
  * @method simplifyText
+ * @memberof mcodeServer
  * @desc Strips a string of BRACES, BRACKETS, QUOTES, etc.
  * @api public
  * @param {string} textToSimplify the string to be simplified to data
@@ -350,6 +354,7 @@ methods.simplifyText = function (textToSimplify)
 
 /**
  * @method logifyText
+ * @memberof mcodeServer
  * @desc Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
  * No formatting occurs until the opening brace '{' of the JSON Data.
  * @api public
@@ -460,6 +465,7 @@ methods.logifyText = function (textToLogify)
 
 /**
  * @method NotaNumber
+ * @memberof mcodeServer
  * @desc Checks for NaN.
  * @api public
  * @param {any} numberToCheck as a number of some type
@@ -472,6 +478,7 @@ methods.NotaNumber = function (numberToCheck)
 
 /**
  * @method roundToCents
+ * @memberof mcodeServer
  * @desc Rounds a floating point number that represents dollars and cents to 2 decimals digits (pennies).
  * @api public
  * @param {float} numberToRound as a floating point value
@@ -484,6 +491,7 @@ methods.roundToCents = function (numberToRound)
 
 /**
  * @method roundOff
+ * @memberof mcodeServer
  * @desc Rounds a floating point number to any number of places.
  * @api public
  * @param {float} numberToRound as a floating point value
@@ -506,6 +514,7 @@ methods.roundOff = function (numberToRound, numberOfPlaces)
 
 /**
  * @method isString
+ * @memberof mcodeServer
  * @desc Checks the type of an Object for String.
  * @api public
  * @param {object} object to be tested
@@ -518,6 +527,7 @@ methods.isString = function (object)
 
 /**
  * @method hasJson
+ * @memberof mcodeServer
  * @desc Checks a string for embedded JSON data.
  * @api public
  * @param {object} object string to be tested
@@ -539,6 +549,7 @@ methods.hasJson = function (object)
 
 /**
  * @method toCurrency
+ * @memberof MicroCODE
  * @desc Rounds a floating point number to any number of places.
  * @api public
  * @param {number} numberToDisplay as a floating point value
@@ -546,7 +557,15 @@ methods.hasJson = function (object)
  */
 methods.toCurrency = function (numberToDisplay)
 {
-    return `$${roundToCents(numberToDisplay)}`;
+    // if NaN reset to ZERO
+    if (methods.NotaNumber(numberToRound))
+    {
+        return `$0.00`;
+    }
+    else
+    {
+        return `$${methods.roundToCents(numberToDisplay)}`;
+    }
 };
 
 // #endregion

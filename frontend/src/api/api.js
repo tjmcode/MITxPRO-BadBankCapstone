@@ -121,6 +121,7 @@ const RES_SUCCESS = 200;
  * @func getResData
  * @desc Common execution and event logging for every API function.
  * @api private
+ * @memberof api
  * @param {string} functionName name to display in the event log.
  * @param {string} url the path to the Back-End Entry Point.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
@@ -163,12 +164,17 @@ const getResData = async (functionName, url) =>
 
 // #region  F U N C T I O N S – P U B L I C
 
+/**
+ * @namespace api
+ * @desc The Application Programming Interface (API) for the App's Front-End.
+ */
 var api = {};
 
 /**
  * @func create
  * @desc Creates a USER ACCOUNT on Back-End.
  * @api public
+ * @memberof api
  * @param {string} username user selected display name.
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
@@ -192,6 +198,7 @@ api.create = async (username, email, password, role, deposit) =>
  * @func delete
  * @desc Deletes a USER ACCOUNT on Back-End.
  * @api public
+ * @memberof api
  * @param {string} username user selected display name.
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
@@ -213,6 +220,7 @@ api.delete = async (username, email, password) =>
  * @func login
  * @desc Confirms USER CREDENTIALS on Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} password user's password.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
@@ -233,6 +241,7 @@ api.login = async (email, password) =>
  * @func deposit
  * @desc DEPOSIT funds to Account in Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} deposit deposit amount.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
@@ -253,6 +262,7 @@ api.deposit = async (email, deposit) =>
  * @func withdraw
  * @desc WITHDRAW funds from Account in Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} withdraw withdraw amount.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
@@ -273,6 +283,7 @@ api.withdraw = async (email, withdraw) =>
  * @func transactions
  * @desc Get all user TRANSACTIONS from Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
@@ -292,6 +303,7 @@ api.transactions = async (email) =>
  * @func balance
  * @desc Get user BALANCE from Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
@@ -310,6 +322,7 @@ api.balance = async (email) =>
  * @func sendMoney
  * @desc SEND MONEY to another Bad Bank user from Back-End.
  * @api public
+ * @memberof api
  * @param {string} email user's email - UNIQUE ACCOUNT KEY.
  * @param {string} withdraw withdraw amount.
  * @param {string} receiver payee's email - UNIQUE ACCOUNT KEY.
@@ -330,6 +343,7 @@ api.sendMoney = async (email, withdraw, receiver) =>
  * @func allData
  * @desc Get ALL DATA from Back-End.
  * @api public
+ * @memberof api
  * @returns {object} the Backend Response DATA only as an JavaScript value.
  *
  * @example

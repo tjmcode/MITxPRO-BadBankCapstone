@@ -165,9 +165,16 @@ MongoClient.connect(DB_URL, {useUnifiedTopology: true}, (err, client) =>
 });
 
 /**
+ * @namespace dal
+ * @desc The Data Abstraction Layer (DAL) for the App's Back-End.
+ */
+var dal = {};
+
+/**
  * @func createAccount
  * @desc Create a new Account with an initial deposit.
  * @api public
+ * @memberof dal
  * @param {object} account an object representing the initial data for a new account.
  * @returns {object} current data for Account from DB.
  *
@@ -204,6 +211,7 @@ function createAccount(account)
  * @func deleteAccount
  * @desc Delete an existing Account. NOTE: This deletes all copies matching 'account.email' and can be used to clean-up the DB.
  * @api public
+ * @memberof dal
  * @param {object} account a object representing the initial data for a new account.
  * @returns {object} current data for Account from DB.
  *
@@ -240,6 +248,7 @@ function deleteAccount(account)
  * @func depositFunds
  * @desc Deposit funds into Account.
  * @api public
+ * @memberof dal
  * @param {string} email User's email account - UNIQUE KEY.
  * @param {float} amount New funds for account - FLOATING POINT.
  * @returns {object} current data for Account from DB.
@@ -297,6 +306,7 @@ function depositFunds(email, amount)
  * @func withdrawFunds
  * @desc Withdraw funds from Account.
  * @api public
+ * @memberof dal
  * @param {string} email User's email account - UNIQUE KEY.
  * @param {float} amount Funds taken from account - FLOATING POINT.
  * @returns {object} current data for Account from DB.
@@ -381,6 +391,7 @@ function withdrawFunds(email, amount)
  * @func accountBalance
  * @desc Get Balance in an Account.
  * @api public
+ * @memberof dal
  * @param {string} email User's email account - UNIQUE KEY.
  * @returns {object} current data for Account from DB.
  *
@@ -418,6 +429,7 @@ function accountBalance(email)
  * @func accountTransactions
  * @desc Get Transactions in an Account.
  * @api public
+ * @memberof dal
  * @param {string} email User's email account - UNIQUE KEY.
  * @returns {object} current data for Account from DB.
  *
@@ -455,6 +467,7 @@ function accountTransactions(email)
  * @func allAccounts
  * @desc Return all data for all Accounts.
  * @api public
+ * @memberof dal
  * @returns {array} current data for All Account from DB as an array of objects.
  *
  * @example
@@ -499,6 +512,7 @@ function allAccounts()
  * @func findAccount
  * @desc Return Account object if found.
  * @api public
+ * @memberof dal
  * @param {string} email User's email account - UNIQUE KEY.
  * @returns {object} current data for Account from DB.
  *

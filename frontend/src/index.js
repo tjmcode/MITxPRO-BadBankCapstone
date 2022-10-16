@@ -60,6 +60,18 @@
 // #endregion
 // #endregion
 
+// #region  J A V A S C R I P T
+// #region  C O D E   F O L D I N G
+/**
+ * @namespace mcodeClient
+ * @desc MicroCODE's shared library for constructing the Front-End of a 3-Tier MERN Apps.
+ */
+
+/**
+ * @namespace app
+ * @desc Bad Bank's React Single Page App (SPA).
+ */
+
 // #region  I M P O R T S
 
 import React from 'react';
@@ -83,9 +95,6 @@ var logSource = path.basename(__filename);
 require('dotenv').config();
 
 // #endregion
-
-// #region  J A V A S C R I P T
-// #region  C O D E   F O L D I N G
 
 // #region  C O N S T A N T S
 

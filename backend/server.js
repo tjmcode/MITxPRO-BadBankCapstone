@@ -75,6 +75,16 @@
 // #region  J A V A S C R I P T
 // #region  C O D E   F O L D I N G
 
+/**
+ * @namespace mcodeServer
+ * @desc MicroCODE's shared library for constructing the Back-End of a 3-Tier MERN Apps.
+ */
+
+/**
+ * @namespace server
+ * @desc Bad Bank's Express Route Handler (ERH).
+ */
+
 // #region  C O N S T A N T S
 
 //    localhost:8080 for development
@@ -208,8 +218,10 @@ app.get(`/test`, function (req, res)
 });
 
 /**
- * @function api.create() -- create account route
- *
+ * @func create
+ * @memberof server
+ * @desc Creates account route.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -260,8 +272,10 @@ app.get(`/account/create/:username/:email/:password/:role/:deposit`, function (r
 });
 
 /**
- * @function api.delete() -- delete account route
- *
+ * @func delete
+ * @memberof server
+ * @desc Delete user account.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -311,8 +325,10 @@ app.get(`/account/delete/:username/:email/:password`, function (req, res)
         });
 });
 /**
- * @function api.login() -- user confirm credentials
- *
+ * @func login
+ * @memberof server
+ * @desc Confirms user's credentials.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -348,8 +364,10 @@ app.get(`/account/login/:email/:password`, function (req, res)
 });
 
 /**
- * @function api.deposit() -- deposit money to account by email
- *
+ * @func deposit
+ * @memberof server
+ * @desc Deposit money to account by email.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -385,8 +403,10 @@ app.get(`/account/deposit/:email/:amount`, function (req, res)
 });
 
 /**
- * @function api.withdraw() -- withdraw money from account by email
- *
+ * @func withdraw
+ * @memberof server
+ * @desc Withdraw money from account by email.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -422,8 +442,10 @@ app.get(`/account/withdraw/:email/:amount`, function (req, res)
 });
 
 /**
- * @function api.balance() -- Return balance for specific accounts
- *
+ * @func balance
+ * @memberof server
+ * @desc Return balance for a specific account.
+ * @api public
  * @returns {object} accounts data object if successful
  */
 app.get(`/account/balance/:email`, function (req, res)
@@ -449,8 +471,10 @@ app.get(`/account/balance/:email`, function (req, res)
 });
 
 /**
- * @function api.sendMoney() -- sendMoney money from account by email
- *
+ * @func sendMoney
+ * @memberof server
+ * @desc Sends money from account to another by email.
+ * @api public
  * @returns {object} account object if successful
  * @returns {string} 401 status with error message if unsucessful
  */
@@ -540,8 +564,10 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
 });
 
 /**
- * @function api.transactions() -- Return transactions for specific accounts
- *
+ * @func transactions
+ * @memberof server
+ * @desc Returns transactions for a specific account.
+ * @api public
  * @returns {object} accounts data object if successful
  */
 app.get(`/account/transactions/:email`, function (req, res)
@@ -567,8 +593,10 @@ app.get(`/account/transactions/:email`, function (req, res)
 });
 
 /**
- * @function api.allData() -- Return data for all accounts
- *
+ * @func allData
+ * @memberof server
+ * @desc Returns all data for all accounts.
+ * @api public
  * @returns {object} accounts data object if successful
  */
 app.get(`/account/all`, function (req, res)

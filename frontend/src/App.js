@@ -123,12 +123,11 @@ const apiUrl = `${process.env.REACT_APP_BACKEND_URL}`;
 // #region  C O M P O N E N T S
 
 /**
- * App() – Bad Bank's Single Page App (SPA).
- *
+ * @func App
+ * @memberof app
+ * @desc Bad Bank's Single Page App (SPA).
  * @api public
- *
  * @param {nil} no properties.
- *
  * @returns {JSX} JavaScript Extension (JSX) code representing the current state of the component.
  *
  * @example
