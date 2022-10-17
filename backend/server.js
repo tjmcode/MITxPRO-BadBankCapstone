@@ -91,11 +91,12 @@
 // #region  C O N S T A N T S
 
 //    localhost:8080 for development
-//    https://badbank.tjmcode.io/backend for frontend
-// or https://badbank.tjmcode.io:8080 for backend
+//    http://45.55.107.145/backend for staging
+//    https://badbank.tjmcode.io/backend for frontend production
+// or https://badbank.tjmcode.io:8080 for backend production
 //
 const APP_PORT = parseInt(`${process.env.APP_BACKEND_PORT}`);
-const APP_URL = `https://${process.env.APP_SUBDOMAIN}:${APP_PORT}`;
+const APP_URL = `${process.env.APP_SUBDOMAIN}:${APP_PORT}`;
 
 // #endregion
 

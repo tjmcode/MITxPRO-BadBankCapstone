@@ -1,0 +1,222 @@
+# ***************************************************************************
+# NOTE: This version does not BUILD it only launches the Containers.
+#       This is used direcly in a DigitalOcean 'Droplet' to launch our App.
+#       It is run from *root* and expects ".env" to be there as a concatenation
+#       of our .env and .env.prodction files.
+# ***************************************************************************
+#
+#       Title:    MicroCODE Docker Compose File for MERN App STACK
+#       Module:   Modules (./docker-compose.yaml)
+#       Customer: MITxPRO MERN Course
+#       Creator:  MicroCODE Incorporated
+#       Date:     September 2022
+#       Author:   Timothy J McGuire
+#
+#       Designed and Coded: 2022 MicroCODE Incorporated
+#
+#       This software and related materials are the property of
+#       MicroCODE Incorporated and contain confidential and proprietary
+#       information. This software and related materials shall not be
+#       duplicated, disclosed to others, or used in any way without the
+#       written of MicroCODE Incorported.
+#
+#
+#       DESCRIPTION:
+#       ------------
+#
+#       This module builds all (3) Containers of the Dockerization of a MERN App.
+#
+#       o  Frontend = Client = ReactJS / NextJS, NodeJS, Apollo Client, etc.
+#       o  Backend = Server = ExpressJS, NodeJS, Apollo API, GraphQL, etc.
+#       o  Database = MondoDB = Persistent App Data Store.
+#
+#
+#       NOTES:
+#       ------
+#
+#       o  Remember: Code like a Machine™. Consistently and Explictly, Simply and for Readability. Hail CAESAR™.
+#
+#       o  While I could just call for a standard 'mongo' image from 'backend' I chose to
+#          create a seperate folder and 'dockerfile' to do so, so I could build the (3) containers
+#          in a consistent manner. (The lack of a 'database' folder and dockerfile threw me when
+#          I first looked at other 3-Tier App examples, i.e.: Where is the dockfile for the 3rd Tier?).
+#          So I figured out how to invoke it just like 'frontend/client' and 'backend/server'. Hail CAESAR.
+#
+#
+#       REFERENCES:
+#       -----------
+#
+#       1.  DOCKER Documentation
+#           by Docker, Inc.
+#           https://docs.docker.com/docker-hub/
+#
+#       2.  Docker for absolute beginners — what is Docker and how to use it (+ examples) - PART 1
+#           by Mike Huls
+#           https://towardsdatascience.com/docker-for-absolute-beginners-what-is-docker-and-how-to-use-it-examples-3d3b11efd830
+#
+#       3.  Docker Compose for absolute beginners — how does it work and how to use it (+ examples) - PART 2
+#           by Mike Huls
+#           https://towardsdatascience.com/docker-compose-for-absolute-beginners-how-does-it-work-and-how-to-use-it-examples-733ca24c5e6c
+#
+#       4.  A complete guide to using environment variables and files with Docker and Compose
+#           by Mike Huls
+#           https://towardsdatascience.com/a-complete-guide-to-using-environment-variables-and-files-with-docker-and-compose-4549c21dc6af
+#
+#       5.  CI/CD Hands-On : Github Actions+Docker Hub+AWS EC2
+#           by Minho Jang
+#           https://medium.com/ryanjang-devnotes/ci-cd-hands-on-github-actions-docker-hub-aws-ec2-ba09f80297e1
+#
+#       6.  Demo Repository of MERN + DOCKER (Development + Production Guidance)
+#           by Josh Cuneo
+#           https://github.com/joshdcuneo/mern-docker-starter
+#
+#       7.  How To Provision and Manage Remote Docker Hosts with Docker Machine on Ubuntu 16.04
+#           by Finid
+#           https://www.digitalocean.com/community/tutorials/how-to-provision-and-manage-remote-docker-hosts-with-docker-machine-on-ubuntu-16-04
+#
+#       8.  Automatically build & push a Full Stack Application onto Docker Hub using GitHub Actions
+#           by Stephen George
+#           https://towardsdev.com/automatically-build-push-a-full-stack-application-onto-docker-hub-using-github-actions-fb274980202d
+#
+#       9.  How to Use MERN Stack: A Complete Guide
+#           by MongoDB, Inc.
+#           https://www.mongodb.com/languages/mern-stack-tutorial
+#
+#       10. How to Use Docker Environment Variables in Docker Compose
+#           by Estefania Gallardo
+#           https://builtin.com/software-engineering-perspectives/docker-compose-environment-variables
+#
+#       11. Use Volumes
+#           by Docker
+#           https://docs.docker.com/storage/volumes/
+#
+#       12. How To Solve Module Not Found Can’t Resolve ‘fs’ in Next.js
+#           by Maikel Venn
+#           https://maikelveen.com/blog/how-to-solve-module-not-found-cant-resolve-fs-in-nextjs
+#
+#       13. How to use docker-compose, volumes, networks, and more
+#           by Dvir Segal
+#           Complete Docker Course is linked in...
+#           https://faun.pub/how-to-use-docker-compose-volumes-networks-and-more-24f82169c077
+#
+#       14: Back Up and Share Docker Volumes with this Extension
+#           by Felipe Cruz
+#           https://www.docker.com/blog/back-up-and-share-docker-volumes-with-this-extension/
+#
+#
+#
+#       NOTES:
+#       ------
+#
+#       o  To create a volume use the command:
+#
+#           $  docker volume create [volume-name]
+#
+#       o  To remove the volume holding the MongoDB use the command:
+#
+#           $ docker volume rm [volume-name]
+#
+#       o  To examine the volume holding the MongoDB use the command:
+#
+#           $ docker volume inspect [volume-name]
+#
+#       o  If you start a container with a volume the does not exist Docker creates one for you.
+#
+#
+#
+#       MODIFICATIONS:
+#       --------------
+#
+#  Date:         By-Group:   Rev:     Description:
+#
+#  27-Sep-2022   TJM-MCODE  {0001}    New file for my '${APP_NAME}' 3-Tier Dockerized Template solution.
+#                                     Define all the APP_* environment variables in your .env file.
+#
+#
+version: '3'
+#
+#  V O L U M E S -- NOTE: can't use ${APP_NAME} here, and internal are auto-prefixed with <appname>_<name-specified>
+#                         with <appname>_<name-specified> if you don't use [name: <volume-name>]
+#  -------------
+#
+volumes:
+  frontend-volume:  # our Frontend/Client execution volume
+    name: "badbank-frontend"
+    external: false  # temporary, build specific
+#
+  backend-volume:  # our Backend/Server execution volume
+    name: "badbank-backend"
+    external: false  # temporary, build specific
+#
+  database-volume:  # our Database configuration volume
+    name: "badbank-database"
+    external: false  # temporary, build specific
+#
+  mongodb-volume:  # our Database/MongoDB storage volume
+    name: "badbank-mongodb"
+    external: true  # keep after all Containers are destroyed
+#
+#
+services:
+#
+#  F R O N T E N D
+#  ---------------
+  frontend:
+    # frontend, client, app ui
+    container_name: ${APP_NAME}-frontend
+    # use the shared .env file for all 3 Tiers
+    env_file:
+      - .env  # shared environment vars for all 3-Tiers
+    image: "tjmcode/badbank-frontend"
+    ports:
+      - '${APP_FRONTEND_PORT:-3000}:${APP_FRONTEND_PORT:-3000}'
+    volumes:
+      - frontend-volume:/exe/frontend  # temporary volume
+    restart: always
+    networks:
+      - react-express  # frontend to backend connection
+    depends_on:
+      - backend
+#
+#  B A C K E N D
+#  -------------
+  backend:
+    # backend, server, app internals
+    container_name: ${APP_NAME}-backend
+    # use the shared .env file for all 3 Tiers
+    env_file:
+      - .env  # shared environment vars for all 3-Tiers
+    image: "tjmcode/badbank-backend"
+    ports:
+      - '${APP_BACKEND_PORT:-8080}:${APP_BACKEND_PORT:-8080}'
+    volumes:
+      - backend-volume:/exe/frontend  # temporary volume
+    restart: always
+    networks:
+      - react-express  # frontend to backend connection
+      - express-mongo  # backend to database connection
+    depends_on:
+      - database
+#
+#  D A T A B A S E
+#  ---------------
+  database:
+    # database, db, data store, app persistent data
+    container_name: ${APP_NAME}-database
+    # use the shared .env file for all 3 Tiers
+    env_file:
+      - .env  # shared environment vars for all 3-Tiers
+    image: "tjmcode/badbank-database"
+    ports:
+      - '${APP_DATABASE_PORT:-27017}:${APP_DATABASE_PORT:-27017}'
+    volumes:
+      - database-volume:/data/configdb  # temporary volume -- NOTE: /data/configdb/ is the path required by MongoDB
+      - mongodb-volume:/data/db  # persist our database in this volume -- NOTE: /data/db/ is the path required by MongoDB
+    restart: always
+    networks:
+      - express-mongo  # backend to database connection
+#
+networks:
+  react-express:
+  express-mongo:
+#
