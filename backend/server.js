@@ -64,7 +64,7 @@
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
  *  15-Oct-2022   TJM-MCODE  {0003}   Added 'Send Money' feature.
  *  17-Oct-2022   TJM-MCODE  {0004}   Fix SEND MONEY by sequencing the DAL Promsises with 'Promise.all()'
- *  17-Oct-2022   TJM-MCODE  {0005}   Added APPLE ID Sign-In - https://badbank.tjmcode.io/account/appleid/notification
+ *  17-Oct-2022   TJM-MCODE  {0005}   Added APPLE ID Sign-In - https://badbank.tjmcode.io/backend/account/appleid/notification
  *
  *
  *

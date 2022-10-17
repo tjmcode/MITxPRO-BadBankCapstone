@@ -115,7 +115,7 @@ scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_
 {
     const params = {
         clientId: 'service.badbank.tjmcode.io',
-        redirectURI: 'https://badbank.tjmcode.io/account/appleid/notification',
+        redirectURI: 'https://badbank.tjmcode.io/backend/account/appleid/notification',
         scope: 'name email',
     };
     window.AppleID.auth.init(params);
