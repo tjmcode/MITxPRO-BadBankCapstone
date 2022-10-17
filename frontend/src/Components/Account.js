@@ -106,6 +106,11 @@ const MINIMUM_OPENING_DEPOSIT = 100;
 
 // #region  C O M P O N E N T – P U B L I C
 
+/*
+ * Get the APPLE code for 'Sign in with Apple'.
+ * This was tested on 17-Oct-2022 and works, but Server Endpoint fails with 'Cannot POST /account/applid/notification'.
+ *
+ */
 scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js', () =>
 {
     const params = {

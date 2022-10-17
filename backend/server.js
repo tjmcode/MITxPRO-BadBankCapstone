@@ -228,7 +228,7 @@ app.get(`/test`, function (req, res)
  * @returns {object} response to Apple
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get(`/account/appleid/notification`, async function (req, res)
+app.post(`/account/appleid/notification`, async function (req, res)
 {
     mcode.log(`Apple Request: ${req}`, logSource, `wait`);
 
