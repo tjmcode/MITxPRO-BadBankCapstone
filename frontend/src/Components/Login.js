@@ -198,7 +198,7 @@ function Login()
             return;
         }
 
-        log(`[LOGIN] Attempting User Login...`, logSource, `Waiting`);
+        log(`[LOGIN] Attempting User Login...`, logSource, `wait`);
 
         try
         {

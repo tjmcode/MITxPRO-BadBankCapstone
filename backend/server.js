@@ -60,9 +60,10 @@
  *
  *  Date:         By-Group:   Rev:    Description:
  *
- *  25-Aug-2022   TJM-MCODE  {0002}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
+ *  25-Aug-2022   TJM-MCODE  {0001}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
- *  15-Oct-2022   TJM-MCODE  {0002}   Added 'Send Money' feature.
+ *  15-Oct-2022   TJM-MCODE  {0003}   Added 'Send Money' feature.
+ *  17=Oct-2022   TJM-MCODE  {0004}   Fix SEND MONEY by sequencing the DAL Promsises with 'Promise.all()'
  *
  *
  */
@@ -481,14 +482,18 @@ app.get(`/account/balance/:email`, function (req, res)
 app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
 {
     mcode.log(`SENDMONEY -- Sending Money from Account of ${req.params.email} to Account of ${req.params.receiver}`, logSource, `info`);
-    let sendersAccount = {};
+
+    let sendersAccount = {};  // init until 'Withdraw' gives us the Sender's Account Object
 
     // 1) Check for receiver in Bad Bank
     // 2) Attempt Withdraw from User (allow Overdraft to make money LOL, 'Bad Bank')
     // 3) Deposit the money in other personal Account
 
-    // 1) Check for receiver in Bad Bank
-    dal.findAccount(req.params.receiver)
+    // to seqeunce the Promises creates by the DAL I use an array of the created promises and 'Promise.all()' to sequence them...
+    let sequence = [];
+
+    // Set Step 1) Check for receiver in Bad Bank
+    sequence.push(dal.findAccount(req.params.receiver)
         .then((res_find) =>
         {
             if (!res_find)
@@ -506,10 +511,10 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
         .finally(() =>
         {
 
-        });
+        }));
 
-    // 2) Attempt Withdraw from User (allow Overdraft to make money LOL, 'Bad Bank')
-    dal.withdrawFunds(req.params.email, req.params.amount)
+    // Set Step 2) Attempt Withdraw from User (allow Overdraft to make money LOL, 'Bad Bank')
+    sequence.push(dal.withdrawFunds(req.params.email, req.params.amount)
         .then((res_withdrawMoney) =>
         {
             if (!res_withdrawMoney)
@@ -532,10 +537,10 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
         .finally(() =>
         {
 
-        });
+        }));
 
-    // 3) Deposit the money in other personal Account
-    dal.depositFunds(req.params.receiver, req.params.amount)
+    // Set Step 3) Deposit the money in other personal Account
+    sequence.push(dal.depositFunds(req.params.receiver, req.params.amount)
         .then((res_depositMoney) =>
         {
             if (!res_depositMoney)
@@ -547,9 +552,6 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
             else
             {
                 mcode.log(`SENDMONEY -- Successfully deposited User funds, new balance: ${res_depositMoney.balance}`, logSource, `success`);
-
-                // final response to API -- Sender's Account
-                res.send(sendersAccount);
             }
         })
         .catch((exp_depositMoney) =>
@@ -560,6 +562,34 @@ app.get(`/account/sendMoney/:email/:amount/:receiver`, function (req, res)
         .finally(() =>
         {
 
+        }));
+
+    // Now exeute all the DAL transactions in sequence...
+    Promise.all(sequence)
+        .then((result) =>
+        {
+            result.forEach((response) =>
+            {
+                mcode.log(`SENDMONEY -- Successfully deposited User funds, new balance: ${response}`, logSource, `success`);
+            });
+        })
+        .catch((exp_sendMoney) =>
+        {
+            const exp_msg = mcode.exp(`SENDMONEY -- DAL Promise Sequence CRASHED.`, logSource, exp_sendMoney);
+            res.status(401).json({error: exp_msg});
+        })
+        .finally(() =>
+        {
+            if (sendersAccount)
+            {
+                // final response to API -- the original Sender's updated Account
+                res.send(sendersAccount);
+            }
+            else
+            {
+                const exp_msg = mcode.exp(`SENDMONEY -- DAL Promise Sequence FAILED.`, logSource, 'error');
+                res.status(401).json({error: exp_msg});
+            }
         });
 });
 

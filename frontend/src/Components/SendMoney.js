@@ -238,15 +238,13 @@ function SendMoney()
     {
         e.preventDefault();  // we're handling it here (prevent: error-form-submission-canceled-because-the-form-is-not-connected)
 
-        log(`[SENDMONEY] Making Account SendMoney - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `info`);
+        log(`[SENDMONEY] Attempting to SendMoney - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `wait`);
 
         if (!checkFields())
         {
-            log(`[SENDMONEY] SendMoney failed checks - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `warn`);
+            log(`[SENDMONEY] SendMoney failed validation - name: ${ctx.User.username} sendMoney: ${sendMoney}`, logSource, `warn`);
             return;
         }
-
-        log(`[SENDMONEY] Attempting User SendMoney...`, logSource, `Waiting`);
 
         try
         {

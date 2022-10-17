@@ -230,7 +230,7 @@ function Withdraw()
             return;
         }
 
-        log(`[WITHDRAW] Attempting User Withdraw...`, logSource, `Waiting`);
+        log(`[WITHDRAW] Attempting User Withdraw...`, logSource, `wait`);
 
         try
         {

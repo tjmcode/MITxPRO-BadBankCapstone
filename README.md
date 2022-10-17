@@ -112,6 +112,8 @@ Contributors names and contact info
 
 ## Version History
 
+* 0.6
+    * Fixed a Promise sequence issue with dal.sendMoney().
 * 0.5
     * Refactored into the 3-Tier Dockerized MongoDB, Express, React, NodeJS (MERN) Architecture.
 * 0.4
@@ -128,8 +130,8 @@ Contributors names and contact info
 
 ## Future Development
 
-* 0.6
-    * Correct issue with 'Send Money' if attempted during first session during Account creation.
+* 0.7
+    * Add a 2nd method of Authentication.
 
 
 ## License

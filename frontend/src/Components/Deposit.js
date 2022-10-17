@@ -226,7 +226,7 @@ function Deposit()
             return;
         }
 
-        log(`[DEPOSIT] Attempting User Deposit...`, logSource, `Waiting`);
+        log(`[DEPOSIT] Attempting User Deposit...`, logSource, `wait`);
 
         try
         {

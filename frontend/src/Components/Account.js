@@ -51,6 +51,7 @@
  *
  *  02-Jun-2022   TJM-MCODE  {0001}     New module implementing the creation Bad Bank Accounts.
  *  14-Oct-2022   TJM-MCODE  {0002}     Added Roles for controlling access to ALL DATA.
+ *  17-Oct-2022   TJM-MCODE  {0003}     UAT: Force ROLE to all CAPS during entry... should actually be a pulldown.
  *
  *
  */
@@ -165,9 +166,11 @@ function Account()
 
         if (label === "role")
         {
-            if ((field !== "BANKER")
-                && (field !== "CUSTOMER")
-                && (field !== "AUDITOR"))
+            let requestedRole = field.toUpperCase();
+
+            if ((requestedRole !== "BANKER")
+                && (requestedRole !== "CUSTOMER")
+                && (requestedRole !== "AUDITOR"))
             {
                 setStatus(`error: Role must be one of: BANKER, CUSTOMER, AUDITOR.`);
                 setSubmit('Disabled');
@@ -264,7 +267,7 @@ function Account()
             return;
         }
 
-        log(`[ACCOUNT] Attempting to Create User...`, logSource, `Waiting`);
+        log(`[ACCOUNT] Attempting to Create User...`, logSource, `wait`);
 
         try
         {
@@ -313,7 +316,7 @@ function Account()
             return;
         }
 
-        log(`[ACCOUNT] Attempting to Delete User...`, logSource, `Waiting`);
+        log(`[ACCOUNT] Attempting to Delete User...`, logSource, `wait`);
 
         try
         {
@@ -402,7 +405,7 @@ function Account()
                         {
                             setSubmit('');
                             setStatus('');
-                            setRole(e.currentTarget.value);
+                            setRole(e.currentTarget.value.toUpperCase());
                             validate(e.currentTarget.value, 'role');
                         }} /><br />
 
