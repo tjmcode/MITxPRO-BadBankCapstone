@@ -109,7 +109,7 @@ const MINIMUM_OPENING_DEPOSIT = 100;
 scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js', () =>
 {
     const params = {
-        clientId: 'badbank.tjmcode.io',
+        clientId: 'service.badbank.tjmcode.io',
         redirectURI: 'https://badbank.tjmcode.io/account/appleid/notification',
         scope: 'name email',
     };

@@ -220,7 +220,6 @@ app.get(`/test`, function (req, res)
     res.send("Bad Bank Server was test scucessful. [NOTE: Changes to this file are *not* dynamic, they are loaded at Page Display.]");
 });
 
-
 /**
  * @func appleid
  * @memberof server
@@ -229,9 +228,12 @@ app.get(`/test`, function (req, res)
  * @returns {object} response to Apple
  * @returns {string} 401 status with error message if unsucessful
  */
-app.get(`/account/appleid/notification`, function (req, res)
+app.get(`/account/appleid/notification`, async function (req, res)
 {
     mcode.log(`Apple Request: ${req}`, logSource, `wait`);
+
+    const user = await getAppleUserId(req.body.id_token);
+    res.redirect(303, 'https://badbank.tjmcode.io/app?user=${JSON.stringify(req.body.id_token)}');
 
     // respond to Apple Id requests
     res.send("Response for Apple Id requests...");
