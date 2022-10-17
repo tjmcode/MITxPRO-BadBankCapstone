@@ -29,11 +29,15 @@
  *      REFERENCES:
  *      -----------
  *
- *      1. MicroCODE JavaScript Style Guide
- *         Local File: MCX-S02 (Internal JS Style Guide).docx
- *         https://github.com/MicroCODEIncorporated/JavaScriptSG
+ *      1.  MicroCODE JavaScript Style Guide
+ *          Local File: MCX-S02 (Internal JS Style Guide).docx
+ *          https://github.com/MicroCODEIncorporated/JavaScriptSG
  *
- *      2. MIT xPRO:
+ *      2.  HOW-TO: Sign in with Apple on React and React-Native using Node
+ *          by Sunim Acharya
+ *          https://dev.to/aryaminus/how-to-sign-in-with-apple-on-react-and-react-native-using-node-5g0b
+ *
+ *
  *
  *
  *
@@ -52,6 +56,7 @@
  *  02-Jun-2022   TJM-MCODE  {0001}     New module implementing the creation Bad Bank Accounts.
  *  14-Oct-2022   TJM-MCODE  {0002}     Added Roles for controlling access to ALL DATA.
  *  17-Oct-2022   TJM-MCODE  {0003}     UAT: Force ROLE to all CAPS during entry... should actually be a pulldown.
+ *  17-Oct-2022   TJM-MCODE  {0004}     Added APPLE Sign-In.
  *
  *
  */
@@ -63,8 +68,11 @@
 // #region  I M P O R T S
 
 import React, {useContext, useState} from 'react';
-import {AppContext} from './AppContext';
+import scriptjs from 'scriptjs';
 import BankCard from './BankCard';
+
+// get our app-wide context
+import {AppContext} from './AppContext';
 
 // include the Back-End API
 import {api} from '../api/api.js';
@@ -97,6 +105,16 @@ const MINIMUM_OPENING_DEPOSIT = 100;
 // #endregion
 
 // #region  C O M P O N E N T – P U B L I C
+
+scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js', () =>
+{
+    const params = {
+        clientId: 'badbank.tjmcode.io',
+        redirectURI: 'https://badbank.tjmcode.io/account/appleid/notification',
+        scope: 'name email',
+    };
+    window.AppleID.auth.init(params);
+});
 
 /**
  * @func Account
@@ -424,6 +442,8 @@ function Account()
                     <button type="submit" className="btn btn-light" onClick={createAccount_Click} disabled={submit}>Create</button>
                     <> </>
                     <button type="submit" className="btn btn-light" onClick={deleteAccount_Click} disabled={submit}>Delete</button>
+                    <> </>
+                    <button type="submit" className="btn btn-light" onClick={() => window.AppleID.auth.signIn()}>Sign In with Apple</button>
                     <br />
                 </form>
             ) : (

@@ -112,6 +112,8 @@ Contributors names and contact info
 
 ## Version History
 
+* 0.7
+    * Added a 2nd method of Authentication.
 * 0.6
     * Fixed a Promise sequence issue with dal.sendMoney().
 * 0.5
@@ -130,8 +132,8 @@ Contributors names and contact info
 
 ## Future Development
 
-* 0.7
-    * Add a 2nd method of Authentication.
+* 0.8
+    * Encrypt email password properly
 
 
 ## License

@@ -63,7 +63,9 @@
  *  25-Aug-2022   TJM-MCODE  {0001}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
  *  15-Oct-2022   TJM-MCODE  {0003}   Added 'Send Money' feature.
- *  17=Oct-2022   TJM-MCODE  {0004}   Fix SEND MONEY by sequencing the DAL Promsises with 'Promise.all()'
+ *  17-Oct-2022   TJM-MCODE  {0004}   Fix SEND MONEY by sequencing the DAL Promsises with 'Promise.all()'
+ *  17-Oct-2022   TJM-MCODE  {0005}   Added APPLE ID Sign-In - https://badbank.tjmcode.io/account/appleid/notification
+ *
  *
  *
  */
@@ -217,6 +219,24 @@ app.get(`/test`, function (req, res)
     // a simple response to a request
     res.send("Bad Bank Server was test scucessful. [NOTE: Changes to this file are *not* dynamic, they are loaded at Page Display.]");
 });
+
+
+/**
+ * @func appleid
+ * @memberof server
+ * @desc Responds to Apple Id notifications.
+ * @api public
+ * @returns {object} response to Apple
+ * @returns {string} 401 status with error message if unsucessful
+ */
+app.get(`/account/appleid/notification`, function (req, res)
+{
+    mcode.log(`Apple Request: ${req}`, logSource, `wait`);
+
+    // respond to Apple Id requests
+    res.send("Response for Apple Id requests...");
+});
+
 
 /**
  * @func create
