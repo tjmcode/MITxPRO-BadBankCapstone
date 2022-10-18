@@ -102,7 +102,7 @@ const logSource = path.basename(__filename);
 // for running in a Docker Container that's running a HOST named "mongo"
 // NOTE: This "mongo" is *not* the Docker Container Name!
 //                  mondodb://hostname:port/appname
-const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
+const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}`;
 const DB_NAME = `${process.env.APP_DATABASE_NAME}`;
 
 const BB_OVERDRAFT_FEE = 35.00; // really 'Bad Bank'
