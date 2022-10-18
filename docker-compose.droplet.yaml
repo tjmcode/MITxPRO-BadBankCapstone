@@ -1,8 +1,8 @@
 # ***************************************************************************
 # NOTE: This version does not BUILD it only launches the Containers.
 #       This is used direcly in a DigitalOcean 'Droplet' to launch our App.
-#       It is run from *root* and expects ".env" to be there as a concatenation
-#       of our .env and .env.prodction files.
+#       It is run from \root\apps\${APP_NAME} and expects ".env" to be there
+#       as a concatenation of our .env and .env.prodction files.
 # ***************************************************************************
 #
 #       Title:    MicroCODE Docker Compose File for MERN App STACK
