@@ -1,36 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>JSDoc: Source: backend/src/dal/dal.js</title>
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: backend/src/dal/dal.js</title>
 
-        <script src="scripts/prettify/prettify.js"> </script>
-        <script src="scripts/prettify/lang-css.js"> </script>
-        <!--[if lt IE 9]>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-        <link type="text/css"
-              rel="stylesheet"
-              href="styles/prettify-tomorrow.css">
-        <link type="text/css"
-              rel="stylesheet"
-              href="styles/jsdoc-default.css">
-    </head>
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
 
-    <body>
+<body>
 
-        <div id="main">
+<div id="main">
 
-            <h1 class="page-title">Source: backend/src/dal/dal.js</h1>
+    <h1 class="page-title">Source: backend/src/dal/dal.js</h1>
+
+    
 
 
 
-
-
-
-            <section>
-                <article>
-                    <pre class="prettyprint source linenums"><code>// #region  H E A D E R
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// #region  H E A D E R
 // &lt;copyright file="dal.js" company="MicroCODE Incorporated">Copyright © 2022 MicroCODE, Inc. Troy, MI&lt;/copyright>&lt;author>Timothy J. McGuire&lt;/author>
 // #region  P R E A M B L E
 // #region  D O C U M E N T A T I O N
@@ -134,7 +130,11 @@ const logSource = path.basename(__filename);
 // for running in a Docker Container that's running a HOST named "mongo"
 // NOTE: This "mongo" is *not* the Docker Container Name!
 //                  mondodb://hostname:port/appname
+//~const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
+//*const DB_URL = `mongodb://0.0.0.0:27021/${process.env.APP_NAME}`;
+//*const DB_URL = `mongodb://mongo:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}-database`;
 const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
+
 const DB_NAME = `${process.env.APP_DATABASE_NAME}`;
 
 const BB_OVERDRAFT_FEE = 35.00; // really 'Bad Bank'
@@ -188,11 +188,11 @@ MongoClient.connect(DB_URL, {useUnifiedTopology: true}, (err, client) =>
     {
         db = client.db(DB_NAME);
 
-        mcode.log(`DAL: init - Connected to Mongo DB Server, using database: ${db.databaseName}`, logSource, `info`);
+        mcode.log(`DAL: init - Connected to Mongo DB Server, using database: ${db.databaseName}`, logSource, `success`);
     }
     catch (exception)
     {
-        mcode.exp(`DAL: init - Database Connection CRASHED, MongoDB Error: ${err}`, logSource, exception);
+        mcode.exp(`DAL: init - Database Connection CRASHED, \r\n\x1b[35m           MongoDB Error: ${err}`, logSource, exception);
     }
 });
 
@@ -587,43 +587,25 @@ module.exports = {createAccount, deleteAccount, depositFunds, withdrawFunds, acc
 
 // #endregion
 // #endregion</code></pre>
-                </article>
-            </section>
+        </article>
+    </section>
 
 
 
 
-        </div>
+</div>
 
-        <nav>
-            <h2><a href="index.html">Home</a></h2>
-            <h3>Modules</h3>
-            <ul>
-                <li><a href="app.module_AppContext.html">AppContext</a></li>
-            </ul>
-            <h3>Namespaces</h3>
-            <ul>
-                <li><a href="api.html">api</a></li>
-                <li><a href="app.html">app</a></li>
-                <li><a href="dal.html">dal</a></li>
-                <li><a href="mcodeClient.html">mcodeClient</a></li>
-                <li><a href="mcodeServer.html">mcodeServer</a></li>
-                <li><a href="server.html">server</a></li>
-            </ul>
-            <h3>Global</h3>
-            <ul>
-                <li><a href="global.html#accountRecord">accountRecord</a></li>
-                <li><a href="global.html#transactionRecord">transactionRecord</a></li>
-            </ul>
-        </nav>
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="app.module_AppContext.html">AppContext</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="app.html">app</a></li><li><a href="dal.html">dal</a></li><li><a href="mcodeClient.html">mcodeClient</a></li><li><a href="mcodeServer.html">mcodeServer</a></li><li><a href="server.html">server</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accountRecord">accountRecord</a></li><li><a href="global.html#transactionRecord">transactionRecord</a></li></ul>
+</nav>
 
-        <br class="clear">
+<br class="clear">
 
-        <footer>
-            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Oct 17 2022 12:13:16 GMT-0500 (Central Daylight Time)
-        </footer>
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Oct 18 2022 13:35:34 GMT-0500 (Central Daylight Time)
+</footer>
 
-        <script> prettyPrint(); </script>
-        <script src="scripts/linenumber.js"> </script>
-    </body>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
 </html>

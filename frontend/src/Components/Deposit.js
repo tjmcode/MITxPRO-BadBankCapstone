@@ -55,8 +55,6 @@
  */
 
 // #endregion
-// #endregion
-// #endregion
 
 // #region  I M P O R T S
 
@@ -74,6 +72,9 @@ import {log, exp, toCurrency} from '../mcodeClient.js';
 var path = require('path');
 var logSource = path.basename(__filename);
 
+// #endregion
+
+// #endregion
 // #endregion
 
 // #region  J A V A S C R I P T
