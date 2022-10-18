@@ -102,8 +102,7 @@ const logSource = path.basename(__filename);
 // for running in a Docker Container that's running a HOST named "mongo"
 // NOTE: This "mongo" is *not* the Docker Container Name!
 //                  mondodb://hostname:port/appname
-// const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}`; -- works in DEV
-const DB_URL = `mongodb://localhost:${process.env.APP_DATABASE_PORT}`;
+const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
 const DB_NAME = `${process.env.APP_DATABASE_NAME}`;
 
 const BB_OVERDRAFT_FEE = 35.00; // really 'Bad Bank'
@@ -157,7 +156,7 @@ MongoClient.connect(DB_URL, {useUnifiedTopology: true}, (err, client) =>
     {
         db = client.db(DB_NAME);
 
-        mcode.log(`DAL: init - Connected to Mongo DB Server, using database: ${db.databaseName}`, logSource, `info`);
+        mcode.log(`DAL: init - Connected to Mongo DB Server, using database: ${db.databaseName}`, logSource, `success`);
     }
     catch (exception)
     {
