@@ -166,7 +166,7 @@ services:
         APP_NAME: ${APP_NAME}
         NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - '${APP_FRONTEND_PORT:-3000}:${APP_FRONTEND_PORT:-3000}'
+      - '${APP_FRONTEND_PORT:-3000}:3000'
     volumes:
       - frontend-volume:/exe/frontend  # temporary volume
     restart: always
@@ -190,7 +190,7 @@ services:
         APP_NAME: ${APP_NAME}
         NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - '${APP_BACKEND_PORT:-8080}:${APP_BACKEND_PORT:-8080}'
+      - '${APP_BACKEND_PORT:-8080}:$8080'
     volumes:
       - backend-volume:/exe/frontend  # temporary volume
     restart: always
@@ -215,7 +215,7 @@ services:
         APP_NAME: ${APP_NAME}
         NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - '${APP_DATABASE_PORT:-27017}:${APP_DATABASE_PORT:-27017}'
+      - '${APP_DATABASE_PORT:-27017}:27017'
     volumes:
       - database-volume:/data/configdb  # temporary volume -- NOTE: /data/configdb/ is the path required by MongoDB
       - mongodb-volume:/data/db  # persist our database in this volume -- NOTE: /data/db/ is the path required by MongoDB
