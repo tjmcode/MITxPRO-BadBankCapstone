@@ -169,7 +169,7 @@ services:
       - .env  # shared environment vars for all 3-Tiers
     image: "tjmcode/badbank-frontend"
     ports:
-      - '${APP_FRONTEND_PORT:-3000}:3000'
+      - '${APP_FRONTEND_PORT:-3001}:3001'
     volumes:
       - frontend-volume:/exe/frontend  # temporary volume
     restart: always
@@ -188,7 +188,7 @@ services:
       - .env  # shared environment vars for all 3-Tiers
     image: "tjmcode/badbank-backend"
     ports:
-      - '${APP_BACKEND_PORT:-8080}:8080'
+      - '${APP_BACKEND_PORT:-8081}:8081'
     volumes:
       - backend-volume:/exe/backend  # temporary volume
     restart: always
@@ -208,7 +208,7 @@ services:
       - .env  # shared environment vars for all 3-Tiers
     image: "tjmcode/badbank-database"
     ports:
-      - '${APP_DATABASE_PORT:-27017}:27017'
+      - '${APP_DATABASE_PORT:-27021}:27021'
     volumes:
       - database-volume:/data/configdb  # temporary volume -- NOTE: /data/configdb/ is the path required by MongoDB
       - mongodb-volume:/data/db  # persist our database in this volume -- NOTE: /data/db/ is the path required by MongoDB

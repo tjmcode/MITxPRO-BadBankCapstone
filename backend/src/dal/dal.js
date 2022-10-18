@@ -96,13 +96,17 @@ const logSource = path.basename(__filename);
 // #region  C O N S T A N T S
 
 // for running native on local machine
-// const DB_URL = 'mongodb://localhost:27017/appname';
-// const DB_URL = 'mongodb://appname.tjmcode.io:27017/appname';
+// const DB_URL = 'mongodb://localhost:2702x/appname';
+// const DB_URL = 'mongodb://appname.tjmcode.io:2702x/appname';
 
 // for running in a Docker Container that's running a HOST named "mongo"
 // NOTE: This "mongo" is *not* the Docker Container Name!
 //                  mondodb://hostname:port/appname
+//~const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
+//*const DB_URL = `mongodb://0.0.0.0:27021/${process.env.APP_NAME}`;
+//*const DB_URL = `mongodb://mongo:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}-database`;
 const DB_URL = `mongodb://${process.env.APP_NAME}-database:${process.env.APP_DATABASE_PORT}/${process.env.APP_NAME}`;
+
 const DB_NAME = `${process.env.APP_DATABASE_NAME}`;
 
 const BB_OVERDRAFT_FEE = 35.00; // really 'Bad Bank'
@@ -160,7 +164,7 @@ MongoClient.connect(DB_URL, {useUnifiedTopology: true}, (err, client) =>
     }
     catch (exception)
     {
-        mcode.exp(`DAL: init - Database Connection CRASHED, MongoDB Error: ${err}`, logSource, exception);
+        mcode.exp(`DAL: init - Database Connection CRASHED, \r\n\x1b[35m           MongoDB Error: ${err}`, logSource, exception);
     }
 });
 

@@ -21,7 +21,7 @@ const testLoginPage = async () =>
         await page.setViewport({width: 1920, height: 1080});
 
         // Step 3 - Using the page variable goto the correct URL that the React app is running on
-        await page.goto(`http://localhost:3000/#/login/`);
+        await page.goto(`http://localhost:1/#/login/`);
 
         // Step 4 - Using the page variable, use the click method by passing the ".create-user" class name
         //await page.click(`.create-user`);

@@ -57,7 +57,7 @@ docker compose up
 
 * Navigate your Browser to...
 ```
-localhost:3000
+localhost:3001
 ```
 
 * Add test to "puppeteer.js" in the Server root folder.

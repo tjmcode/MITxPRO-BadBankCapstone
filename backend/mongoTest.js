@@ -1,7 +1,7 @@
 // Standalone Temporary Test Code for MongoDB
 
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://localhost:27021';
 
 MongoClient.connect(url, {useUnifiedTopology: true}, function (err, client)
 {

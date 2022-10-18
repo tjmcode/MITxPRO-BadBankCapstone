@@ -76,8 +76,8 @@ var logSource = path.basename(__filename);
         const page = await browser.newPage();
 
         // path to Frontend at build-time...
-        // localhost:8080
-        // https://appname.tjmcode.io:8080
+        // localhost:8081
+        // https://appname.tjmcode.io:8081
         const appPort = parseInt(`${process.env.APP_FRONTEND_PORT}`);
         const appUrl = `https://${process.env.APP_SUBDOMAIN}:${appPort}`;
 

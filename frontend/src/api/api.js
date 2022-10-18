@@ -96,9 +96,9 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
-//    localhost:8080 for development
+//    localhost:808x for development
 //    https://appname.tjmcode.io/backend for frontend
-// or http://appname.tjmcode.io:8080 for backend
+// or http://appname.tjmcode.io:808x for backend
 //
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}`;
 

@@ -74,4 +74,5 @@ ENV \
 # expose port and start the application
 EXPOSE ${APP_DATABASE_PORT:-27017}
 #
+
 CMD ["mongod"]
