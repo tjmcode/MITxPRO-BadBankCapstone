@@ -69,7 +69,7 @@ ENV \
     #
     # REACT_APP_BACKEND_URL - taken from the standard .env file into a REACT_APP_* var for the Front-End
     # should be equal to ${APP_BACKEND_URL}
-    REACT_APP_BACKEND_URL=https://badbank.tjmcode.io/backend
+    REACT_APP_BACKEND_URL=https://badbank.tjmcode.io:8080
 #
 # set container’s working directory
 WORKDIR /app

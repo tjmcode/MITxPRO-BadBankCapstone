@@ -48,6 +48,7 @@
  *  Date:         By-Group:   Rev:     Description:
  *
  *  02-Jun-2022   TJM-MCODE  {0001}    New module implementing the Bad Bank Account Login.
+ *  17-Oct-2022   TJM-MCODE  {0002}    Added APPLE Sign-In.
  *
  *
  */
@@ -59,6 +60,9 @@
 // #region  I M P O R T S
 
 import React, {useContext, useState} from 'react';
+import scriptjs from 'scriptjs';
+
+// get our app-wide context
 import {AppContext} from './AppContext';
 import BankCard from './BankCard';
 
@@ -72,6 +76,9 @@ import {log, exp} from '../mcodeClient.js';
 var path = require('path');
 var logSource = path.basename(__filename);
 
+// support .env file variables -- this bring the .env file variables into the 'process.env' object
+require('dotenv').config();
+
 // #endregion
 
 // #region  J A V A S C R I P T
@@ -79,6 +86,22 @@ var logSource = path.basename(__filename);
 
 // #region  C O N S T A N T S
 
+const REACT_APP_BACKEND_PORT = `${process.env.REACT_APP_BACKEND_PORT}`;
+
+/*
+ * Get the APPLE code for 'Sign in with Apple'.
+ * This was tested on 17-Oct-2022 and works, but Server Endpoint fails with 'Cannot POST /account/applid/notification'.
+ *
+ */
+scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js', () =>
+{
+    const params = {
+        clientId: 'service.badbank.tjmcode.io',
+        redirectURI: `https://badbank.tjmcode.io/${REACT_APP_BACKEND_PORT}/account/appleid/notification`,
+        scope: 'name email',
+    };
+    window.AppleID.auth.init(params);
+});
 // #endregion
 
 // #region  P R I V A T E   F I E L D S
@@ -293,6 +316,8 @@ function Login()
                     <button type="button" className="btn btn-light" onClick={clearForm_Click}>Clear</button>
                     <> </>
                     <button type="submit" className="btn btn-light" onClick={logIn_Click} disabled={submit}>Log In</button>
+                    <> </>
+                    <button type="submit" className="btn btn-light" onClick={() => window.AppleID.auth.signIn()}>Sign In with Apple</button>
                     <br />
                 </form>
             ) : (

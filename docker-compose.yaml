@@ -190,9 +190,9 @@ services:
         APP_NAME: ${APP_NAME}
         NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - '${APP_BACKEND_PORT:-8080}:$8080'
+      - '${APP_BACKEND_PORT:-8080}:8080'
     volumes:
-      - backend-volume:/exe/frontend  # temporary volume
+      - backend-volume:/exe/backend  # temporary volume
     restart: always
     networks:
       - react-express  # frontend to backend connection
