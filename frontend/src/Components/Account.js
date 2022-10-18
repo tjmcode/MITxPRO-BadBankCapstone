@@ -84,6 +84,9 @@ import {log, exp} from '../mcodeClient.js';
 var path = require('path');
 var logSource = path.basename(__filename);
 
+// support .env file variables -- this bring the .env file variables into the 'process.env' object
+require('dotenv').config();
+
 // #endregion
 
 // #region  J A V A S C R I P T
@@ -93,6 +96,10 @@ var logSource = path.basename(__filename);
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 const MINIMUM_OPENING_DEPOSIT = 100;
+
+// #region  C O N S T A N T S
+
+const REACT_APP_BACKEND_PORT = `${process.env.REACT_APP_BACKEND_PORT}`;
 
 // #endregion
 
@@ -115,7 +122,7 @@ scriptjs.get('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_
 {
     const params = {
         clientId: 'service.badbank.tjmcode.io',
-        redirectURI: 'https://badbank.tjmcode.io/backend/account/appleid/notification',
+        redirectURI: `https://badbank.tjmcode.io/${REACT_APP_BACKEND_PORT}/account/appleid/notification`,
         scope: 'name email',
     };
     window.AppleID.auth.init(params);
