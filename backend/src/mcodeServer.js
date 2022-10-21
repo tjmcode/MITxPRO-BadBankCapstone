@@ -428,7 +428,7 @@ methods.logifyText = function (textToLogify)
                     lineEmpty = false;
                     break;
                 case `,`:
-                    logifiedText += indent();
+                    logifiedText += `,` + indent();
                     firstColon = true;
                     lineEmpty = true;
                     break;
