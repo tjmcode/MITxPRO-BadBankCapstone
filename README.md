@@ -57,7 +57,7 @@ docker compose up
 
 * Navigate your Browser to...
 ```
-localhost:3001
+localhost:3000
 ```
 
 * Add test to "puppeteer.js" in the Server root folder.
@@ -76,7 +76,7 @@ node puppeteer
 
 <p align="left"><img src=".\.github\images\app-ui.png" width="720" title="App U.I..."></p>
 
-* Demonstration of the React Bad Bank... (https://youtu.be/hctvo-EFqe4.mp4)
+* Demonstration of the React Bad Bank... (https://www.youtube.com/watch?v=kQxvMWJc2JE&t=5s)
 
 <video id="demo-video" style="border-style:solid; border-width:2px" src="https://youtu.be/hctvo-EFqe4.mp4" width="1024" allowfullscreen="allowfullscreen" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allow="autoplay *" loop autoplay autobuffer controls muted>
 Your browser does not support the HTML5 player.
