@@ -34,7 +34,7 @@
  *      REFERENCES:
  *      -----------
  *
- *      1. Starter Code Repository (Front end and API)
+ *      1. Starter Code Repository (Front-End and API)
  *         https://github.com/1125f16/badbank
  *      2. Starter Code Repository (Simple database)
  *         https://github.com/1125f16/littledb
@@ -60,7 +60,7 @@
  *
  *  Date:         By-Group:   Rev:    Description:
  *
- *  25-Aug-2022   TJM-MCODE  {0001}   Copied from `Fire Hydrant` project to move React App to MERN Architecture.
+ *  25-Aug-2022   TJM-MCODE  {0001}   Copied from 'Fire Hydrant' project to move React App to MERN Architecture.
  *  14-Oct-2022   TJM-MCODE  {0002}   Added Roles for controlling access to ALL DATA.
  *  15-Oct-2022   TJM-MCODE  {0003}   Added 'Send Money' feature.
  *  17-Oct-2022   TJM-MCODE  {0004}   Fix SEND MONEY by sequencing the DAL Promsises with 'Promise.all()'
@@ -105,7 +105,7 @@ const APP_URL = `${process.env.APP_SUBDOMAIN}:${APP_PORT}`;
 /*
  * SERVER: FILE SYSTEM, STORAGE, and STRUCTURES
  * --------------------------------------------
- * These define the Server it`s File System, Storage mechanisms, and stored Objects/Structures.
+ * These define the Server it's File System, Storage mechanisms, and stored Objects/Structures.
  *
  */
 
@@ -122,6 +122,7 @@ require(`dotenv`).config();
 const app = express();
 
 // load Faker to generate test data
+//* const faker = require(`faker`);
 
 // include our common MicroCODE Server Library
 var mcode = require(`./src/mcodeServer.js`);
@@ -182,7 +183,7 @@ var logSource = path.basename(__filename);
 // configure express to serve static files from public directory
 app.use(express.static(`public`));
 
-// configure CORS to share resources
+// configure CORS to share resources -- THIS MUST COME BEFORE ROUTES
 app.use(cors());
 
 // Startup Server
@@ -348,6 +349,7 @@ app.get(`/account/delete/:username/:email/:password`, function (req, res)
 
         });
 });
+
 /**
  * @func login
  * @memberof server

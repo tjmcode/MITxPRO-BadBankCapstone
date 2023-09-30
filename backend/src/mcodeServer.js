@@ -52,6 +52,7 @@
  *  03-Oct-2022   TJM-MCODE  {0004}    Added `log()` to simplify console logging of app events.
  *  03-Oct-2022   TJM-MCODE  {0005}    Added use of `vt` for colorizing Console Log entries.
  *  16-Oct-2022   TJM-MCODE  {0006}    Added 'success' as a severity.
+ *  14-May-2023   TJM-MCODE  {0007}    Made TypeScript corrections.
  *
  *
  */
@@ -358,7 +359,7 @@ methods.simplifyText = function (textToSimplify)
  * @desc Formats a string of BRACES, BRACKETS, QUOTES, for display in the EVENT LOG.
  * No formatting occurs until the opening brace '{' of the JSON Data.
  * @api public
- * @param {string} textToLogiify the string to be formatted for the event log
+ * @param {string} textToLogify the string to be formatted for the event log
  * @returns {string} the simplified text
  */
 methods.logifyText = function (textToLogify)
@@ -558,7 +559,7 @@ methods.hasJson = function (object)
 methods.toCurrency = function (numberToDisplay)
 {
     // if NaN reset to ZERO
-    if (methods.NotaNumber(numberToRound))
+    if (methods.NotaNumber(numberToDisplay))
     {
         return `$0.00`;
     }
